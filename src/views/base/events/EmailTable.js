@@ -160,13 +160,12 @@ class EmailTable extends React.Component{
                         <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
                     </CTableRow>
                     </CTableBody>
-                    <br />
-                    <CRow className="justify-content-center">
-                    <CCol md="auto">
-                        <CButton color="primary">Download</CButton>
-                        </CCol>
-                    </CRow>
                 </CTable>
+                <CRow className="justify-content-center">
+                <CCol md="auto">
+                    <CButton color="primary">Download</CButton>
+                    </CCol>
+                </CRow>
             </CCardBody>
           </CCard>
         </CCol>
