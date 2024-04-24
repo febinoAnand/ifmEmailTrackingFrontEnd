@@ -13,6 +13,7 @@ const EventGroup = React.lazy(() => import ('./views/base/events/EventGroup'))
 const Indicator = React.lazy(() => import('./views/base/events/EventIndicator'))
 const Button = React.lazy(() => import('./views/base/events/EventButton'))
 const ProblemCode = React.lazy(() => import('./views/base/events/EventProblemcode'))
+const EmailTable = React.lazy(() => import('./views/base/events/EmailTable'))
 
 //datas
 const HMIRaw = React.lazy(() => import('./views/base/data/HMIRaw_function'))
@@ -91,6 +92,7 @@ const routes = [
   { path: '/event/indicator', name: 'Indicator', element: Indicator}, //Event
   { path: '/event/button', name: 'Button', element: Button}, //Event
   { path: '/event/problemcode', name: 'ProblemCode', element: ProblemCode}, //Event
+  { path: '/event/emailtable', name: 'EmailTable', element: EmailTable}, //Event
 
   { path: '/data/activeproblem', name: 'ActiveProblem', element: ActiveProblem}, //data
   { path: '/data/problemdata', name: 'ProblemData', element: ProblemData}, //data
