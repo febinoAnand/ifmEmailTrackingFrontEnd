@@ -12,9 +12,17 @@ import {
   cilSitemap,
   cilTouchApp,
   cilBug,
+  cilCenterFocus,
   // cilUserX,
   cilListRich,
   cilObjectGroup,
+  cilBraille,
+  cilCheckCircle,
+  cilDiamond,
+  cilEnvelopeLetter,
+  cilArrowCircleBottom,
+  cilSettings,
+  cilSearch,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -73,53 +81,59 @@ const _nav = [
       to: '/event/problemcode',
       icon: <CIcon icon={cilBug} customClassName="nav-icon" />,
     },
+    {
+      component: CNavGroup,
+      name: 'Received Data',
+      
+      icon: <CIcon icon={cilCenterFocus} customClassName="nav-icon" />,
+      items:[
+      {
+        component: CNavItem,
+        name: 'Active Problem',
+        to: '/data/activeproblem',
+        icon: <CIcon icon={cilBraille} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Problem Data',
+        to: '/data/problemdata',
+        icon: <CIcon icon={cilCheckCircle} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Device Raw',
+        to: '/data/devraw',
+        icon: <CIcon icon={cilDiamond} customClassName="nav-icon" />,
+      },
+  
+      ]
+      
+    },
   ]
 },
   {
     component: CNavGroup,
-    name: 'Received Data',
-    
-    icon: <CIcon icon={cilListRich} customClassName="nav-icon" />,
-    items:[
-    {
-      component: CNavItem,
-      name: 'Active Problem',
-      to: '/data/activeproblem',
-    },
-    {
-      component: CNavItem,
-      name: 'Problem Data',
-      to: '/data/problemdata',
-    },
-    {
-      component: CNavItem,
-      name: 'Device Raw',
-      to: '/data/devraw',
-    },
-
-    ]
-    
-  },
-  {
-    component: CNavGroup,
     name: 'Email tracking',
     
-    icon: <CIcon icon={cilListRich} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilEnvelopeLetter} customClassName="nav-icon" />,
     items:[
     {
       component: CNavItem,
       name: 'Inbox',
       to: '/event/emailtable',
+      icon: <CIcon icon={cilArrowCircleBottom} customClassName="nav-icon" />,
     },
     {
       component: CNavItem,
       name: 'Setting',
       to: '/event/setting',
+      icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
     },
     {
       component: CNavItem,
       name: 'search parameter',
       to: '/data/devraw',
+      icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
     },
 
     ]
