@@ -114,7 +114,7 @@ const _nav = [
     {
       component: CNavItem,
       name: 'Setting',
-      to: '/data/problemdata',
+      to: '/event/setting',
     },
     {
       component: CNavItem,
