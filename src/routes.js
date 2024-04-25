@@ -16,6 +16,7 @@ const ProblemCode = React.lazy(() => import('./views/base/events/EventProblemcod
 const EmailTable = React.lazy(() => import('./views/base/events/EmailTable'))
 const SettingData = React.lazy(() => import('./views/base/events/SettingData'))
 const SearchParameter = React.lazy(() => import('./views/base/events/SearchParameter'))
+const EmailSubpage = React.lazy(() => import('./views/base/events/EmailSubpage'))
 
 //datas
 const HMIRaw = React.lazy(() => import('./views/base/data/HMIRaw_function'))
@@ -97,6 +98,7 @@ const routes = [
   { path: '/event/emailtable', name: 'EmailTable', element: EmailTable}, //Event
   { path: '/event/setting', name: 'SettingData', element: SettingData}, //Event
   { path: '/event/search', name: 'SearchParameter', element: SearchParameter}, //Event
+  { path: '/event/emailsubpage', name: 'EmailSubpage', element: EmailSubpage}, //Event
 
   { path: '/data/activeproblem', name: 'ActiveProblem', element: ActiveProblem}, //data
   { path: '/data/problemdata', name: 'ProblemData', element: ProblemData}, //data
