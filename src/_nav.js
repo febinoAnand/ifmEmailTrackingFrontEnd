@@ -141,7 +141,7 @@ const _nav = [
   },
   {
     component: CNavTitle,
-    name: 'Details',
+    name: 'Device Management',
   },
   {
     component: CNavItem,

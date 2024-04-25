@@ -82,7 +82,6 @@ class EmailTable extends React.Component{
                         <CTableHeaderCell scope="col">Time</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Subject</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Message</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Status</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Action</CTableHeaderCell>
                     </CTableRow>
                     </CTableHead>
@@ -93,7 +92,6 @@ class EmailTable extends React.Component{
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell>Sent</CTableDataCell>
                         <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
                     </CTableRow>
                     <CTableRow>
@@ -102,7 +100,6 @@ class EmailTable extends React.Component{
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell>Sent</CTableDataCell>
                         <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
                     </CTableRow>
                     <CTableRow>
@@ -111,7 +108,6 @@ class EmailTable extends React.Component{
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell>Sent</CTableDataCell>
                         <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
                     </CTableRow>
                     <CTableRow>
@@ -120,7 +116,6 @@ class EmailTable extends React.Component{
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell>Sent</CTableDataCell>
                         <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
                     </CTableRow>
                     <CTableRow>
@@ -129,7 +124,6 @@ class EmailTable extends React.Component{
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell>Sent</CTableDataCell>
                         <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
                     </CTableRow>
                     <CTableRow>
@@ -138,7 +132,6 @@ class EmailTable extends React.Component{
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell>Sent</CTableDataCell>
                         <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
                     </CTableRow>
                     <CTableRow>
@@ -147,7 +140,6 @@ class EmailTable extends React.Component{
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell>Sent</CTableDataCell>
                         <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
                     </CTableRow>
                     <CTableRow>
@@ -156,7 +148,6 @@ class EmailTable extends React.Component{
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell>Sent</CTableDataCell>
                         <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
                     </CTableRow>
                     </CTableBody>
