@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
 import { cilTrash, cilFilter } from '@coreui/icons';
-
+import axios from 'axios';
 
 
 import {
@@ -10,11 +10,7 @@ import {
     CCardBody,
     CCardHeader,
     CCol,
-    CForm,
-    CFormCheck,
     CFormInput,
-    CFormLabel,
-    CFormSelect,
     CInputGroup,
     CInputGroupText,
     CRow,
@@ -26,13 +22,33 @@ import {
     CTableRow,
   } from '@coreui/react'
 import CIcon from '@coreui/icons-react';
-
+import BaseURL from 'src/assets/contants/BaseURL';
 import {
   cilMagnifyingGlass
 } from '@coreui/icons'
 
 class EmailTable extends React.Component{
-  
+  constructor(props) {
+    super(props);
+    this.state = {
+      emails: [],
+    };
+  }
+
+  componentDidMount() {
+    this.fetchEmails();
+  }
+
+  fetchEmails = () => {
+    axios.get(BaseURL+'EmailTracking/inbox')
+      .then(response => {
+        this.setState({ emails: response.data });
+        console.log(response.data)
+      })
+      .catch(error => {
+        console.error('Error fetching emails:', error);
+      });
+  }
   
   render(){
     return (
@@ -87,71 +103,19 @@ class EmailTable extends React.Component{
                     </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                    <CTableRow>
-                        <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
-                        <CTableDataCell>11:34:23</CTableDataCell>
-                        <CTableDataCell>Static threshold</CTableDataCell>
-                        <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
-                    </CTableRow>
-                    <CTableRow>
-                        <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
-                        <CTableDataCell>11:34:23</CTableDataCell>
-                        <CTableDataCell>Static threshold</CTableDataCell>
-                        <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
-                    </CTableRow>
-                    <CTableRow>
-                        <CTableHeaderCell scope="row">3</CTableHeaderCell>
-                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
-                        <CTableDataCell>11:34:23</CTableDataCell>
-                        <CTableDataCell>Static threshold</CTableDataCell>
-                        <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
-                    </CTableRow>
-                    <CTableRow>
-                        <CTableHeaderCell scope="row">4</CTableHeaderCell>
-                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
-                        <CTableDataCell>11:34:23</CTableDataCell>
-                        <CTableDataCell>Static threshold</CTableDataCell>
-                        <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
-                    </CTableRow>
-                    <CTableRow>
-                        <CTableHeaderCell scope="row">5</CTableHeaderCell>
-                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
-                        <CTableDataCell>11:34:23</CTableDataCell>
-                        <CTableDataCell>Static threshold</CTableDataCell>
-                        <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
-                    </CTableRow>
-                    <CTableRow>
-                        <CTableHeaderCell scope="row">6</CTableHeaderCell>
-                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
-                        <CTableDataCell>11:34:23</CTableDataCell>
-                        <CTableDataCell>Static threshold</CTableDataCell>
-                        <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
-                    </CTableRow>
-                    <CTableRow>
-                        <CTableHeaderCell scope="row">7</CTableHeaderCell>
-                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
-                        <CTableDataCell>11:34:23</CTableDataCell>
-                        <CTableDataCell>Static threshold</CTableDataCell>
-                        <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
-                    </CTableRow>
-                    <CTableRow>
-                        <CTableHeaderCell scope="row">8</CTableHeaderCell>
-                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
-                        <CTableDataCell>11:34:23</CTableDataCell>
-                        <CTableDataCell>Static threshold</CTableDataCell>
-                        <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
-                        <CTableDataCell><CButton><CIcon icon={cilTrash} /></CButton></CTableDataCell>
-                    </CTableRow>
-                    </CTableBody>
+                    {this.state.emails.map((email, index) => (
+                      <CTableRow key={index}>
+                        <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                        <CTableDataCell>{email.date}</CTableDataCell>
+                        <CTableDataCell>{email.time}</CTableDataCell>
+                        <CTableDataCell>{email.subject}</CTableDataCell>
+                        <CTableDataCell>{email.message}</CTableDataCell>
+                        <CTableDataCell>
+                          <CButton><CIcon icon={cilTrash} /></CButton>
+                        </CTableDataCell>
+                      </CTableRow>
+                    ))}
+                  </CTableBody>
                 </CTable>
                 <CRow className="justify-content-center">
                 <CCol md="auto">
