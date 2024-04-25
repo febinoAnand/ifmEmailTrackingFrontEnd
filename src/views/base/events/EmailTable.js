@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
 import { cilTrash, cilFilter } from '@coreui/icons';
 
 
@@ -88,7 +89,7 @@ class EmailTable extends React.Component{
                     <CTableBody>
                     <CTableRow>
                         <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                        <CTableDataCell>15.04.2024</CTableDataCell>
+                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
@@ -96,7 +97,7 @@ class EmailTable extends React.Component{
                     </CTableRow>
                     <CTableRow>
                         <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                        <CTableDataCell>15.04.2024</CTableDataCell>
+                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
@@ -104,7 +105,7 @@ class EmailTable extends React.Component{
                     </CTableRow>
                     <CTableRow>
                         <CTableHeaderCell scope="row">3</CTableHeaderCell>
-                        <CTableDataCell>15.04.2024</CTableDataCell>
+                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
@@ -112,7 +113,7 @@ class EmailTable extends React.Component{
                     </CTableRow>
                     <CTableRow>
                         <CTableHeaderCell scope="row">4</CTableHeaderCell>
-                        <CTableDataCell>15.04.2024</CTableDataCell>
+                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
@@ -120,7 +121,7 @@ class EmailTable extends React.Component{
                     </CTableRow>
                     <CTableRow>
                         <CTableHeaderCell scope="row">5</CTableHeaderCell>
-                        <CTableDataCell>15.04.2024</CTableDataCell>
+                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
@@ -128,7 +129,7 @@ class EmailTable extends React.Component{
                     </CTableRow>
                     <CTableRow>
                         <CTableHeaderCell scope="row">6</CTableHeaderCell>
-                        <CTableDataCell>15.04.2024</CTableDataCell>
+                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
@@ -136,7 +137,7 @@ class EmailTable extends React.Component{
                     </CTableRow>
                     <CTableRow>
                         <CTableHeaderCell scope="row">7</CTableHeaderCell>
-                        <CTableDataCell>15.04.2024</CTableDataCell>
+                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
@@ -144,7 +145,7 @@ class EmailTable extends React.Component{
                     </CTableRow>
                     <CTableRow>
                         <CTableHeaderCell scope="row">8</CTableHeaderCell>
-                        <CTableDataCell>15.04.2024</CTableDataCell>
+                        <CTableDataCell><Link to="/event/emailsubpage">15.04.2024</Link></CTableDataCell>
                         <CTableDataCell>11:34:23</CTableDataCell>
                         <CTableDataCell>Static threshold</CTableDataCell>
                         <CTableDataCell>Ticked type : upper alarm</CTableDataCell>
