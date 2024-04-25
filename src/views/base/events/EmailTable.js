@@ -42,7 +42,7 @@ class EmailTable extends React.Component{
         <CCol xs={12}>
           <CCard className="mb-4">
             <CCardHeader>
-              <strong>Inbox</strong>
+              <strong>E-Mail box</strong>
             </CCardHeader>
             <CCardBody>
               {/* <p className="text-medium-emphasis small">

@@ -132,7 +132,7 @@ const _nav = [
     {
       component: CNavItem,
       name: 'search parameter',
-      to: '/data/devraw',
+      to: '/event/search',
       icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
     },
 

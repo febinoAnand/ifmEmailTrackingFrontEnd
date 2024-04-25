@@ -95,7 +95,7 @@ import {
             <CCol xs={12}>
               <CCard className="mb-4">
                 <CCardHeader>
-                  <strong>Settings</strong>
+                  <strong>SMPT Settings</strong>
                 </CCardHeader>
                 <CCardBody>
                   <CForm onSubmit={this.handleSubmit}>
