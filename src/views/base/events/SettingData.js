@@ -37,7 +37,7 @@ class SettingData extends React.Component {
         axios.get(BaseURL + 'EmailTracking/settings')
             .then(response => {
                 const { host, port, username, password, checkInterval } = response.data;
-                const validCheckInterval = typeof checkInterval !== 'undefined' ? checkInterval : 0;
+                const validCheckInterval = typeof checkInterval !== 'undefined' ? String(checkInterval) : '';
                 this.setState({ host, port, username, password, checkInterval: validCheckInterval });
             })
             .catch(error => {
@@ -46,39 +46,49 @@ class SettingData extends React.Component {
     }
 
     handleChange = (e) => {
-        const { name, value } = e.target;
-        this.setState({
-            [name]: value
-        });
-    };
-
-    handleRadioChange = (e) => {
-        const { name, value } = e.target;
-        this.setState({
-            [name]: value
-        });
-    };
-
-    handleSubmit = (e) => {
-      e.preventDefault();
-      const errors = this.validate();
-      if (Object.keys(errors).length === 0) {
-          console.log('Submitting form with data:', this.state);
-          axios.put(BaseURL + 'EmailTracking/settings', this.state)
-              .then(response => {
-                  console.log('Response:', response.data);
-                  toast.success('Settings updated successfully');
-              })
-              .catch(error => {
-                  console.error('Error updating settings:', error);
-                  toast.error('Failed to update settings');
-              });
-      } else {
-          this.setState({ errors });
-          console.log('Validation errors:', errors);
-      }
-    };
+      const { name, value } = e.target;
+      this.setState({
+          [name]: value
+      });
+  };
   
+  handleRadioChange = (e) => {
+      const { name, value } = e.target;
+      this.setState({
+          [name]: value
+      });
+  };
+  
+  handleSubmit = (e) => {
+    e.preventDefault();
+    const errors = this.validate();
+    if (Object.keys(errors).length === 0) {
+        console.log('Submitted data:', this.state);
+
+        const { host, port, username, password, checkInterval, checkStatus } = this.state;
+        const data = {
+            host,
+            port: parseInt(port),
+            username,
+            password,
+            checkInterval: checkInterval !== '' ? parseInt(checkInterval) : null,
+            checkStatus: checkStatus === 'true'
+        };
+
+        axios.put(BaseURL + 'EmailTracking/settings', data)
+            .then(() => {
+                toast.success('Settings updated successfully');
+            })
+            .catch(error => {
+                console.error('Error updating settings:', error);
+                toast.error('Failed to update settings');
+            });
+    } else {
+        this.setState({ errors });
+        console.log('Validation errors:', errors);
+    }
+};
+
     validate = () => {
         const { host, port, username, password, checkInterval } = this.state;
         const errors = {};
@@ -103,7 +113,7 @@ class SettingData extends React.Component {
         } else if (password.length > 50) {
             errors.password = 'Password must be less than 50 characters';
         }
-        if (checkInterval && (isNaN(checkInterval) || checkInterval < 0 || checkInterval > 3600)) {
+        if (checkInterval !== '' && (isNaN(checkInterval) || checkInterval < 0 || checkInterval > 3600)) {
             errors.checkInterval = 'Check Interval must be a number between 0 to 3600';
         }
 
@@ -154,8 +164,24 @@ class SettingData extends React.Component {
                                     <fieldset className="row mb-3">
                                         <legend className="col-form-label col-sm-2 pt-0">Check Status</legend>
                                         <CCol sm={10} >
-                                            <CFormCheck type="radio" name="checkStatus" id="gridRadios1" value="true" label="Enable" checked={checkStatus === 'true'} onChange={this.handleRadioChange} />
-                                            <CFormCheck type="radio" name="checkStatus" id="gridRadios2" value="false" label="Disable" checked={checkStatus === 'false'} onChange={this.handleRadioChange} />
+                                            <CFormCheck
+                                                type="radio"
+                                                name="checkStatus"
+                                                id="gridRadios1"
+                                                value="true"
+                                                label="Enable"
+                                                checked={checkStatus === 'true'}
+                                                onChange={this.handleRadioChange}
+                                            />
+                                            <CFormCheck
+                                                type="radio"
+                                                name="checkStatus"
+                                                id="gridRadios2"
+                                                value="false"
+                                                label="Disable"
+                                                checked={checkStatus === 'false'}
+                                                onChange={this.handleRadioChange}
+                                            />
                                         </CCol>
                                     </fieldset>
                                     <CRow className="mb-3">
