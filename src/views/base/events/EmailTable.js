@@ -32,6 +32,7 @@ class EmailTable extends React.Component{
     super(props);
     this.state = {
       emails: [],
+      successMessage: ''
     };
   }
 
@@ -54,6 +55,7 @@ class EmailTable extends React.Component{
       .then(response => {
         const updatedEmails = this.state.emails.filter(email => email.id !== emailId);
         this.setState({ emails: updatedEmails });
+        this.setState({ successMessage: 'Deleted successfully', errors: {} });
       })
       .catch(error => {
         console.error('Error deleting email:', error);
@@ -61,11 +63,15 @@ class EmailTable extends React.Component{
   }
   
   render(){
+    const { successMessage } = this.state;
     return (
       <>
+      {successMessage && (
+        <div className="alert alert-success" role="alert">
+          {successMessage}
+        </div>
+      )}
       <CRow>
-      
-
         <CCol xs={12}>
           <CCard className="mb-4">
             <CCardHeader>

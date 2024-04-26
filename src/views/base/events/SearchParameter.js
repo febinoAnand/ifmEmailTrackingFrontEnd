@@ -35,6 +35,7 @@ class SearchParameter extends React.Component {
       mobile: '',
       country_code: '',
       errors: {},
+      successMessage: '',
       data: []
     };
   }
@@ -64,6 +65,7 @@ class SearchParameter extends React.Component {
     })
       .then(response => {
         console.log('Data added successfully:', response.data);
+        this.setState({ successMessage: 'Data added successfully', errors: {} });
         this.fetchData();
       })
       .catch(error => {
@@ -80,6 +82,7 @@ class SearchParameter extends React.Component {
     const { data, name, hunt_word, message, mobile, country_code } = this.state;
     const updatedData = [...data];
     updatedData[index] = { name, hunt_word, message, mobile, country_code };
+    this.setState({ data: updatedData, successMessage: 'Data updated successfully', errors: {} });
 
     this.setState({ data: updatedData });
   };
@@ -101,13 +104,15 @@ class SearchParameter extends React.Component {
     }
   };
 
-  handleUpdate = (e, index) => {
-    e.preventDefault();
-    const errors = this.validate();
-    if (Object.keys(errors).length === 0) {
+  handleUpdate = () => {
+    const { data, hunt_word } = this.state;
+    const itemToUpdate = data.find(item => item.hunt_word === hunt_word);
+  
+    if (itemToUpdate) {
+      const index = data.indexOf(itemToUpdate);
       this.updateData(index);
     } else {
-      this.setState({ errors });
+      alert("No search parameter found with this hunt word");
     }
   };
 
@@ -149,10 +154,15 @@ class SearchParameter extends React.Component {
   };
 
   render() {
-    const { errors, data } = this.state;
+    const { errors, successMessage, data } = this.state;
 
     return (
       <>
+        {successMessage && (
+          <div className="alert alert-success" role="alert">
+            {successMessage}
+          </div>
+        )}
         <CRow>
           <CCol xs={12}>
             <CCard className="mb-4">
@@ -203,7 +213,7 @@ class SearchParameter extends React.Component {
                   <CRow className="justify-content-center">
                     <CCol md="auto">
                       <CButton color="primary" type="submit" onClick={this.handleAdd}>Add</CButton>
-                      <CButton color="primary" type="button" onClick={(e) => this.handleUpdate(e, 0)}>Update</CButton>
+                      <CButton color="primary" type="button" onClick={this.handleUpdate}>Update</CButton>
                       {/* Change the index value as needed */}
                     </CCol>
                   </CRow>

@@ -28,7 +28,8 @@ class SettingData extends React.Component {
             sid: '',
             authToken: '',
             phone: '',
-            errors: {}
+            errors: {},
+            successMessage: ''
         };
     }
 
@@ -95,13 +96,13 @@ class SettingData extends React.Component {
             };
 
             axios.put(BaseURL + 'EmailTracking/settings', data)
-                .then(() => {
-                    toast.success('Settings updated successfully');
-                })
-                .catch(error => {
-                    console.error('Error updating settings:', error);
-                    toast.error('Failed to update settings');
-                });
+            .then(() => {
+                this.setState({ successMessage: 'Settings updated successfully', errors: {} });
+            })
+            .catch(error => {
+                console.error('Error updating settings:', error);
+                toast.error('Failed to update settings');
+            });
         } else {
             this.setState({ errors });
             console.log('Validation errors:', errors);
@@ -156,10 +157,15 @@ class SettingData extends React.Component {
     };    
 
     render() {
-        const { host, port, username, password, checkInterval, checkStatus, sid, authToken, phone, errors } = this.state;
+        const { host, port, username, password, checkInterval, checkStatus, sid, authToken, phone, errors, successMessage } = this.state;
 
         return (
             <>
+                {successMessage && (
+                <div className="alert alert-success" role="alert">
+                    {successMessage}
+                </div>
+                )}
                 <CRow>
                     <CCol xs={12}>
                         <CCard className="mb-4">
