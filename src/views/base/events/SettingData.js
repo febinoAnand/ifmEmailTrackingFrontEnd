@@ -129,7 +129,7 @@ class SettingData extends React.Component {
                     <CCol xs={12}>
                         <CCard className="mb-4">
                             <CCardHeader>
-                                <strong>Settings</strong>
+                                <strong>SMTP Settings</strong>
                             </CCardHeader>
                             <CCardBody>
                                 <CForm onSubmit={this.handleSubmit}>
@@ -190,7 +190,32 @@ class SettingData extends React.Component {
                                             <CFormInput type="text" id="checkInterval" name="checkInterval" value={checkInterval} onChange={this.handleChange} />
                                             {errors.checkInterval && (<div className="text-danger">{errors.checkInterval}</div>)}
                                         </CCol>
-                                    </CRow>
+                                    </CRow><br />
+                                    <CCardHeader>
+                                        <strong>SMS Gateway</strong>
+                                    </CCardHeader>
+                                    <CCardBody>
+                                        <CForm>
+                                            <CRow className="mb-3">
+                                                <CFormLabel htmlFor="sid" className="col-sm-2 col-form-label">SID</CFormLabel>
+                                                <CCol sm={10}>
+                                                    <CFormInput type="text" id="sid" name="sid" />
+                                                </CCol>
+                                            </CRow>
+                                            <CRow className="mb-3">
+                                                <CFormLabel htmlFor="authtoken" className="col-sm-2 col-form-label">Auth Token</CFormLabel>
+                                                <CCol sm={10}>
+                                                    <CFormInput type="text" id="authtoken" name="authtoken" />
+                                                </CCol>
+                                            </CRow>
+                                            <CRow className="mb-3">
+                                                <CFormLabel htmlFor="phone" className="col-sm-2 col-form-label">Phone</CFormLabel>
+                                                <CCol sm={10}>
+                                                    <CFormInput type="number" id="phone" name="phone" />
+                                                </CCol>
+                                            </CRow>
+                                        </CForm>
+                                    </CCardBody>
                                     <CRow className="justify-content-center">
                                         <CCol md="auto">
                                             <CButton color="primary" type="submit">Update</CButton>
