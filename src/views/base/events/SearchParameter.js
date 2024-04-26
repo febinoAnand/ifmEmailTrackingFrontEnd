@@ -112,7 +112,7 @@ class SearchParameter extends React.Component {
       const index = data.indexOf(itemToUpdate);
       this.updateData(index);
     } else {
-      alert("No search parameter found with this hunt word");
+      alert("Enter the values");
     }
   };
 

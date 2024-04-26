@@ -38,6 +38,11 @@ class EmailTable extends React.Component{
 
   componentDidMount() {
     this.fetchEmails();
+    this.interval = setInterval(this.fetchEmails, 3000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   fetchEmails = () => {
