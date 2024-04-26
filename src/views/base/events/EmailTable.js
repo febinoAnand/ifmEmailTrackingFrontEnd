@@ -106,10 +106,10 @@ class EmailTable extends React.Component{
                     {this.state.emails.map((email, index) => (
                       <CTableRow key={index}>
                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                        <CTableDataCell>{email.date}</CTableDataCell>
-                        <CTableDataCell>{email.time}</CTableDataCell>
-                        <CTableDataCell>{email.subject}</CTableDataCell>
-                        <CTableDataCell>{email.message}</CTableDataCell>
+                        <CTableDataCell><Link to={'/event/emailsubpage'}>{email.date}</Link></CTableDataCell>
+                        <CTableDataCell><Link to={'/event/emailsubpage'}>{email.time}</Link></CTableDataCell>
+                        <CTableDataCell><Link to={'/event/emailsubpage'}>{email.subject}</Link></CTableDataCell>
+                        <CTableDataCell><Link to={'/event/emailsubpage'}>{email.message}</Link></CTableDataCell>
                         <CTableDataCell>
                           <CButton><CIcon icon={cilTrash} /></CButton>
                         </CTableDataCell>

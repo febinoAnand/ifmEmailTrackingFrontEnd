@@ -23,7 +23,6 @@ import {
   cilArrowCircleBottom,
   cilSettings,
   cilSearch,
-  cilArrowCircleRight,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -123,12 +122,6 @@ const _nav = [
       name: 'Inbox',
       to: '/event/emailtable',
       icon: <CIcon icon={cilArrowCircleBottom} customClassName="nav-icon" />,
-    },
-    {
-      component: CNavItem,
-      name: 'Sub Page',
-      to: '/event/emailsubpage',
-      icon: <CIcon icon={cilArrowCircleRight} customClassName="nav-icon" />,
     },
     {
       component: CNavItem,
