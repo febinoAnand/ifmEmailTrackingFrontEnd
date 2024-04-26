@@ -24,7 +24,10 @@ class SettingData extends React.Component {
             username: '',
             password: '',
             checkInterval: '',
-            checkStatus: 'true',
+            checkStatus: false,
+            sid: '',
+            authToken: '',
+            phone: '',
             errors: {}
         };
     }
@@ -36,79 +39,98 @@ class SettingData extends React.Component {
     fetchSettings() {
         axios.get(BaseURL + 'EmailTracking/settings')
             .then(response => {
-                const { host, port, username, password, checkInterval } = response.data;
+                const { host, port, username, password, checkInterval, sid, authToken, phone, checkStatus } = response.data;
                 const validCheckInterval = typeof checkInterval !== 'undefined' ? String(checkInterval) : '';
-                this.setState({ host, port, username, password, checkInterval: validCheckInterval });
+                const validCheckStatus = typeof checkStatus !== 'undefined' ? checkStatus : false;
+    
+                this.setState({ 
+                    host, 
+                    port, 
+                    username, 
+                    password, 
+                    checkInterval: validCheckInterval, 
+                    sid, 
+                    authToken, 
+                    phone,
+                    checkStatus: validCheckStatus
+                });
             })
             .catch(error => {
                 console.error('Error fetching settings:', error);
             });
     }
-
+    
     handleChange = (e) => {
-      const { name, value } = e.target;
-      this.setState({
-          [name]: value
-      });
-  };
-  
-  handleRadioChange = (e) => {
-      const { name, value } = e.target;
-      this.setState({
-          [name]: value
-      });
-  };
-  
-  handleSubmit = (e) => {
-    e.preventDefault();
-    const errors = this.validate();
-    if (Object.keys(errors).length === 0) {
-        console.log('Submitted data:', this.state);
+        const { name, value } = e.target;
+        this.setState({
+            [name]: value
+        });
+    };
 
-        const { host, port, username, password, checkInterval, checkStatus } = this.state;
-        const data = {
-            host,
-            port: parseInt(port),
-            username,
-            password,
-            checkInterval: checkInterval !== '' ? parseInt(checkInterval) : null,
-            checkStatus: checkStatus === 'true'
-        };
+    handleRadioChange = (e) => {
+        const { name, value } = e.target;
+        const newValue = value === 'true';
+        this.setState({
+            [name]: newValue
+        });
+    };    
+      
+    handleSubmit = (e) => {
+        e.preventDefault();
+        const errors = this.validate();
+        if (Object.keys(errors).length === 0) {
+            console.log('Submitted data:', this.state);
 
-        axios.put(BaseURL + 'EmailTracking/settings', data)
-            .then(() => {
-                toast.success('Settings updated successfully');
-            })
-            .catch(error => {
-                console.error('Error updating settings:', error);
-                toast.error('Failed to update settings');
-            });
-    } else {
-        this.setState({ errors });
-        console.log('Validation errors:', errors);
-    }
-};
+            const { host, port, username, password, checkInterval, checkStatus, sid, authToken, phone } = this.state;
+            const data = {
+                host,
+                port: parseInt(port),
+                username,
+                password,
+                checkInterval: checkInterval !== '' ? parseInt(checkInterval) : null,
+                checkStatus: checkStatus === 'true',
+                sid,
+                authToken,
+                phone
+            };
+
+            axios.put(BaseURL + 'EmailTracking/settings', data)
+                .then(() => {
+                    toast.success('Settings updated successfully');
+                })
+                .catch(error => {
+                    console.error('Error updating settings:', error);
+                    toast.error('Failed to update settings');
+                });
+        } else {
+            this.setState({ errors });
+            console.log('Validation errors:', errors);
+        }
+    };
 
     validate = () => {
-        const { host, port, username, password, checkInterval } = this.state;
+        const { host, port, username, password, checkInterval, sid, authToken, phone } = this.state;
         const errors = {};
-        if (!host.trim()) {
+
+        if (!host || !host.trim()) {
             errors.host = 'Host is required';
         } else if (host.length > 200) {
             errors.host = 'Host must be less than 200 characters';
         }
-        const portNum = parseInt(port);
-        if (!String(port).trim()) {
+        if (!port || !String(port).trim()) {
             errors.port = 'Port is required';
-        } else if (isNaN(portNum) || portNum < 0 || portNum > 65535) {
-            errors.port = 'Port must be a number between 0 to 65535';
+        } else {
+            const portNum = parseInt(port);
+            if (isNaN(portNum) || portNum < 0 || portNum > 65535) {
+                errors.port = 'Port must be a number between 0 to 65535';
+            }
         }
-        if (!username.trim()) {
+        if (!username || !username.trim()) {
             errors.username = 'Username is required';
         } else if (username.length > 50) {
             errors.username = 'Username must be less than 50 characters';
         }
-        if (!password.trim()) {
+        if (!password || !password.trim()) {
             errors.password = 'Password is required';
         } else if (password.length > 50) {
             errors.password = 'Password must be less than 50 characters';
@@ -116,12 +138,25 @@ class SettingData extends React.Component {
         if (checkInterval !== '' && (isNaN(checkInterval) || checkInterval < 0 || checkInterval > 3600)) {
             errors.checkInterval = 'Check Interval must be a number between 0 to 3600';
         }
-
+        if (!sid || !sid.trim()) {
+            errors.sid = 'SID is required';
+        } else if (sid.length > 100) {
+            errors.sid = 'SID must be less than 100 characters';
+        }
+        if (!authToken || !authToken.trim()) {
+            errors.authToken = 'Auth Token is required';
+        } else if (authToken.length > 100) {
+            errors.authToken = 'Auth Token must be less than 100 characters';
+        }
+        if (!phone || !phone.trim()) {
+            errors.phone = 'Phone is required';
+        }
+    
         return errors;
-    };
+    };    
 
     render() {
-        const { host, port, username, password, checkInterval, checkStatus, errors } = this.state;
+        const { host, port, username, password, checkInterval, checkStatus, sid, authToken, phone, errors } = this.state;
 
         return (
             <>
@@ -163,25 +198,25 @@ class SettingData extends React.Component {
                                     </CRow>
                                     <fieldset className="row mb-3">
                                         <legend className="col-form-label col-sm-2 pt-0">Check Status</legend>
-                                        <CCol sm={10} >
-                                            <CFormCheck
-                                                type="radio"
-                                                name="checkStatus"
-                                                id="gridRadios1"
-                                                value="true"
-                                                label="Enable"
-                                                checked={checkStatus === 'true'}
-                                                onChange={this.handleRadioChange}
-                                            />
-                                            <CFormCheck
-                                                type="radio"
-                                                name="checkStatus"
-                                                id="gridRadios2"
-                                                value="false"
-                                                label="Disable"
-                                                checked={checkStatus === 'false'}
-                                                onChange={this.handleRadioChange}
-                                            />
+                                        <CCol sm={10}>
+                                        <CFormCheck
+                                            type="radio"
+                                            name="checkStatus"
+                                            id="gridRadios1"
+                                            value="true"
+                                            label="Enable"
+                                            checked={checkStatus === true}
+                                            onChange={this.handleRadioChange}
+                                        />
+                                        <CFormCheck
+                                            type="radio"
+                                            name="checkStatus"
+                                            id="gridRadios2"
+                                            value="false"
+                                            label="Disable"
+                                            checked={checkStatus === false}
+                                            onChange={this.handleRadioChange}
+                                        />
                                         </CCol>
                                     </fieldset>
                                     <CRow className="mb-3">
@@ -195,26 +230,27 @@ class SettingData extends React.Component {
                                         <strong>SMS Gateway</strong>
                                     </CCardHeader>
                                     <CCardBody>
-                                        <CForm>
                                             <CRow className="mb-3">
                                                 <CFormLabel htmlFor="sid" className="col-sm-2 col-form-label">SID</CFormLabel>
                                                 <CCol sm={10}>
-                                                    <CFormInput type="text" id="sid" name="sid" />
+                                                    <CFormInput type="text" id="sid" name="sid" value={sid} onChange={this.handleChange} />
+                                                    {errors.sid && <div className="text-danger">{errors.sid}</div>}
                                                 </CCol>
                                             </CRow>
                                             <CRow className="mb-3">
                                                 <CFormLabel htmlFor="authtoken" className="col-sm-2 col-form-label">Auth Token</CFormLabel>
                                                 <CCol sm={10}>
-                                                    <CFormInput type="text" id="authtoken" name="authtoken" />
+                                                    <CFormInput type="password" id="authtoken" name="authToken" value={authToken} onChange={this.handleChange} />
+                                                    {errors.authToken && <div className="text-danger">{errors.authToken}</div>}
                                                 </CCol>
                                             </CRow>
                                             <CRow className="mb-3">
                                                 <CFormLabel htmlFor="phone" className="col-sm-2 col-form-label">Phone</CFormLabel>
                                                 <CCol sm={10}>
-                                                    <CFormInput type="number" id="phone" name="phone" />
+                                                    <CFormInput type="text" id="phone" name="phone" value={phone} onChange={this.handleChange} />
+                                                    {errors.phone && <div className="text-danger">{errors.phone}</div>}
                                                 </CCol>
                                             </CRow>
-                                        </CForm>
                                     </CCardBody>
                                     <CRow className="justify-content-center">
                                         <CCol md="auto">
