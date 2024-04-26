@@ -49,6 +49,16 @@ class EmailTable extends React.Component{
         console.error('Error fetching emails:', error);
       });
   }
+  handleDelete = (emailId) => {
+    axios.delete(BaseURL+'EmailTracking/inbox')
+      .then(response => {
+        const updatedEmails = this.state.emails.filter(email => email.id !== emailId);
+        this.setState({ emails: updatedEmails });
+      })
+      .catch(error => {
+        console.error('Error deleting email:', error);
+      });
+  }
   
   render(){
     return (
@@ -111,7 +121,7 @@ class EmailTable extends React.Component{
                         <CTableDataCell><Link to={'/event/emailsubpage'}>{email.subject}</Link></CTableDataCell>
                         <CTableDataCell><Link to={'/event/emailsubpage'}>{email.message}</Link></CTableDataCell>
                         <CTableDataCell>
-                          <CButton><CIcon icon={cilTrash} /></CButton>
+                          <CButton onClick={() => this.handleDelete(email.id)}><CIcon icon={cilTrash} /></CButton>
                         </CTableDataCell>
                       </CTableRow>
                     ))}
