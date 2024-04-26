@@ -36,7 +36,9 @@ class SearchParameter extends React.Component {
       country_code: '',
       errors: {},
       successMessage: '',
-      data: []
+      data: [],
+      searchQuery: '',
+      filteredData: [],
     };
   }
 
@@ -116,6 +118,21 @@ class SearchParameter extends React.Component {
     }
   };
 
+  handleSearch = () => {
+    const { data, searchQuery } = this.state;
+    const filteredData = data.filter(item =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.hunt_word.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.mobile.includes(searchQuery)
+    );
+    this.setState({ filteredData });
+  };
+
+  handleInputChange = (event) => {
+    this.setState({ searchQuery: event.target.value });
+  };
+
   validate = () => {
     const { name, hunt_word, message, mobile, country_code } = this.state;
     const errors = {};
@@ -154,7 +171,8 @@ class SearchParameter extends React.Component {
   };
 
   render() {
-    const { errors, successMessage, data } = this.state;
+    const { errors, successMessage, data, filteredData } = this.state;
+    const itemsToDisplay = filteredData.length > 0 ? filteredData : data;
 
     return (
       <>
@@ -198,8 +216,9 @@ class SearchParameter extends React.Component {
                     </CCol>
                     <CCol sm={2}>
                       <CFormSelect id="country_code" name="country_code" onChange={this.handleChange}>
-                        <option value="1">+1</option>
-                        <option value="91">+91</option>
+                      <option value="0"></option>
+                        <option value="1">1</option>
+                        <option value="91">91</option>
                         {/* Add more options as needed */}
                       </CFormSelect>
                       {errors.country_code && <div className="text-danger">{errors.country_code}</div>}
@@ -214,7 +233,6 @@ class SearchParameter extends React.Component {
                     <CCol md="auto">
                       <CButton color="primary" type="submit" onClick={this.handleAdd}>Add</CButton>
                       <CButton color="primary" type="button" onClick={this.handleUpdate}>Update</CButton>
-                      {/* Change the index value as needed */}
                     </CCol>
                   </CRow>
                 </CForm>
@@ -228,15 +246,16 @@ class SearchParameter extends React.Component {
                     placeholder="Search"
                     aria-label="Search"
                     aria-describedby="addon-wrapping"
+                    value={this.state.searchQuery}
+                    onChange={this.handleInputChange}
                   />
-                  <CButton type="button" color="secondary" id="button-addon2">
+                  <CButton type="button" color="secondary" onClick={this.handleSearch} id="button-addon2">
                     Search
                   </CButton>
                   <CButton color="primary">
                     <CIcon icon={cilFilter} />
                   </CButton>
                 </CInputGroup>
-
                 <CTable>
                   <CTableHead>
                     <CTableRow>
@@ -249,7 +268,7 @@ class SearchParameter extends React.Component {
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
-                    {data.map((item, index) => (
+                    {itemsToDisplay.map((item, index) => (
                       <CTableRow key={index}>
                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                         <CTableDataCell>{item.name}</CTableDataCell>
@@ -263,7 +282,6 @@ class SearchParameter extends React.Component {
                     ))}
                   </CTableBody>
                 </CTable>
-
                 <CRow className="justify-content-center">
                   <CCol md="auto">
                     <CButton color="primary">Download</CButton>
