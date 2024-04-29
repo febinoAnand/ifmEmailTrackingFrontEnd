@@ -1,7 +1,7 @@
 import React from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { cilTrash, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
-import axios from 'axios';
 import {
   CButton,
   CCard,
@@ -21,6 +21,7 @@ import {
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
+import EmailSubpage from './EmailSubpage';
 
 class EmailTable extends React.Component {
   constructor(props) {
@@ -29,7 +30,8 @@ class EmailTable extends React.Component {
       emails: [],
       filteredEmails: [],
       searchQuery: '',
-      successMessage: ''
+      selectedEmail: null,
+      successMessage: '',
     };
   }
 
@@ -76,10 +78,26 @@ class EmailTable extends React.Component {
     this.setState({ searchQuery: event.target.value });
   }
 
+  handleViewDetails = (emailId) => {
+    const selectedEmail = this.state.emails.find(email => email.id === emailId);
+    this.setState({ selectedEmail });
+  }
+
+  handleBackToList = () => {
+    this.setState({ selectedEmail: null });
+  }
+
   render() {
-    const { successMessage, filteredEmails, searchQuery } = this.state;
+    const { successMessage, filteredEmails, searchQuery, selectedEmail } = this.state;
+
+    if (selectedEmail) {
+      return (
+        <EmailSubpage email={selectedEmail} onBack={this.handleBackToList} />
+      );
+    }
+
     const emailsToDisplay = filteredEmails.length > 0 ? filteredEmails : this.state.emails;
-  
+
     let tableContent;
     if (searchQuery !== '' && emailsToDisplay.length === 0) {
       tableContent = (
@@ -89,7 +107,7 @@ class EmailTable extends React.Component {
       );
     } else {
       tableContent = (
-        <CTable>
+        <CTable striped hover>
           <CTableHead>
             <CTableRow>
               <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
@@ -104,10 +122,10 @@ class EmailTable extends React.Component {
             {emailsToDisplay.map((email, index) => (
               <CTableRow key={index}>
                 <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                <CTableDataCell><Link to={'/event/emailsubpage'}>{email.date}</Link></CTableDataCell>
-                <CTableDataCell><Link to={'/event/emailsubpage'}>{email.time}</Link></CTableDataCell>
-                <CTableDataCell><Link to={'/event/emailsubpage'}>{email.subject}</Link></CTableDataCell>
-                <CTableDataCell><Link to={'/event/emailsubpage'}>{email.message}</Link></CTableDataCell>
+                <CTableDataCell><Link to={`/event/emailsubpage/${email.id}`}>{email.date}</Link></CTableDataCell>
+                <CTableDataCell><Link to={`/event/emailsubpage/${email.id}`}>{email.time}</Link></CTableDataCell>
+                <CTableDataCell><Link to={`/event/emailsubpage/${email.id}`}>{email.subject}</Link></CTableDataCell>
+                <CTableDataCell><Link to={`/event/emailsubpage/${email.id}`}>{email.message}</Link></CTableDataCell>
                 <CTableDataCell>
                   <CButton onClick={() => this.handleDelete(email.id)}><CIcon icon={cilTrash} /></CButton>
                 </CTableDataCell>
@@ -117,7 +135,7 @@ class EmailTable extends React.Component {
         </CTable>
       );
     }
-    
+
     return (
       <>
         {successMessage && (
@@ -148,32 +166,7 @@ class EmailTable extends React.Component {
                     <CIcon icon={cilFilter} />
                   </CButton>
                 </CInputGroup>
-                <CTable>
-                  <CTableHead>
-                    <CTableRow>
-                      <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Date</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Time</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Subject</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Message</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Action</CTableHeaderCell>
-                    </CTableRow>
-                  </CTableHead>
-                  <CTableBody>
-                    {emailsToDisplay.map((email, index) => (
-                      <CTableRow key={index}>
-                        <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                        <CTableDataCell><Link to={'/event/emailsubpage'}>{email.date}</Link></CTableDataCell>
-                        <CTableDataCell><Link to={'/event/emailsubpage'}>{email.time}</Link></CTableDataCell>
-                        <CTableDataCell><Link to={'/event/emailsubpage'}>{email.subject}</Link></CTableDataCell>
-                        <CTableDataCell><Link to={'/event/emailsubpage'}>{email.message}</Link></CTableDataCell>
-                        <CTableDataCell>
-                          <CButton onClick={() => this.handleDelete(email.id)}><CIcon icon={cilTrash} /></CButton>
-                        </CTableDataCell>
-                      </CTableRow>
-                    ))}
-                  </CTableBody>
-                </CTable>
+                {tableContent}
                 <CRow className="justify-content-center">
                   <CCol md="auto">
                     <CButton color="primary">Download</CButton>

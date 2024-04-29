@@ -33,6 +33,7 @@ const UnregisteredDevices = React.lazy(() => import('./views/base/details/Unregi
 const MachineDetails = React.lazy(() => import('./views/base/details/MachineDetails'))
 const RFID = React.lazy(() => import('./views/base/details/RFID'))
 const Users = React.lazy(() => import('./views/base/details/Users'))
+const Groups = React.lazy(() => import('./views/base/details/Groups'))
 
 
 
@@ -109,6 +110,7 @@ const routes = [
   { path: '/details/unregister', name: 'Unregistered Device', element: UnregisteredDevices}, //details
   { path: '/details/users', name: 'Users', element: Users}, //details
   { path: '/details/rfid', name: 'RFID', element: RFID}, //details
+  { path: '/details/groups', name: 'Groups', element: Groups}, //details
 
 
   { path: '/config/uart', name: 'UART', element: UART}, //config

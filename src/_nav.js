@@ -13,7 +13,8 @@ import {
   cilTouchApp,
   cilBug,
   cilCenterFocus,
-  // cilUserX,
+  cilUserX,
+  cilGroup,
   cilListRich,
   cilObjectGroup,
   cilBraille,
@@ -162,12 +163,22 @@ const _nav = [
     to:'/details/unregister',
     icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
   },
-  // {
-  //   component: CNavItem,
-  //   name: 'Users',
-  //   to: '/details/users',
-  //   icon: <CIcon icon={cilUserX} customClassName="nav-icon" />,
-  // },
+  {
+    component: CNavTitle,
+    name: 'User Management',
+  },
+  {
+    component: CNavItem,
+    name: 'Users',
+    to: '/details/users',
+    icon: <CIcon icon={cilUserX} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Groups',
+    to: '/details/groups',
+    icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
+  },
   {
     component: CNavTitle,
     name: 'Configurations',
