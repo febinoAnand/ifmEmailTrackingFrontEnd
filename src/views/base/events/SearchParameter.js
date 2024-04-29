@@ -230,10 +230,16 @@ class SearchParameter extends React.Component {
                     </CCol>
                   </CRow>
                   <CRow className="justify-content-center">
-                    <CCol md="auto">
-                      <CButton color="primary" type="submit" onClick={this.handleAdd}>Add</CButton>
-                      <CButton color="primary" type="button" onClick={this.handleUpdate}>Update</CButton>
-                    </CCol>
+                  <CCol xs={1}>
+                    <div className='d-grid gap-2'>
+                        <CButton color="primary" type="submit" onClick={this.handleAdd}>Add</CButton>
+                    </div>
+                  </CCol>
+                  <CCol xs={1}>
+                    <div className='d-grid gap-2'>
+                        <CButton color="primary" type="button" onClick={this.handleUpdate}>Update</CButton>
+                    </div>
+                  </CCol>
                   </CRow>
                 </CForm>
               </CCardBody>
