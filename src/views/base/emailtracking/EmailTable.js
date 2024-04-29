@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 import { cilTrash, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
 import {
   CButton,
@@ -21,164 +20,137 @@ import {
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
-import EmailSubpage from './EmailSubpage';
+import { useNavigate } from 'react-router-dom';
 
-class EmailTable extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      emails: [],
-      filteredEmails: [],
-      searchQuery: '',
-      selectedEmail: null,
-      successMessage: '',
-    };
-  }
+const EmailTable = () => {
+  const navigate = useNavigate();
+  const [emails, setEmails] = useState([]);
+  const [filteredEmails, setFilteredEmails] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
-  componentDidMount() {
-    this.fetchEmails();
-    this.interval = setInterval(this.fetchEmails, 3000);
-  }
+  useEffect(() => {
+    fetchEmails();
+    const interval = setInterval(fetchEmails, 3000);
 
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
+    return () => clearInterval(interval);
+  }, []);
 
-  fetchEmails = () => {
+  const fetchEmails = () => {
     axios.get(BaseURL + 'EmailTracking/inbox')
       .then(response => {
-        this.setState({ emails: response.data });
+        setEmails(response.data);
       })
       .catch(error => {
         console.error('Error fetching emails:', error);
       });
-  }
+  };
 
-  handleDelete = (emailId) => {
+  const handleDelete = (emailId) => {
     axios.delete(BaseURL + 'EmailTracking/inbox')
       .then(response => {
-        const updatedEmails = this.state.emails.filter(email => email.id !== emailId);
-        this.setState({ emails: updatedEmails, successMessage: 'Deleted successfully' });
+        const updatedEmails = emails.filter(email => email.id !== emailId);
+        setEmails(updatedEmails);
+        setSuccessMessage('Deleted successfully');
       })
       .catch(error => {
         console.error('Error deleting email:', error);
       });
-  }
+  };
 
-  handleSearch = () => {
-    const { emails, searchQuery } = this.state;
+  const handleSearch = () => {
     const filteredEmails = emails.filter(email =>
       email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
       email.message.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    this.setState({ filteredEmails });
-  }
+    setFilteredEmails(filteredEmails);
+  };
 
-  handleInputChange = (event) => {
-    this.setState({ searchQuery: event.target.value });
-  }
+  const handleInputChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
 
-  handleViewDetails = (emailId) => {
-    const selectedEmail = this.state.emails.find(email => email.id === emailId);
-    this.setState({ selectedEmail });
-  }
+  const handleRowClick = (emailId) => {
+    navigate(`/emailtracking/emailsubpage/${emailId}`);
+  };
 
-  handleBackToList = () => {
-    this.setState({ selectedEmail: null });
-  }
+  const emailsToDisplay = filteredEmails.length > 0 ? filteredEmails : emails;
 
-  render() {
-    const { successMessage, filteredEmails, searchQuery, selectedEmail } = this.state;
-
-    if (selectedEmail) {
-      return (
-        <EmailSubpage email={selectedEmail} onBack={this.handleBackToList} />
-      );
-    }
-
-    const emailsToDisplay = filteredEmails.length > 0 ? filteredEmails : this.state.emails;
-
-    let tableContent;
-    if (searchQuery !== '' && emailsToDisplay.length === 0) {
-      tableContent = (
-        <div className="text-center mt-3">
-          <p>No results found for &quot;{searchQuery}&quot;.</p>
-        </div>
-      );
-    } else {
-      tableContent = (
-        <CTable striped hover>
-          <CTableHead>
-            <CTableRow>
-              <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Date</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Time</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Subject</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Message</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Action</CTableHeaderCell>
+  let tableContent;
+  if (searchQuery !== '' && emailsToDisplay.length === 0) {
+    tableContent = (
+      <div className="text-center mt-3">
+        <p>No results found for &quot;{searchQuery}&quot;.</p>
+      </div>
+    );
+  } else {
+    tableContent = (
+      <CTable striped hover>
+        <CTableHead>
+          <CTableRow>
+            <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Date</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Time</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Subject</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Message</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Action</CTableHeaderCell>
+          </CTableRow>
+        </CTableHead>
+        <CTableBody>
+          {emailsToDisplay.map((email, index) => (
+            <CTableRow key={index} onClick={() => handleRowClick(email.id)}>
+              <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+              <CTableDataCell>{email.date}</CTableDataCell>
+              <CTableDataCell>{email.time}</CTableDataCell>
+              <CTableDataCell>{email.subject}</CTableDataCell>
+              <CTableDataCell>{email.message}</CTableDataCell>
+              <CTableDataCell>
+                <CButton onClick={() => handleDelete(email.id)}><CIcon icon={cilTrash} /></CButton>
+              </CTableDataCell>
             </CTableRow>
-          </CTableHead>
-          <CTableBody>
-            {emailsToDisplay.map((email, index) => (
-              <CTableRow key={index}>
-                <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                <CTableDataCell><Link to={`/emailtracking/emailsubpage/${email.id}`}>{email.date}</Link></CTableDataCell>
-                <CTableDataCell><Link to={`/emailtracking/emailsubpage/${email.id}`}>{email.time}</Link></CTableDataCell>
-                <CTableDataCell><Link to={`/emailtracking/emailsubpage/${email.id}`}>{email.subject}</Link></CTableDataCell>
-                <CTableDataCell><Link to={`/emailtracking/emailsubpage/${email.id}`}>{email.message}</Link></CTableDataCell>
-                <CTableDataCell>
-                  <CButton onClick={() => this.handleDelete(email.id)}><CIcon icon={cilTrash} /></CButton>
-                </CTableDataCell>
-              </CTableRow>
-            ))}
-          </CTableBody>
-        </CTable>
-      );
-    }
-
-    return (
-      <>
-        {successMessage && (
-          <div className="alert alert-success" role="alert">
-            {successMessage}
-          </div>
-        )}
-        <CRow>
-          <CCol xs={12}>
-            <CCard className="mb-4">
-              <CCardHeader>
-                <strong>E-Mail box</strong>
-              </CCardHeader>
-              <CCardBody>
-                <CInputGroup className="flex-nowrap mt-3 col-sg-3">
-                  <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass} /></CInputGroupText>
-                  <CFormInput
-                    placeholder="Search by Subject or Message"
-                    aria-label="Search"
-                    aria-describedby="addon-wrapping"
-                    value={this.state.searchQuery}
-                    onChange={this.handleInputChange}
-                  />
-                  <CButton type="button" color="secondary" onClick={this.handleSearch} id="button-addon2">
-                    Search
-                  </CButton>
-                  <CButton color="primary">
-                    <CIcon icon={cilFilter} />
-                  </CButton>
-                </CInputGroup>
-                {tableContent}
-                <CRow className="justify-content-center">
-                  <CCol md="auto">
-                    <CButton color="primary">Download</CButton>
-                  </CCol>
-                </CRow>
-              </CCardBody>
-            </CCard>
-          </CCol>
-        </CRow>
-      </>
-    )
+          ))}
+        </CTableBody>
+      </CTable>
+    );
   }
-}
+
+  return (
+    <>
+      {successMessage && (
+        <div className="alert alert-success" role="alert">
+          {successMessage}
+        </div>
+      )}
+      <CRow>
+        <CCol xs={12}>
+          <CCard className="mb-4">
+            <CCardHeader>
+              <strong>E-Mail box</strong>
+            </CCardHeader>
+            <CCardBody>
+              <CInputGroup className="flex-nowrap mt-3 col-sg-3">
+                <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass} /></CInputGroupText>
+                <CFormInput
+                  placeholder="Search by Subject or Message"
+                  aria-label="Search"
+                  aria-describedby="addon-wrapping"
+                  value={searchQuery}
+                  onChange={handleInputChange}
+                />
+                <CButton type="button" color="secondary" onClick={handleSearch} id="button-addon2">
+                  Search
+                </CButton>
+                <CButton color="primary">
+                  <CIcon icon={cilFilter} />
+                </CButton>
+              </CInputGroup>
+              {tableContent}
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+    </>
+  );
+};
 
 export default EmailTable;

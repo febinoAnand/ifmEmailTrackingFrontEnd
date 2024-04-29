@@ -49,9 +49,9 @@ class Groups extends React.Component{
             <CRow className="mb-3">
                 <CFormLabel htmlFor="userlist" className="col-sm-2 col-form-label">User List</CFormLabel>
                 <CCol sm={10}>
-                    <CFormSelect id="userlist" multiple value>
-                    <option>Users 2</option>
-                    <option>Users 3</option>
+                  <CFormSelect id="userlist" multiple value={[]}>
+                      {/*<option>Users 2</option>
+                      <option>Users 3</option> */}
                     </CFormSelect> 
                 </CCol> 
             </CRow>

@@ -34,8 +34,11 @@ const HMIDetails = React.lazy(() => import('./views/base/details/HMIDetails'))
 const UnregisteredDevices = React.lazy(() => import('./views/base/details/UnregisteredDevices'))
 const MachineDetails = React.lazy(() => import('./views/base/details/MachineDetails'))
 const RFID = React.lazy(() => import('./views/base/details/RFID'))
-const Users = React.lazy(() => import('./views/base/details/Users'))
-const Groups = React.lazy(() => import('./views/base/details/Groups'))
+
+//users
+const Users = React.lazy(() => import('./views/base/users/Users'))
+const Groups = React.lazy(() => import('./views/base/users/Groups'))
+const UserSubpage = React.lazy(() => import('./views/base/users/UserSubpage'))
 
 
 
@@ -111,9 +114,11 @@ const routes = [
   { path: '/details/machinedetails', name: 'Machine Details', element: MachineDetails}, //details
   { path: '/details/devdetails', name: 'HMI Device', element: HMIDetails}, //details
   { path: '/details/unregister', name: 'Unregistered Device', element: UnregisteredDevices}, //details
-  { path: '/details/users', name: 'Users', element: Users}, //details
   { path: '/details/rfid', name: 'RFID', element: RFID}, //details
-  { path: '/details/groups', name: 'Groups', element: Groups}, //details
+
+  { path: '/users/users', name: 'Users', element: Users}, //users
+  { path: '/users/groups', name: 'Groups', element: Groups}, //users
+  { path: '/users/usersubpage', name: 'UserSubpage', element: UserSubpage}, //users
 
 
   { path: '/config/uart', name: 'UART', element: UART}, //config

@@ -170,13 +170,13 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Users',
-    to: '/details/users',
+    to: '/users/users',
     icon: <CIcon icon={cilUserX} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Groups',
-    to: '/details/groups',
+    to: '/users/groups',
     icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
   },
   {

@@ -1,17 +1,14 @@
 import React from 'react'
 import { cilTrash, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
-
+import { useNavigate } from 'react-router-dom';
 import {
     CButton,
     CCard,
     CCardBody,
     CCardHeader,
     CCol,
-    CForm,
     CFormCheck,
     CFormInput,
-    CFormLabel,
-    CFormSelect,
     CInputGroup,
     CInputGroupText,
     CRow,
@@ -25,6 +22,11 @@ import {
 import CIcon from '@coreui/icons-react';
 
 const Users = () => {
+  const navigate = useNavigate();
+  
+  const handleRowClick = () => {
+    navigate("/users/usersubpage");
+  };
   
   return (
     <>
@@ -83,7 +85,7 @@ const Users = () => {
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                  <CTableRow>
+                  <CTableRow  onClick={handleRowClick}>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
                     <CTableDataCell>Anandkumar</CTableDataCell>
                     <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
@@ -100,7 +102,7 @@ const Users = () => {
                     
                     
                   </CTableRow>
-                  <CTableRow>
+                  <CTableRow  onClick={handleRowClick}>
                   <CTableHeaderCell scope="row">2</CTableHeaderCell>
                     <CTableDataCell>Kumar</CTableDataCell>
                     <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
@@ -112,7 +114,7 @@ const Users = () => {
                     </CTableDataCell>
                     
                   </CTableRow>
-                  <CTableRow>
+                  <CTableRow  onClick={handleRowClick}>
                   <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell>Anand</CTableDataCell>
                     <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
@@ -125,7 +127,7 @@ const Users = () => {
                    
                     
                   </CTableRow>
-                  <CTableRow>
+                  <CTableRow  onClick={handleRowClick}>
                   <CTableHeaderCell scope="row">4</CTableHeaderCell>
                     <CTableDataCell>Anand</CTableDataCell>
                     <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
@@ -138,7 +140,7 @@ const Users = () => {
                    
                     
                   </CTableRow>
-                  <CTableRow>
+                  <CTableRow  onClick={handleRowClick}>
                   <CTableHeaderCell scope="row">5</CTableHeaderCell>
                     <CTableDataCell>Anand</CTableDataCell>
                     <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
@@ -151,7 +153,7 @@ const Users = () => {
                    
                     
                   </CTableRow>
-                  <CTableRow>
+                  <CTableRow  onClick={handleRowClick}>
                   <CTableHeaderCell scope="row">6</CTableHeaderCell>
                     <CTableDataCell>Anand</CTableDataCell>
                     <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
