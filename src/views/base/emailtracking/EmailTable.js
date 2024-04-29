@@ -76,44 +76,6 @@ const EmailTable = () => {
 
   const emailsToDisplay = filteredEmails.length > 0 ? filteredEmails : emails;
 
-  let tableContent;
-  if (searchQuery !== '' && emailsToDisplay.length === 0) {
-    tableContent = (
-      <div className="text-center mt-3">
-        <p>No results found for &quot;{searchQuery}&quot;.</p>
-      </div>
-    );
-  } else {
-    tableContent = (
-      <CTable striped hover>
-        <CTableHead>
-          <CTableRow>
-            <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Date</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Time</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Subject</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Message</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Action</CTableHeaderCell>
-          </CTableRow>
-        </CTableHead>
-        <CTableBody>
-          {emailsToDisplay.map((email, index) => (
-            <CTableRow key={index} onClick={() => handleRowClick(email.id)}>
-              <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-              <CTableDataCell>{email.date}</CTableDataCell>
-              <CTableDataCell>{email.time}</CTableDataCell>
-              <CTableDataCell>{email.subject}</CTableDataCell>
-              <CTableDataCell>{email.message}</CTableDataCell>
-              <CTableDataCell>
-                <CButton onClick={() => handleDelete(email.id)}><CIcon icon={cilTrash} /></CButton>
-              </CTableDataCell>
-            </CTableRow>
-          ))}
-        </CTableBody>
-      </CTable>
-    );
-  }
-
   return (
     <>
       {successMessage && (
@@ -144,7 +106,32 @@ const EmailTable = () => {
                   <CIcon icon={cilFilter} />
                 </CButton>
               </CInputGroup>
-              {tableContent}
+              <CTable striped hover>
+                <CTableHead>
+                  <CTableRow>
+                    <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Date</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Time</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Subject</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Message</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Action</CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
+                <CTableBody>
+                  {emailsToDisplay.map((email, index) => (
+                    <CTableRow key={index} onClick={() => handleRowClick(email.id)}>
+                      <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                      <CTableDataCell>{email.date}</CTableDataCell>
+                      <CTableDataCell>{email.time}</CTableDataCell>
+                      <CTableDataCell>{email.subject}</CTableDataCell>
+                      <CTableDataCell>{email.message}</CTableDataCell>
+                      <CTableDataCell>
+                        <CButton onClick={() => handleDelete(email.id)}><CIcon icon={cilTrash} /></CButton>
+                      </CTableDataCell>
+                    </CTableRow>
+                  ))}
+                </CTableBody>
+              </CTable>
             </CCardBody>
           </CCard>
         </CCol>
