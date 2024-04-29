@@ -32,8 +32,7 @@ class SearchParameter extends React.Component {
       name: '',
       hunt_word: '',
       message: '',
-      mobile: '',
-      country_code: '',
+      usergroup: '',
       errors: {},
       successMessage: '',
       data: [],
@@ -57,13 +56,12 @@ class SearchParameter extends React.Component {
   };
 
   postData = () => {
-    const { name, hunt_word, message, mobile, country_code } = this.state;
+    const { name, hunt_word, message, usergroup } = this.state;
     axios.post(BaseURL + 'EmailTracking/searchparameters', {
       name,
       hunt_word,
       message,
-      mobile,
-      country_code
+      usergroup
     })
       .then(response => {
         console.log('Data added successfully:', response.data);
@@ -81,9 +79,9 @@ class SearchParameter extends React.Component {
   };
 
   updateData = (index) => {
-    const { data, name, hunt_word, message, mobile, country_code } = this.state;
+    const { data, name, hunt_word, message,usergroup } = this.state;
     const updatedData = [...data];
-    updatedData[index] = { name, hunt_word, message, mobile, country_code };
+    updatedData[index] = { name, hunt_word, message, usergroup };
     this.setState({ data: updatedData, successMessage: 'Data updated successfully', errors: {} });
 
     this.setState({ data: updatedData });
@@ -134,7 +132,7 @@ class SearchParameter extends React.Component {
   };
 
   validate = () => {
-    const { name, hunt_word, message, mobile, country_code } = this.state;
+    const { name, hunt_word, message, usergroup} = this.state;
     const errors = {};
 
     if (!name.trim()) {
@@ -155,16 +153,8 @@ class SearchParameter extends React.Component {
       errors.message = 'Message must be less than 250 characters';
     }
 
-    if (!mobile.trim()) {
-      errors.mobile = 'Mobile number is required';
-    } else if (isNaN(mobile) || mobile.length !== 10) {
-      errors.mobile = 'Mobile number must be 10 digits';
-    }
-
-    if (!country_code.trim()) {
-      errors.country_code = 'Country code is required';
-    } else if (isNaN(country_code) || country_code.length < 1 || country_code.length > 3) {
-      errors.country_code = 'Country code must be 1 to 3 digits';
+    if (!usergroup.trim()) {
+      errors.usergroup = 'User Group is required';
     }
 
     return errors;
@@ -212,22 +202,16 @@ class SearchParameter extends React.Component {
                   </CRow>
                   <CRow className="mb-3">
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="country_code" className="col-form-label">Mobile</CFormLabel>
+                      <CFormLabel htmlFor="user_group" className="col-form-label">User Group</CFormLabel>
                     </CCol>
-                    <CCol sm={2}>
-                      <CFormSelect id="country_code" name="country_code" onChange={this.handleChange}>
-                      <option value="0"></option>
-                        <option value="1">1</option>
-                        <option value="91">91</option>
-                        {/* Add more options as needed */}
+                      <CCol md={6}>
+                      <CFormSelect id="button" >
+                        <option></option>
+                        <option>group 1</option>
+                        <option>group 2</option>
                       </CFormSelect>
-                      {errors.country_code && <div className="text-danger">{errors.country_code}</div>}
-                      <CFormLabel htmlFor="mobile" className="col-form-label"></CFormLabel>
-                    </CCol>
-                    <CCol sm={5}>
-                      <CFormInput id="mobile" type="tel" name="mobile" placeholder="Enter your mobile number" onChange={this.handleChange} />
-                      {errors.mobile && <div className="text-danger">{errors.mobile}</div>}
-                    </CCol>
+                      {errors.usergroup && <div className="text-danger">{errors.usergroup}</div>}
+                  </CCol>
                   </CRow>
                   <CRow className="justify-content-center">
                   <CCol xs={1}>
@@ -269,7 +253,7 @@ class SearchParameter extends React.Component {
                       <CTableHeaderCell scope="col">Name</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Hunt Word</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Message</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Mobile</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">User Group</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Action</CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
@@ -280,7 +264,7 @@ class SearchParameter extends React.Component {
                         <CTableDataCell>{item.name}</CTableDataCell>
                         <CTableDataCell>{item.hunt_word}</CTableDataCell>
                         <CTableDataCell>{item.message}</CTableDataCell>
-                        <CTableDataCell>{item.mobile}</CTableDataCell>
+                        <CTableDataCell>{item.usergroup}</CTableDataCell>
                         <CTableDataCell>
                           <CButton><CIcon icon={cilTrash} /></CButton>
                         </CTableDataCell>

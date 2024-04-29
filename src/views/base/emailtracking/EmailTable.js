@@ -9,6 +9,7 @@ import {
   CCol,
   CFormInput,
   CInputGroup,
+  CNavLink,
   CInputGroupText,
   CRow,
   CTable,
@@ -18,6 +19,8 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react';
+import { NavLink } from 'react-router-dom'
+
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
 import { useNavigate } from 'react-router-dom';
@@ -71,7 +74,7 @@ const EmailTable = () => {
   };
 
   const handleRowClick = (emailId) => {
-    navigate(`/emailtracking/emailsubpage/${emailId}`);
+    navigate("/emailtracking/emailsubpage/?emailid=" + emailId);
   };
 
   const emailsToDisplay = filteredEmails.length > 0 ? filteredEmails : emails;
@@ -119,7 +122,11 @@ const EmailTable = () => {
                 </CTableHead>
                 <CTableBody>
                   {emailsToDisplay.map((email, index) => (
-                    <CTableRow key={index} onClick={() => handleRowClick(email.id)}>
+                    <CTableRow key={index}>
+                    {/* <CTableRow key={index} onClick={() => handleRowClick(email.id)}> */}
+                      <CNavLink to={"/emailtracking/emailsubpage/?emailid=" + email.id} component={NavLink}>
+                      
+                    
                       <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                       <CTableDataCell>{email.date}</CTableDataCell>
                       <CTableDataCell>{email.time}</CTableDataCell>
@@ -128,6 +135,7 @@ const EmailTable = () => {
                       <CTableDataCell>
                         <CButton onClick={() => handleDelete(email.id)}><CIcon icon={cilTrash} /></CButton>
                       </CTableDataCell>
+                      </CNavLink>
                     </CTableRow>
                   ))}
                 </CTableBody>

@@ -14,6 +14,9 @@ import {
 import BaseURL from 'src/assets/contants/BaseURL';
 import { useParams, useNavigate } from 'react-router-dom';
 
+// const [searchParams] = useSearchParams("emailid");
+// const emailIDParam = searchParams.get("emailid");
+
 const EmailSubpage = () => {
   const { emailId } = useParams();
   const navigate = useNavigate(); 
@@ -56,7 +59,7 @@ const EmailSubpage = () => {
               <CRow className="mb-3">
                 <CFormLabel htmlFor="fromEmail" className="col-sm-2 col-form-label">From :</CFormLabel>
                 <CCol sm={10}>
-                  <CFormInput type="text" id="fromEmail" value={emailData.fromEmail} readOnly />
+                  <CFormInput type="text" id="fromEmail" value={fromEmail} readOnly />
                 </CCol>
               </CRow>
               <CRow className="mb-3">

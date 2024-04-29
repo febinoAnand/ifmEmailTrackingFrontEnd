@@ -126,15 +126,15 @@ const _nav = [
     },
     {
       component: CNavItem,
-      name: 'Setting',
-      to: '/emailtracking/setting',
-      icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
-    },
-    {
-      component: CNavItem,
       name: 'search parameter',
       to: '/emailtracking/search',
       icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavItem,
+      name: 'Setting',
+      to: '/emailtracking/setting',
+      icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
     },
 
     ]
