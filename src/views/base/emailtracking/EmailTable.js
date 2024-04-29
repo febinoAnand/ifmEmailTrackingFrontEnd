@@ -122,10 +122,10 @@ class EmailTable extends React.Component {
             {emailsToDisplay.map((email, index) => (
               <CTableRow key={index}>
                 <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                <CTableDataCell><Link to={`/event/emailsubpage/${email.id}`}>{email.date}</Link></CTableDataCell>
-                <CTableDataCell><Link to={`/event/emailsubpage/${email.id}`}>{email.time}</Link></CTableDataCell>
-                <CTableDataCell><Link to={`/event/emailsubpage/${email.id}`}>{email.subject}</Link></CTableDataCell>
-                <CTableDataCell><Link to={`/event/emailsubpage/${email.id}`}>{email.message}</Link></CTableDataCell>
+                <CTableDataCell><Link to={`/emailtracking/emailsubpage/${email.id}`}>{email.date}</Link></CTableDataCell>
+                <CTableDataCell><Link to={`/emailtracking/emailsubpage/${email.id}`}>{email.time}</Link></CTableDataCell>
+                <CTableDataCell><Link to={`/emailtracking/emailsubpage/${email.id}`}>{email.subject}</Link></CTableDataCell>
+                <CTableDataCell><Link to={`/emailtracking/emailsubpage/${email.id}`}>{email.message}</Link></CTableDataCell>
                 <CTableDataCell>
                   <CButton onClick={() => this.handleDelete(email.id)}><CIcon icon={cilTrash} /></CButton>
                 </CTableDataCell>

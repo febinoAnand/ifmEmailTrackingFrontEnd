@@ -37,7 +37,7 @@ class Groups extends React.Component{
         <CCol xs={12}>
           <CCard className="mb-4">
             <CCardHeader>
-              <strong>User List</strong>
+              <strong>USER LIST</strong>
             </CCardHeader>
             <CCardBody>
             <CRow className="mb-3">
@@ -87,7 +87,7 @@ class Groups extends React.Component{
             </CCol>
             <CCol className='mb-3'>
             </CCol>
-                <CTable>
+                <CTable striped hover>
                   <CTableHead>
                     <CTableRow>
                       <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>

@@ -121,19 +121,19 @@ const _nav = [
     {
       component: CNavItem,
       name: 'Inbox',
-      to: '/event/emailtable',
+      to: '/emailtracking/emailtable',
       icon: <CIcon icon={cilArrowCircleBottom} customClassName="nav-icon" />,
     },
     {
       component: CNavItem,
       name: 'Setting',
-      to: '/event/setting',
+      to: '/emailtracking/setting',
       icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
     },
     {
       component: CNavItem,
       name: 'search parameter',
-      to: '/event/search',
+      to: '/emailtracking/search',
       icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
     },
 

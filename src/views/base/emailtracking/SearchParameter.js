@@ -262,7 +262,7 @@ class SearchParameter extends React.Component {
                     <CIcon icon={cilFilter} />
                   </CButton>
                 </CInputGroup>
-                <CTable>
+                <CTable striped hover>
                   <CTableHead>
                     <CTableRow>
                       <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>

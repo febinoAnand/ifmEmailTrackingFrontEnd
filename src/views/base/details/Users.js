@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { cilTrash, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
 
 import {
     CButton,
@@ -24,10 +24,6 @@ import {
   } from '@coreui/react'
 import CIcon from '@coreui/icons-react';
 
-import {
-  cilMagnifyingGlass
-} from '@coreui/icons'
-
 const Users = () => {
   
   return (
@@ -38,7 +34,7 @@ const Users = () => {
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
-            <strong>Data from HMI</strong>
+            <strong>USER LIST</strong>
           </CCardHeader>
           <CCardBody>
             {/* <p className="text-medium-emphasis small">
@@ -61,6 +57,9 @@ const Users = () => {
                 <CButton type="button" color="secondary"  id="button-addon2">
                   Search
                 </CButton>
+                <CButton color="primary">
+                    <CIcon icon={cilFilter} />
+                </CButton>
               </CInputGroup>
               {/* <CButton color='primary'>Search</CButton> */}
               </CCol>
@@ -72,11 +71,13 @@ const Users = () => {
               <CTable striped hover>
                 <CTableHead>
                   <CTableRow>
-                    <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">User Name</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Mobile</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Email</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Designation</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Status</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Action</CTableHeaderCell>
                     
                     
                   </CTableRow>
@@ -84,10 +85,14 @@ const Users = () => {
                 <CTableBody>
                   <CTableRow>
                     <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>KKK2938</CTableDataCell>
                     <CTableDataCell>Anandkumar</CTableDataCell>
+                    <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
                     <CTableDataCell>Richianand1990@gmail.com</CTableDataCell>
                     <CTableDataCell>Manager</CTableDataCell>
+                    <CTableDataCell><CFormCheck/></CTableDataCell>
+                    <CTableDataCell>
+                      <CButton><CIcon icon={cilTrash} /></CButton>
+                    </CTableDataCell>
                     
                     
                  
@@ -97,21 +102,69 @@ const Users = () => {
                   </CTableRow>
                   <CTableRow>
                   <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>AA3948</CTableDataCell>
                     <CTableDataCell>Kumar</CTableDataCell>
+                    <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
                     <CTableDataCell>Richianand1990@gmail.com</CTableDataCell>
                     <CTableDataCell>Technician</CTableDataCell>
+                    <CTableDataCell><CFormCheck/></CTableDataCell>
+                    <CTableDataCell>
+                      <CButton><CIcon icon={cilTrash} /></CButton>
+                    </CTableDataCell>
                     
                   </CTableRow>
                   <CTableRow>
                   <CTableHeaderCell scope="row">3</CTableHeaderCell>
-                    <CTableDataCell>AA34394</CTableDataCell>
                     <CTableDataCell>Anand</CTableDataCell>
+                    <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
                     <CTableDataCell>Richianand1990@gmail.com</CTableDataCell>
                     <CTableDataCell>CEO</CTableDataCell>
+                    <CTableDataCell><CFormCheck/></CTableDataCell>
+                    <CTableDataCell>
+                      <CButton><CIcon icon={cilTrash} /></CButton>
+                    </CTableDataCell>
                    
                     
                   </CTableRow>
+                  <CTableRow>
+                  <CTableHeaderCell scope="row">4</CTableHeaderCell>
+                    <CTableDataCell>Anand</CTableDataCell>
+                    <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
+                    <CTableDataCell>Richianand1990@gmail.com</CTableDataCell>
+                    <CTableDataCell>CEO</CTableDataCell>
+                    <CTableDataCell><CFormCheck/></CTableDataCell>
+                    <CTableDataCell>
+                      <CButton><CIcon icon={cilTrash} /></CButton>
+                    </CTableDataCell>
+                   
+                    
+                  </CTableRow>
+                  <CTableRow>
+                  <CTableHeaderCell scope="row">5</CTableHeaderCell>
+                    <CTableDataCell>Anand</CTableDataCell>
+                    <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
+                    <CTableDataCell>Richianand1990@gmail.com</CTableDataCell>
+                    <CTableDataCell>CEO</CTableDataCell>
+                    <CTableDataCell><CFormCheck/></CTableDataCell>
+                    <CTableDataCell>
+                      <CButton><CIcon icon={cilTrash} /></CButton>
+                    </CTableDataCell>
+                   
+                    
+                  </CTableRow>
+                  <CTableRow>
+                  <CTableHeaderCell scope="row">6</CTableHeaderCell>
+                    <CTableDataCell>Anand</CTableDataCell>
+                    <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
+                    <CTableDataCell>Richianand1990@gmail.com</CTableDataCell>
+                    <CTableDataCell>CEO</CTableDataCell>
+                    <CTableDataCell><CFormCheck /></CTableDataCell>
+                    <CTableDataCell>
+                      <CButton><CIcon icon={cilTrash} /></CButton>
+                    </CTableDataCell>
+                   
+                    
+                  </CTableRow>
+                  
                 </CTableBody>
               </CTable>
             

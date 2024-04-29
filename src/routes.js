@@ -13,10 +13,12 @@ const EventGroup = React.lazy(() => import ('./views/base/events/EventGroup'))
 const Indicator = React.lazy(() => import('./views/base/events/EventIndicator'))
 const Button = React.lazy(() => import('./views/base/events/EventButton'))
 const ProblemCode = React.lazy(() => import('./views/base/events/EventProblemcode'))
-const EmailTable = React.lazy(() => import('./views/base/events/EmailTable'))
-const SettingData = React.lazy(() => import('./views/base/events/SettingData'))
-const SearchParameter = React.lazy(() => import('./views/base/events/SearchParameter'))
-const EmailSubpage = React.lazy(() => import('./views/base/events/EmailSubpage'))
+
+//EmailTracking
+const EmailTable = React.lazy(() => import('./views/base/emailtracking/EmailTable'))
+const SettingData = React.lazy(() => import('./views/base/emailtracking/SettingData'))
+const SearchParameter = React.lazy(() => import('./views/base/emailtracking/SearchParameter'))
+const EmailSubpage = React.lazy(() => import('./views/base/emailtracking/EmailSubpage'))
 
 //datas
 const HMIRaw = React.lazy(() => import('./views/base/data/HMIRaw_function'))
@@ -96,10 +98,11 @@ const routes = [
   { path: '/event/indicator', name: 'Indicator', element: Indicator}, //Event
   { path: '/event/button', name: 'Button', element: Button}, //Event
   { path: '/event/problemcode', name: 'ProblemCode', element: ProblemCode}, //Event
-  { path: '/event/emailtable', name: 'EmailTable', element: EmailTable}, //Event
-  { path: '/event/setting', name: 'SettingData', element: SettingData}, //Event
-  { path: '/event/search', name: 'SearchParameter', element: SearchParameter}, //Event
-  { path: '/event/emailsubpage', name: 'EmailSubpage', element: EmailSubpage}, //Event
+
+  { path: '/emailtracking/emailtable', name: 'EmailTable', element: EmailTable}, //EmailTracking
+  { path: '/emailtracking/setting', name: 'SettingData', element: SettingData}, //EmailTracking
+  { path: '/emailtracking/search', name: 'SearchParameter', element: SearchParameter}, //EmailTracking
+  { path: '/emailtracking/emailsubpage', name: 'EmailSubpage', element: EmailSubpage}, //EmailTracking
 
   { path: '/data/activeproblem', name: 'ActiveProblem', element: ActiveProblem}, //data
   { path: '/data/problemdata', name: 'ProblemData', element: ProblemData}, //data
