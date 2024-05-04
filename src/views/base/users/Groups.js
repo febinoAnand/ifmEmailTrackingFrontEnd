@@ -124,7 +124,6 @@ const Groups = () => {
       }
     }
     setItemSelecte(selectedOptions);
-    console.log("Selected Row",selectedRow);
     console.log(selectedOptions);
   };
   

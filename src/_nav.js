@@ -24,6 +24,14 @@ import {
   cilArrowCircleBottom,
   cilSettings,
   cilSearch,
+  cilSwapHorizontal,
+  cilVoiceOverRecord,
+  cilShieldAlt,
+  cilPrint,
+  cilLan,
+  cilBoltCircle,
+  cilBellExclamation,
+  cilRunning,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -136,6 +144,65 @@ const _nav = [
       to: '/emailtracking/setting',
       icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
     },
+
+    ]
+
+  },
+  {
+    component: CNavGroup,
+    name: 'Actions',
+    
+    icon: <CIcon icon={cilRunning} customClassName="nav-icon" />,
+    items:[
+      {
+        component: CNavGroup,
+        name: 'Notifications',
+        
+        icon: <CIcon icon={cilBellExclamation} customClassName="nav-icon" />,
+        items:[
+        {
+          component: CNavItem,
+          name: 'Send Report',
+          to: '/event/eventgroup',
+          icon: <CIcon icon={cilSwapHorizontal} customClassName="nav-icon" />,
+        },
+        {
+          component: CNavItem,
+          name: 'User Identifier',
+          to: '/event/eventmap',
+          icon: <CIcon icon={cilVoiceOverRecord} customClassName="nav-icon" />,
+        },
+        {
+          component: CNavItem,
+          name: 'Setting',
+          to: '/event/indicator',
+          icon: <CIcon icon={cilShieldAlt} customClassName="nav-icon" />,
+        },
+    
+        ]
+        
+      },
+      {
+        component: CNavGroup,
+        name: 'SMS Gateway',
+        
+        icon: <CIcon icon={cilBoltCircle} customClassName="nav-icon" />,
+        items:[
+          {
+            component: CNavItem,
+            name: 'SMS Report',
+            to: '/event/eventgroup',
+            icon: <CIcon icon={cilPrint} customClassName="nav-icon" />,
+          },
+          {
+            component: CNavItem,
+            name: 'Settings',
+            to: '/event/eventmap',
+            icon: <CIcon icon={cilLan} customClassName="nav-icon" />,
+          },
+        ]
+        
+      },
 
     ]
     
