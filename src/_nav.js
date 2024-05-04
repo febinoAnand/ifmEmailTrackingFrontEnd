@@ -191,13 +191,13 @@ const _nav = [
           {
             component: CNavItem,
             name: 'SMS Report',
-            to: '/event/eventgroup',
+            to: '/smsgateway/sendreport',
             icon: <CIcon icon={cilPrint} customClassName="nav-icon" />,
           },
           {
             component: CNavItem,
             name: 'Settings',
-            to: '/event/eventmap',
+            to: '/smsgateway/settings',
             icon: <CIcon icon={cilLan} customClassName="nav-icon" />,
           },
         ]

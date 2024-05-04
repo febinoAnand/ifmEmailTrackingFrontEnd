@@ -25,6 +25,10 @@ const SendReport = React.lazy(() => import('./views/base/pushnotification/sendre
 const UserIdentifier = React.lazy(() => import('./views/base/pushnotification/useridentifier'))
 const Setting = React.lazy(() => import('./views/base/pushnotification/setting'))
 
+//SMSGateway
+const SendReports = React.lazy(() => import('./views/base/smsgateway/sendreport'))
+const Settings = React.lazy(() => import('./views/base/smsgateway/settings'))
+
 //datas
 const HMIRaw = React.lazy(() => import('./views/base/data/HMIRaw_function'))
 const ActiveProblem = React.lazy(() => import('./views/base/data/ActiveProblem'))
@@ -115,6 +119,9 @@ const routes = [
   { path: '/pushnotification/sendreport', name: 'SendReport', element: SendReport}, //PushNotification
   { path: '/pushnotification/useridentifier', name: 'UserIdentifier', element: UserIdentifier}, //PushNotification
   { path: '/pushnotification/setting', name: 'Setting', element: Setting}, //PushNotification
+
+  { path: '/smsgateway/sendreport', name: 'SendReport', element: SendReports}, //SMSGateway
+  { path: '/smsgateway/settings', name: 'Settings', element: Settings}, //SMSGateway
 
   { path: '/data/activeproblem', name: 'ActiveProblem', element: ActiveProblem}, //data
   { path: '/data/problemdata', name: 'ProblemData', element: ProblemData}, //data
