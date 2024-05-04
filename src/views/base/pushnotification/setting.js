@@ -42,23 +42,19 @@ class Setting extends React.Component{
             
             
             
-              <CTable striped hover>
-                <CTableHead>
-                  <CTableRow>
-                    <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Application ID</CTableHeaderCell>
-
-
-                    
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                      <CTableRow >
-                        <CTableHeaderCell></CTableHeaderCell>
-                        <CTableDataCell></CTableDataCell>
-                        </CTableRow>
-                  </CTableBody>
-              </CTable>
+                  <CRow className="mb-3">
+                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">Application ID</CFormLabel>
+                    <CCol md={6}>
+                      <CFormInput type="text" id="name" name="name" />
+                    </CCol>
+                  </CRow>
+                  <CRow className="justify-content-center">
+                  <CCol xs={1}>
+                    <div className='d-grid gap-2'>
+                        <CButton color="primary" type="submit" >Update</CButton>
+                    </div>
+                  </CCol>
+                  </CRow>
             
           </CCardBody>
         </CCard>

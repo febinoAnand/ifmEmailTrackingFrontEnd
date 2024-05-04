@@ -232,32 +232,6 @@ class SettingData extends React.Component {
                                             {errors.checkInterval && (<div className="text-danger">{errors.checkInterval}</div>)}
                                         </CCol>
                                     </CRow><br />
-                                    <CCardHeader>
-                                        <strong>SMS Gateway</strong>
-                                    </CCardHeader>
-                                    <CCardBody>
-                                            <CRow className="mb-3">
-                                                <CFormLabel htmlFor="sid" className="col-sm-2 col-form-label">SID</CFormLabel>
-                                                <CCol sm={10}>
-                                                    <CFormInput type="text" id="sid" name="sid" value={sid} onChange={this.handleChange} />
-                                                    {errors.sid && <div className="text-danger">{errors.sid}</div>}
-                                                </CCol>
-                                            </CRow>
-                                            <CRow className="mb-3">
-                                                <CFormLabel htmlFor="authtoken" className="col-sm-2 col-form-label">Auth Token</CFormLabel>
-                                                <CCol sm={10}>
-                                                    <CFormInput type="password" id="authtoken" name="authToken" value={authToken} onChange={this.handleChange} />
-                                                    {errors.authToken && <div className="text-danger">{errors.authToken}</div>}
-                                                </CCol>
-                                            </CRow>
-                                            <CRow className="mb-3">
-                                                <CFormLabel htmlFor="phone" className="col-sm-2 col-form-label">Phone</CFormLabel>
-                                                <CCol sm={10}>
-                                                    <CFormInput type="text" id="phone" name="phone" value={phone} onChange={this.handleChange} />
-                                                    {errors.phone && <div className="text-danger">{errors.phone}</div>}
-                                                </CCol>
-                                            </CRow>
-                                    </CCardBody>
                                     <CRow className="justify-content-center">
                                         <CCol md="auto">
                                             <CButton color="primary" type="submit">Update</CButton>

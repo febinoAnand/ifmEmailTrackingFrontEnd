@@ -32,6 +32,8 @@ import {
   cilBoltCircle,
   cilBellExclamation,
   cilRunning,
+  cilSignLanguage,
+  cilShortText,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -134,9 +136,21 @@ const _nav = [
     },
     {
       component: CNavItem,
-      name: 'search parameter',
-      to: '/emailtracking/search',
+      name: 'Parameter',
+      to: '/emailtracking/parameter',
       icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavItem,
+      name: 'Trigger',
+      to: '/emailtracking/trigger',
+      icon: <CIcon icon={cilSignLanguage} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavItem,
+      name: 'Ticket Report',
+      to: '/emailtracking/ticketreport',
+      icon: <CIcon icon={cilShortText} customClassName="nav-icon" />,
     },
     {
       component: CNavItem,

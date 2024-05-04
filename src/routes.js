@@ -19,6 +19,9 @@ const EmailTable = React.lazy(() => import('./views/base/emailtracking/EmailTabl
 const SettingData = React.lazy(() => import('./views/base/emailtracking/SettingData'))
 const SearchParameter = React.lazy(() => import('./views/base/emailtracking/SearchParameter'))
 const EmailSubpage = React.lazy(() => import('./views/base/emailtracking/EmailSubpage'))
+const Parameter = React.lazy(() => import('./views/base/emailtracking/parameter'))
+const Trigger = React.lazy(() => import('./views/base/emailtracking/trigger'))
+const TicketReport = React.lazy(() => import('./views/base/emailtracking/ticketreport'))
 
 //PushNotification
 const SendReport = React.lazy(() => import('./views/base/pushnotification/sendreport'))
@@ -115,6 +118,9 @@ const routes = [
   { path: '/emailtracking/setting', name: 'SettingData', element: SettingData}, //EmailTracking
   { path: '/emailtracking/search', name: 'SearchParameter', element: SearchParameter}, //EmailTracking
   { path: '/emailtracking/emailsubpage', name: 'EmailSubpage', element: EmailSubpage}, //EmailTracking
+  { path: '/emailtracking/parameter', name: 'EmailSubpage', element: Parameter}, //EmailTracking
+  { path: '/emailtracking/trigger', name: 'Trigger', element: Trigger}, //EmailTracking
+  { path: '/emailtracking/ticketreport', name: 'TicketReport', element: TicketReport}, //EmailTracking
 
   { path: '/pushnotification/sendreport', name: 'SendReport', element: SendReport}, //PushNotification
   { path: '/pushnotification/useridentifier', name: 'UserIdentifier', element: UserIdentifier}, //PushNotification
