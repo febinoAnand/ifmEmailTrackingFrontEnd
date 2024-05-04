@@ -20,6 +20,11 @@ const SettingData = React.lazy(() => import('./views/base/emailtracking/SettingD
 const SearchParameter = React.lazy(() => import('./views/base/emailtracking/SearchParameter'))
 const EmailSubpage = React.lazy(() => import('./views/base/emailtracking/EmailSubpage'))
 
+//PushNotification
+const SendReport = React.lazy(() => import('./views/base/pushnotification/sendreport'))
+const UserIdentifier = React.lazy(() => import('./views/base/pushnotification/useridentifier'))
+const Setting = React.lazy(() => import('./views/base/pushnotification/setting'))
+
 //datas
 const HMIRaw = React.lazy(() => import('./views/base/data/HMIRaw_function'))
 const ActiveProblem = React.lazy(() => import('./views/base/data/ActiveProblem'))
@@ -106,6 +111,10 @@ const routes = [
   { path: '/emailtracking/setting', name: 'SettingData', element: SettingData}, //EmailTracking
   { path: '/emailtracking/search', name: 'SearchParameter', element: SearchParameter}, //EmailTracking
   { path: '/emailtracking/emailsubpage', name: 'EmailSubpage', element: EmailSubpage}, //EmailTracking
+
+  { path: '/pushnotification/sendreport', name: 'SendReport', element: SendReport}, //PushNotification
+  { path: '/pushnotification/useridentifier', name: 'UserIdentifier', element: UserIdentifier}, //PushNotification
+  { path: '/pushnotification/setting', name: 'Setting', element: Setting}, //PushNotification
 
   { path: '/data/activeproblem', name: 'ActiveProblem', element: ActiveProblem}, //data
   { path: '/data/problemdata', name: 'ProblemData', element: ProblemData}, //data

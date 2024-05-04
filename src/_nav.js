@@ -163,19 +163,19 @@ const _nav = [
         {
           component: CNavItem,
           name: 'Send Report',
-          to: '/event/eventgroup',
+          to: '/pushnotification/sendreport',
           icon: <CIcon icon={cilSwapHorizontal} customClassName="nav-icon" />,
         },
         {
           component: CNavItem,
           name: 'User Identifier',
-          to: '/event/eventmap',
+          to: '/pushnotification/useridentifier',
           icon: <CIcon icon={cilVoiceOverRecord} customClassName="nav-icon" />,
         },
         {
           component: CNavItem,
           name: 'Setting',
-          to: '/event/indicator',
+          to: '/pushnotification/setting',
           icon: <CIcon icon={cilShieldAlt} customClassName="nav-icon" />,
         },
     
