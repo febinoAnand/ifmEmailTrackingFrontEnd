@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { cilMediaSkipForward, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
+import { cilFilter, cilMagnifyingGlass, cilMediaSkipForward } from '@coreui/icons';
 import {
   CButton,
   CCard,
@@ -26,41 +26,19 @@ import BaseURL from 'src/assets/contants/BaseURL';
 
 const EmailTable = () => {
   const [emails, setEmails] = useState([]);
-  const [filteredEmails, setFilteredEmails] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchEmails();
-    const interval = setInterval(fetchEmails, 3000);
-
-    return () => clearInterval(interval);
   }, []);
 
-  const fetchEmails = () => {
-    axios.get(BaseURL + 'EmailTracking/inbox')
-      .then(response => {
-        setEmails(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching emails:', error);
-      });
+  const fetchEmails = async () => {
+    try {
+      const response = await axios.get(BaseURL+ "emailtracking/inbox/");
+      setEmails(response.data);
+    } catch (error) {
+      console.error('Error fetching emails:', error);
+    }
   };
-
-
-  const handleSearch = () => {
-    const filteredEmails = emails.filter(email =>
-      email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      email.message.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredEmails(filteredEmails);
-  };
-
-  const handleInputChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-
-  const emailsToDisplay = filteredEmails.length > 0 ? filteredEmails : emails;
 
   return (
     <>
@@ -77,10 +55,8 @@ const EmailTable = () => {
                   placeholder="Search by Subject or Message"
                   aria-label="Search"
                   aria-describedby="addon-wrapping"
-                  value={searchQuery}
-                  onChange={handleInputChange}
                 />
-                <CButton type="button" color="secondary" onClick={handleSearch} id="button-addon2">
+                <CButton type="button" color="secondary" id="button-addon2">
                   Search
                 </CButton>
                 <CButton color="primary">
@@ -99,18 +75,19 @@ const EmailTable = () => {
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                  {emailsToDisplay.map((email, index) => (
+                  {emails.map((email, index) => (
                     <CTableRow key={index}>
-                    {/* <CTableRow key={index} onClick={() => handleRowClick(email.id)}> */}
-                      
-                    
                       <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                       <CTableDataCell>{email.date}</CTableDataCell>
                       <CTableDataCell>{email.time}</CTableDataCell>
                       <CTableDataCell>{email.subject}</CTableDataCell>
                       <CTableDataCell>{email.message}</CTableDataCell>
                       <CTableDataCell>
-                      <CButton><CNavLink to={"/emailtracking/emailsubpage/?emailid=" + email.id} component={NavLink}><CIcon icon={cilMediaSkipForward} /></CNavLink></CButton>
+                        <CButton>
+                          <CNavLink to={`/emailtracking/emailsubpage/${email.id}`} component={NavLink}>
+                            <CIcon icon={cilMediaSkipForward} />
+                          </CNavLink>
+                        </CButton>
                       </CTableDataCell>
                     </CTableRow>
                   ))}

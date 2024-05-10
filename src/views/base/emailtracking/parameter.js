@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { cilMediaSkipForward, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
+import { cilTrash, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
 import {
   CButton,
   CCard,
@@ -20,15 +20,108 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
-  CFormTextarea,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
 
 class Parameter extends React.Component {
+  state = {
+    parameters: [],
+    formData: {
+      id: '',
+      alias: '',
+      field: '',
+      datatype: '',
+    },
+  };
+
+  componentDidMount() {
+    this.fetchParameters();
+  }
+
+  fetchParameters = () => {
+    axios.get(BaseURL+"emailtracking/parameter/")
+      .then(response => {
+        this.setState({ parameters: response.data });
+      })
+      .catch(error => {
+        console.error('Error fetching parameters:', error);
+      });
+  };
+
+  handleInputChange = (e) => {
+    const { name, value } = e.target;
+    this.setState(prevState => ({
+      formData: {
+        ...prevState.formData,
+        [name]: value,
+      },
+    }));
+  };
+
+  handleAdd = () => {
+    const { formData } = this.state;
+    axios.post(BaseURL+"emailtracking/parameter/", formData)
+      .then(response => {
+        console.log('Parameter added successfully:', response.data);
+         this.setState({ formData: { id: '', alias: '', field: '', datatype: '' } });
+         this.fetchParameters();
+      })
+      .catch(error => {
+        console.error('Error adding parameter:', error);
+      });
+  };
+
+  handleUpdate = () => {
+    const { formData } = this.state;
+    const { id } = formData;
   
+    axios.put(`${BaseURL}emailtracking/parameter/${id}/`, formData)
+      .then(response => {
+        console.log('Parameter updated successfully:', response.data);
+        this.setState({ 
+          formData: { 
+            id: '', 
+            alias: '', 
+            field: '', 
+            datatype: '' 
+          } 
+        });
+        this.fetchParameters();
+      })
+      .catch(error => {
+        console.error('Error updating parameter:', error);
+      });
+  };
+
+  getRowData = (parameter) => {
+    const { id, alias, field, datatype } = parameter;
+    this.setState({
+      formData: {
+        id: id,
+        alias: alias,
+        field: field,
+        datatype: datatype,
+      }
+    });
+    console.log(parameter);
+  };
+
+  handleDelete = (id) => {
+    axios.delete(`${BaseURL}emailtracking/parameter/${id}/`)
+      .then(response => {
+        console.log('Parameter deleted successfully');
+        this.setState(prevState => ({
+          parameters: prevState.parameters.filter(parameter => parameter.id !== id)
+        }));
+      })
+      .catch(error => {
+        console.error('Error deleting parameter:', error);
+      });
+  };
 
   render() {
+    const { parameters, formData } = this.state;
 
     return (
       <>
@@ -40,51 +133,57 @@ class Parameter extends React.Component {
                 <strong>Search Parameter</strong>
               </CCardHeader>
               <CCardBody>
-                <CForm>
+              <CForm>
                   <CRow className="mb-3">
                     <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">Alias</CFormLabel>
                     <CCol md={6}>
-                      <CFormInput type="text" id="name" name="name" />
+                      <CFormInput
+                        type="text"
+                        id="alias"
+                        name="alias"
+                        value={formData.alias}
+                        onChange={this.handleInputChange}
+                      />
                     </CCol>
                   </CRow>
                   <CRow className="mb-3">
-                    <CCol sm={2}>
-                      <CFormLabel htmlFor="user_group" className="col-form-label">Field</CFormLabel>
+                    <CFormLabel htmlFor="field" className="col-sm-2 col-form-label">Field</CFormLabel>
+                    <CCol md={6}>
+                      <CFormInput
+                        type="text"
+                        id="field"
+                        name="field"
+                        value={formData.field}
+                        onChange={this.handleInputChange}
+                      />
                     </CCol>
-                      <CCol md={6}>
-                      <CFormSelect id="user_group" name="user_group" >
-                        <option>1</option>
-                          <option>2</option>
-                      </CFormSelect>
-                  </CCol>
                   </CRow>
                   <CRow className="mb-3">
-                    <CCol sm={2}>
-                      <CFormLabel htmlFor="user_group" className="col-form-label">Data Types</CFormLabel>
-                    </CCol>
-                      <CCol md={6}>
-                      <CFormSelect id="user_group" name="user_group" >
-                        <option>1</option>
-                          <option>2</option>
+                    <CFormLabel htmlFor="datatype" className="col-sm-2 col-form-label">Data Type</CFormLabel>
+                    <CCol md={6}>
+                      <CFormSelect
+                        id="datatype"
+                        name="datatype"
+                        value={formData.datatype}
+                        onChange={this.handleInputChange}
+                      >
+                        <option value="">Select Data Type</option>
+                        <option value="character">Character</option>
+                        <option value="number">Number</option>
                       </CFormSelect>
-                  </CCol>
+                    </CCol>
                   </CRow>
                   <CRow className="justify-content-center">
-                  <CCol xs={1}>
-                    <div className='d-grid gap-2'>
-                        <CButton color="primary" type="submit" >Add</CButton>
-                    </div>
-                  </CCol>
-                  <CCol xs={1}>
-                    <div className='d-grid gap-2'>
-                        <CButton color="primary" type="button" >Update</CButton>
-                    </div>
-                  </CCol>
-                  <CCol xs={1}>
-                    <div className='d-grid gap-2'>
-                        <CButton color="primary" type="button" >Delete</CButton>
-                    </div>
-                  </CCol>
+                    <CCol xs={1}>
+                      <div className='d-grid gap-2'>
+                        <CButton color="primary" type="button" onClick={this.handleAdd}>Add</CButton>
+                      </div>
+                    </CCol>
+                    <CCol xs={1}>
+                      <div className='d-grid gap-2'>
+                        <CButton color="primary" type="submit" onClick={this.handleUpdate}>Update</CButton>
+                      </div>
+                    </CCol>
                   </CRow>
                 </CForm>
               </CCardBody>
@@ -116,15 +215,17 @@ class Parameter extends React.Component {
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
-                      <CTableRow>
-                        <CTableHeaderCell scope="row"></CTableHeaderCell>
-                        <CTableDataCell></CTableDataCell>
-                        <CTableDataCell></CTableDataCell>
-                        <CTableDataCell></CTableDataCell>
+                    {parameters.map((parameter, index) => (
+                      <CTableRow  key={parameter.id} onClick={()=>this.getRowData(parameter)}>
+                        <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                        <CTableDataCell>{parameter.alias}</CTableDataCell>
+                        <CTableDataCell>{parameter.field}</CTableDataCell>
+                        <CTableDataCell>{parameter.datatype}</CTableDataCell>
                         <CTableDataCell>
-                          <CButton><CIcon icon={cilMediaSkipForward} /></CButton>
+                          <CButton onClick={(e) => { e.stopPropagation(); this.handleDelete(parameter.id)}}><CIcon icon={cilTrash} /></CButton>
                         </CTableDataCell>
                       </CTableRow>
+                    ))}
                   </CTableBody>
                 </CTable>
 

@@ -19,15 +19,13 @@ class SettingData extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            id: '',
             host: '',
             port: '',
             username: '',
             password: '',
             checkInterval: '',
             checkStatus: false,
-            sid: '',
-            authToken: '',
-            phone: '',
             errors: {},
             successMessage: ''
         };
@@ -38,26 +36,27 @@ class SettingData extends React.Component {
     }
 
     fetchSettings() {
-        axios.get(BaseURL + 'EmailTracking/settings')
+        axios.get(BaseURL + 'emailtracking/setting/')
             .then(response => {
-                const { host, port, username, password, checkInterval, sid, authToken, phone, checkStatus } = response.data;
-                const validCheckInterval = typeof checkInterval !== 'undefined' ? String(checkInterval) : '';
-                const validCheckStatus = typeof checkStatus !== 'undefined' ? checkStatus : false;
-    
-                this.setState({ 
-                    host, 
-                    port, 
-                    username, 
-                    password, 
-                    checkInterval: validCheckInterval, 
-                    sid, 
-                    authToken, 
-                    phone,
-                    checkStatus: validCheckStatus
-                });
+                const data = response.data[0];
+                if (data) {
+                    const { id, host, port, username, password, checkInterval, checkStatus } = data;
+                    const validCheckInterval = typeof checkInterval !== 'undefined' ? String(checkInterval) : '';
+
+                    this.setState({ 
+                        id,
+                        host, 
+                        port, 
+                        username, 
+                        password, 
+                        checkInterval: validCheckInterval, 
+                        checkStatus,
+                    });
+                }
             })
             .catch(error => {
                 console.error('Error fetching settings:', error);
+                toast.error('Failed to fetch settings');
             });
     }
     
@@ -81,21 +80,19 @@ class SettingData extends React.Component {
         const errors = this.validate();
         if (Object.keys(errors).length === 0) {
             console.log('Submitted data:', this.state);
-
-            const { host, port, username, password, checkInterval, checkStatus, sid, authToken, phone } = this.state;
+    
+            const { id, host, port, username, password, checkInterval, checkStatus } = this.state;
             const data = {
+                id,
                 host,
                 port: parseInt(port),
                 username,
                 password,
                 checkInterval: checkInterval !== '' ? parseInt(checkInterval) : null,
-                checkStatus: checkStatus === 'true',
-                sid,
-                authToken,
-                phone
+                checkStatus,
             };
-
-            axios.put(BaseURL + 'EmailTracking/settings', data)
+    
+            axios.put(`${BaseURL}emailtracking/setting/${id}/`, data)
             .then(() => {
                 this.setState({ successMessage: 'Settings updated successfully', errors: {} });
             })
@@ -110,7 +107,7 @@ class SettingData extends React.Component {
     };
 
     validate = () => {
-        const { host, port, username, password, checkInterval, sid, authToken, phone } = this.state;
+        const { host, port, username, password, checkInterval } = this.state;
         const errors = {};
 
         if (!host || !host.trim()) {
@@ -139,25 +136,12 @@ class SettingData extends React.Component {
         if (checkInterval !== '' && (isNaN(checkInterval) || checkInterval < 0 || checkInterval > 3600)) {
             errors.checkInterval = 'Check Interval must be a number between 0 to 3600';
         }
-        if (!sid || !sid.trim()) {
-            errors.sid = 'SID is required';
-        } else if (sid.length > 100) {
-            errors.sid = 'SID must be less than 100 characters';
-        }
-        if (!authToken || !authToken.trim()) {
-            errors.authToken = 'Auth Token is required';
-        } else if (authToken.length > 100) {
-            errors.authToken = 'Auth Token must be less than 100 characters';
-        }
-        if (!phone || !phone.trim()) {
-            errors.phone = 'Phone is required';
-        }
     
         return errors;
     };    
 
     render() {
-        const { host, port, username, password, checkInterval, checkStatus, sid, authToken, phone, errors, successMessage } = this.state;
+        const { host, port, username, password, checkInterval, checkStatus, errors, successMessage } = this.state;
 
         return (
             <>

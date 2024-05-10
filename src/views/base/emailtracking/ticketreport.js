@@ -1,17 +1,11 @@
 import React from 'react'
 import axios from 'axios';
-import { cilMediaSkipForward, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
 
 import {
-    CButton,
     CCard,
     CCardBody,
     CCardHeader,
     CCol,
-    CForm,
-    CFormLabel,
-    CFormInput,
-    CFormSelect,
     CRow,
     CTable,
     CTableBody,
@@ -20,15 +14,37 @@ import {
     CTableHeaderCell,
     CTableRow,
   } from '@coreui/react'
-  import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
 
 class TicketReport extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      tickets: [],
+    };
+  }
+
+  componentDidMount() {
+    this.fetchTickets();
+  }
+
+  fetchTickets() {
+    axios
+      .get(BaseURL + 'emailtracking/ticket/')
+      .then((response) => {
+        this.setState({ tickets: response.data });
+      })
+      .catch((error) => {
+        console.error('Error fetching tickets:', error);
+      });
+  }
 
 
 
   
  render(){ 
+  const { tickets } = this.state;
+
   return (
     <>
      <CRow>
@@ -56,16 +72,18 @@ class TicketReport extends React.Component{
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                      <CTableRow >
-                        <CTableHeaderCell></CTableHeaderCell>
-                        <CTableDataCell></CTableDataCell>
-                        <CTableDataCell></CTableDataCell>
-                        <CTableDataCell></CTableDataCell>
-                        <CTableDataCell></CTableDataCell>
-                        <CTableDataCell></CTableDataCell>
-                        <CTableDataCell></CTableDataCell>
-                      </CTableRow>
-                  </CTableBody>
+                {tickets.map((ticket, index) => (
+                  <CTableRow key={index}>
+                    <CTableHeaderCell>{index + 1}</CTableHeaderCell>
+                    <CTableDataCell>{ticket.ticketname}</CTableDataCell>
+                    <CTableDataCell>{ticket.date}</CTableDataCell>
+                    <CTableDataCell>{ticket.time}</CTableDataCell>
+                    <CTableDataCell>{ticket.inboxMessage}</CTableDataCell>
+                    <CTableDataCell>{ticket.required_json}</CTableDataCell>
+                    <CTableDataCell>{ticket.actual_json}</CTableDataCell>
+                  </CTableRow>
+                ))}
+              </CTableBody>
               </CTable>
             
           </CCardBody>
