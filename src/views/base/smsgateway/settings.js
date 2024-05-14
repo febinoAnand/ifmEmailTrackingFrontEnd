@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import {
@@ -8,118 +8,91 @@ import {
     CCardHeader,
     CCol,
     CForm,
-    CFormCheck,
     CFormInput,
     CFormLabel,
     CRow,
 } from '@coreui/react';
 import BaseURL from 'src/assets/contants/BaseURL';
 
-class Settings extends React.Component {
+class Settings extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            id:'',
             sid: '',
-            authToken: '',
-            number: '',
+            auth_token: ''
         };
     }
 
     componentDidMount() {
-        this.fetchSettings();
-    }
-
-    fetchSettings() {
-        axios.get(BaseURL + 'smsgateway/setting/')
+        axios.get(BaseURL+'smsgateway/setting/')
             .then(response => {
-                const { sid, authToken, number } = response.data;
-    
-                this.setState({ 
-                    sid, 
-                    authToken, 
-                    number
-                });
+                const settings = response.data[0];
+                if (settings) {
+                    const { id, sid, auth_token } = settings;
+                    console.log(settings);
+                    this.setState({ id, sid, auth_token });
+                } else {
+                    console.error('Empty response data.');
+                    toast.error('Failed to fetch settings: Empty response data.');
+                }
             })
             .catch(error => {
                 console.error('Error fetching settings:', error);
+                toast.error('Failed to fetch settings.');
             });
-    }
-    handleChange = (e) => {
-        const { name, value } = e.target;
-        this.setState({
-            [name]: value
-        });
-    };
+    }     
 
-    handleSubmit = (e) => {
-        e.preventDefault();
-        const errors = this.validate();
-        if (Object.keys(errors).length === 0) {
-            console.log('Submitted data:', this.state);
-
-            const {sid, authToken, number } = this.state;
-            const data = {
-                sid,
-                authToken,
-                number
-            };
-
-            axios.put(BaseURL + 'smsgateway/setting/', data)
-            .then(() => {
-                this.setState({ successMessage: 'Settings updated successfully', errors: {} });
+    handleSubmit = (event) => {
+        event.preventDefault();
+        
+        const { id, sid, auth_token } = this.state;
+    
+        axios.put(`${BaseURL}smsgateway/setting/${id}/`, { sid, auth_token })
+            .then(response => {
+                console.log(response);
+                toast.success('Settings updated successfully!');
             })
             .catch(error => {
                 console.error('Error updating settings:', error);
-                toast.error('Failed to update settings');
+                toast.error('Failed to update settings.');
             });
-        } else {
-            this.setState({ errors });
-            console.log('Validation errors:', errors);
-        }
-    };
+    }    
 
     render() {
-        const { sid, authToken, number } = this.state;
+        const { sid, auth_token } = this.state;
 
         return (
-            <>
-                <CRow>
-                    <CCol xs={12}>
-                        <CCard className="mb-4">
-                            <CCardHeader>
-                                <strong>Settings</strong>
-                            </CCardHeader>
-                            <CCardBody>
-                                <CForm>
-                                    <CRow className="mb-3">
-                                        <CFormLabel htmlFor="host" className="col-sm-2 col-form-label">SID</CFormLabel>
-                                        <CCol sm={10}>
-                                            <CFormInput type="text" id="sid" name="sid" value={sid} onChange={this.handleChange} />
-                                        </CCol>
-                                    </CRow>
-                                    <CRow className="mb-3">
-                                        <CFormLabel htmlFor="port" className="col-sm-2 col-form-label">Auth-Token</CFormLabel>
-                                        <CCol sm={10}>
-                                        <CFormInput type="password" id="authtoken" name="authToken" value={authToken} onChange={this.handleChange} />
-                                        </CCol>
-                                    </CRow>
-                                    <CRow className="mb-3">
-                                        <CFormLabel htmlFor="username" className="col-sm-2 col-form-label">Number</CFormLabel>
-                                        <CCol sm={10}>
-                                            <CFormInput type="text" id="username" name="username" value={number} onChange={this.handleChange} />
-                                        </CCol>
-                                    </CRow>
-                                    <CRow className="justify-content-center">
-                                        <CCol md="auto">
-                                            <CButton color="primary" type="submit">Update</CButton>
-                                        </CCol>
-                                    </CRow>
-                                </CForm>
-                            </CCardBody>
-                        </CCard>
-                    </CCol>
-                </CRow>
-            </>
+            <CRow>
+                <CCol xs={12}>
+                    <CCard className="mb-4">
+                        <CCardHeader>
+                            <strong>Settings</strong>
+                        </CCardHeader>
+                        <CCardBody>
+                            <CForm onSubmit={this.handleSubmit}>
+                                <CRow className="mb-3">
+                                    <CFormLabel htmlFor="sid" className="col-sm-2 col-form-label">SID</CFormLabel>
+                                    <CCol sm={10}>
+                                        <CFormInput type="text" id="sid" name="sid" value={sid} onChange={(e) => this.setState({ sid: e.target.value })} />
+                                    </CCol>
+                                </CRow>
+                                <CRow className="mb-3">
+                                    <CFormLabel htmlFor="authToken" className="col-sm-2 col-form-label">Auth-Token</CFormLabel>
+                                    <CCol sm={10}>
+                                        <CFormInput type="text" id="authToken" name="authToken" value={auth_token} onChange={(e) => this.setState({ authToken: e.target.value })} />
+                                    </CCol>
+                                </CRow>
+                                <CRow className="justify-content-center">
+                                    <CCol md="auto">
+                                        <CButton color="primary" type="submit">Update</CButton>
+                                    </CCol>
+                                </CRow>
+                            </CForm>
+                        </CCardBody>
+                    </CCard>
+                </CCol>
+            </CRow>
         );
     }
 }
