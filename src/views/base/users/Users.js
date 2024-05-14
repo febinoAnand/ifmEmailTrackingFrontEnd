@@ -37,7 +37,7 @@ const Users = () => {
   }, []);
 
   const fetchUsers = () => {
-    axios.get(BaseURL + 'EmailTracking/useremailtracking')
+    axios.get(BaseURL + 'Userauth/unauthuser/')
       .then(response => {
         console.log(response.data);
         setUsers(response.data);
@@ -123,12 +123,12 @@ const Users = () => {
                   <CTableRow key={index}>
                     <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                     <CTableDataCell>{user.user}</CTableDataCell>
-                    <CTableDataCell>{user.mobile}</CTableDataCell>
-                    <CTableDataCell>{user.email}</CTableDataCell>
+                    <CTableDataCell>{user.mobile_no}</CTableDataCell>
+                    <CTableDataCell>{user.emailaddress}</CTableDataCell>
                     <CTableDataCell>{user.designation}</CTableDataCell>
                     <CTableDataCell><CFormCheck /></CTableDataCell>
                     <CTableDataCell>
-                    <CButton><CNavLink to={"/users/usersubpage"} component={NavLink}><CIcon icon={cilMediaSkipForward} /></CNavLink></CButton>
+                    <CButton><CNavLink to={"Userauth/UserSubpage/"} component={NavLink}><CIcon icon={cilMediaSkipForward} /></CNavLink></CButton>
                     </CTableDataCell>
                   </CTableRow>
                 ))}

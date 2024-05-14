@@ -37,6 +37,7 @@ class Trigger extends React.Component {
     trigger_switch: false,
     send_sms: false,
     send_notification: false,
+    parameter_filter_list:[]
   };
 
   componentDidMount() {
@@ -125,35 +126,43 @@ class Trigger extends React.Component {
   };
 
   handleAddTriggerButtonClick = () => {
-    const { trigger_name, notification_message, group_to_send, trigger_field, send_sms, trigger_switch, send_notification } = this.state;
+    const {
+      trigger_name,
+      trigger_field,
+      group_to_send,
+      notification_message,
+      trigger_switch,
+      send_sms,
+      send_notification,
+      operator,
+    } = this.state;
   
     const newTriggerData = {
-      trigger_name: trigger_name,
-      trigger_field: trigger_field,
-      group_to_send: group_to_send,
-      notification_message: notification_message,
-      trigger_switch: trigger_switch,
-      send_sms: send_sms,
-      send_notification: send_notification,
+      trigger_name,
+      trigger_field,
+      group_to_send,
+      notification_message,
+      trigger_switch,
+      send_sms,
+      send_notification,
+      operator,
     };
-    
-    console.log("Selected data", newTriggerData)
-
-    axios.post(BaseURL +"emailtracking/trigger/", newTriggerData)
+    console.log(newTriggerData)
+  
+    axios
+      .post(BaseURL + "emailtracking/trigger/", newTriggerData)
       .then(response => {
-        console.log(newTriggerData)
         console.log('Data added successfully:', response.data);
       })
       .catch(error => {
         console.error('Error adding data:', error);
       });
-  };
+  };  
 
   handleUpdateButtonClick = (e) => {
     e.preventDefault();
     
-    const { id, trigger_name, notification_message, group_to_send, trigger_field, send_sms, trigger_switch, send_notification } = this.state;
-    const { operator, value } = this.state;
+    const { id, trigger_name, notification_message, group_to_send, trigger_field, send_sms, trigger_switch, send_notification, operator, value } = this.state;
 
     const updatedData = {
       trigger_name: trigger_name,
@@ -166,7 +175,9 @@ class Trigger extends React.Component {
       operator: operator,
       value: value,
     };
-  
+
+    console.log(updatedData)
+
     axios.put(`${BaseURL}emailtracking/trigger/${id}/`, updatedData)
       .then(response => {
         console.log('Data updated successfully:', response.data);
@@ -174,6 +185,7 @@ class Trigger extends React.Component {
       })
       .catch(error => {
         console.error('Error updating data:', error);
+        console.log('Response:', error.response);
       });
   };
 
