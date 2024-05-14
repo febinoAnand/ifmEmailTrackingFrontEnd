@@ -125,10 +125,9 @@ class Trigger extends React.Component {
   };
 
   handleAddTriggerButtonClick = () => {
-    const { id , trigger_name, notification_message, group_to_send, trigger_field, send_sms, trigger_switch, send_notification } = this.state;
+    const { trigger_name, notification_message, group_to_send, trigger_field, send_sms, trigger_switch, send_notification } = this.state;
   
     const newTriggerData = {
-      id : id,
       trigger_name: trigger_name,
       trigger_field: trigger_field,
       group_to_send: group_to_send,
@@ -137,7 +136,9 @@ class Trigger extends React.Component {
       send_sms: send_sms,
       send_notification: send_notification,
     };
-  
+    
+    console.log("Selected data", newTriggerData)
+
     axios.post(BaseURL +"emailtracking/trigger/", newTriggerData)
       .then(response => {
         console.log(newTriggerData)

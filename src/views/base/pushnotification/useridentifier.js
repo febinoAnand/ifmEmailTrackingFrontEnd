@@ -1,17 +1,11 @@
 import React from 'react'
 import axios from 'axios';
-import { cilMediaSkipForward, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
 
 import {
-    CButton,
     CCard,
     CCardBody,
     CCardHeader,
     CCol,
-    CForm,
-    CFormLabel,
-    CFormInput,
-    CFormSelect,
     CRow,
     CTable,
     CTableBody,
@@ -20,16 +14,32 @@ import {
     CTableHeaderCell,
     CTableRow,
   } from '@coreui/react'
-  import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
 
 
 class UserIdentifier extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      users: [],
+    };
+  }
 
+  componentDidMount() {
+    axios.get(BaseURL +"pushnotification/notificationauth/")
+      .then(response => {
+        this.setState({ users: response.data });
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }
 
 
   
  render(){ 
+  const { users } = this.state;
+
   return (
     <>
      <CRow>
@@ -54,12 +64,14 @@ class UserIdentifier extends React.Component{
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                      <CTableRow >
-                        <CTableHeaderCell></CTableHeaderCell>
-                        <CTableDataCell></CTableDataCell>
-                        <CTableDataCell></CTableDataCell>
-                        </CTableRow>
-                  </CTableBody>
+                    {users.map((user, index) => (
+                      <CTableRow key={index}>
+                        <CTableHeaderCell>{index + 1}</CTableHeaderCell>
+                        <CTableDataCell>{user.user_to_auth}</CTableDataCell>
+                        <CTableDataCell>{user.noti_token}</CTableDataCell>
+                      </CTableRow>
+                    ))}
+                </CTableBody>
               </CTable>
             
           </CCardBody>

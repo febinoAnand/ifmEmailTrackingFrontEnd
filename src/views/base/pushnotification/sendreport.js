@@ -1,6 +1,6 @@
 import React from 'react'
 import axios from 'axios';
-import { cilMediaSkipForward, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
+import { cilTrash } from '@coreui/icons';
 
 import {
     CButton,
@@ -8,10 +8,6 @@ import {
     CCardBody,
     CCardHeader,
     CCol,
-    CForm,
-    CFormLabel,
-    CFormInput,
-    CFormSelect,
     CRow,
     CTable,
     CTableBody,
@@ -44,12 +40,41 @@ import BaseURL from 'src/assets/contants/BaseURL';
 //     <input type="color" value={color} onChange={e => setColor(e.target.value)} />
 //   );
 // }
-class Inbox extends React.Component{
+class SendReport extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      rowData: [],
+    };
+  }
 
+  componentDidMount() {
+    this.fetchData();
+  }
 
+  fetchData = () => {
+    axios.get(BaseURL + "pushnotification/sendreport/")
+      .then(response => {
+        this.setState({ rowData: response.data });
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }
+
+  handleDelete = (id) => {
+    axios.delete(`${BaseURL}pushnotification/sendreport/${id}/`)
+      .then(() => {
+        this.fetchData();
+      })
+      .catch(error => {
+        console.error('Error deleting data:', error);
+      });
+  }
 
   
  render(){ 
+  const { rowData } = this.state;
   return (
     <>
      <CRow>
@@ -79,19 +104,21 @@ class Inbox extends React.Component{
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                      <CTableRow >
-                        <CTableHeaderCell></CTableHeaderCell>
-                        <CTableDataCell></CTableDataCell>
-                        <CTableDataCell></CTableDataCell>
-                        <CTableDataCell></CTableDataCell>
-                        <CTableDataCell></CTableDataCell>
-                        <CTableDataCell></CTableDataCell>
-                        <CTableDataCell></CTableDataCell>
-                        <CTableDataCell></CTableDataCell>
+                    {rowData.map((row, index) => (
+                      <CTableRow key={index}>
+                        <CTableHeaderCell>{index + 1}</CTableHeaderCell>
+                        <CTableDataCell>{row.date}</CTableDataCell>
+                        <CTableDataCell>{row.time}</CTableDataCell>
+                        <CTableDataCell>{row.title}</CTableDataCell>
+                        <CTableDataCell>{row.message}</CTableDataCell>
+                        <CTableDataCell>{row.send_to_user}</CTableDataCell>
+                        <CTableDataCell>{row.users_group}</CTableDataCell>
+                        <CTableDataCell>{row.delivery_status}</CTableDataCell>
                         <CTableDataCell>
-                          <CButton><CIcon icon={cilMediaSkipForward} /></CButton>
+                          <CButton onClick={() => this.handleDelete(row.id)}><CIcon icon={cilTrash} /></CButton>
                         </CTableDataCell>
                       </CTableRow>
+                    ))}
                   </CTableBody>
               </CTable>
             
@@ -106,4 +133,4 @@ class Inbox extends React.Component{
             }
 }
 
-export default Inbox
+export default SendReport
