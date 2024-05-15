@@ -1,15 +1,11 @@
 import React from 'react';
 import axios from 'axios';
 import {
-    CButton,
     CCard,
     CCardBody,
     CCardHeader,
     CCol,
-    CForm,
-    CFormLabel,
-    CFormInput,
-    CFormSelect,
+    CFormCheck,
     CRow,
     CTable,
     CTableBody,
@@ -68,10 +64,12 @@ class SendReport extends React.Component {
                                                 <CTableDataCell>{index + 1}</CTableDataCell>
                                                 <CTableDataCell>{report.date}</CTableDataCell>
                                                 <CTableDataCell>{report.time}</CTableDataCell>
-                                                <CTableDataCell>{report.toNumber}</CTableDataCell>
-                                                <CTableDataCell>{report.fromNumber}</CTableDataCell>
+                                                <CTableDataCell>{report.to_number}</CTableDataCell>
+                                                <CTableDataCell>{report.from_number}</CTableDataCell>
                                                 <CTableDataCell>{report.message}</CTableDataCell>
-                                                <CTableDataCell>{report.deliveryStatus}</CTableDataCell>
+                                                <CTableDataCell>
+                                                    <CFormCheck checked={report.delivery_status} readOnly/>
+                                                </CTableDataCell>
                                             </CTableRow>
                                         ))}
                                     </CTableBody>

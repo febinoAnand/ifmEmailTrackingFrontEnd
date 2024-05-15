@@ -31,9 +31,8 @@ const Users = () => {
   
   useEffect(() => {
     fetchUsers();
-    const interval = setInterval(fetchUsers, 3000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval();
   }, []);
 
   const fetchUsers = () => {
@@ -56,6 +55,9 @@ const Users = () => {
 
   const handleInputChange = (event) => {
     setSearchQuery(event.target.value);
+  };
+
+  const handleStatusChange = (mobile_no) => {
   };
   
   const usersToDisplay = filteredusers.length > 0 ? filteredusers : users;
@@ -108,7 +110,7 @@ const Users = () => {
                 <CTableHead>
                   <CTableRow>
                     <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Device ID</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Mobile</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Email</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Designation</CTableHeaderCell>
@@ -122,13 +124,15 @@ const Users = () => {
                 {usersToDisplay.map((user, index) => (
                   <CTableRow key={index}>
                     <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                    <CTableDataCell>{user.user}</CTableDataCell>
+                    <CTableDataCell>{user.device_id}</CTableDataCell>
                     <CTableDataCell>{user.mobile_no}</CTableDataCell>
                     <CTableDataCell>{user.emailaddress}</CTableDataCell>
                     <CTableDataCell>{user.designation}</CTableDataCell>
-                    <CTableDataCell><CFormCheck /></CTableDataCell>
                     <CTableDataCell>
-                    <CButton><CNavLink to={"Userauth/UserSubpage/"} component={NavLink}><CIcon icon={cilMediaSkipForward} /></CNavLink></CButton>
+                        <CFormCheck checked={user.is_existing_user} onChange={() => handleStatusChange(user.id)} />
+                    </CTableDataCell>
+                    <CTableDataCell>
+                    <CButton><CNavLink to={"users/UserSubpage"} component={NavLink}><CIcon icon={cilMediaSkipForward} /></CNavLink></CButton>
                     </CTableDataCell>
                   </CTableRow>
                 ))}
