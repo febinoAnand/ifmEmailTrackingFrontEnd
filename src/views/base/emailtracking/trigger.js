@@ -33,11 +33,11 @@ class Trigger extends React.Component {
     trigger_name: '',
     trigger_field: '',
     group_to_send: '',
-    notification_message: [],
+    notification_message: '',
     trigger_switch: false,
     send_sms: false,
     send_notification: false,
-    parameter_filter_list:[]
+    parameter_filter_list: []
   };
 
   componentDidMount() {
@@ -96,7 +96,8 @@ class Trigger extends React.Component {
   };  
 
   getRowData = (row) => {
-    const { id ,trigger_name, trigger_field, group_to_send, notification_message, trigger_switch, send_sms, send_notification } = row;
+    const { id ,trigger_name, trigger_field, group_to_send, notification_message, trigger_switch, send_sms, send_notification, operator, value } = row;
+    console.log(row)
     this.setState({
       id: id,
       trigger_name: trigger_name,
@@ -106,11 +107,13 @@ class Trigger extends React.Component {
       trigger_switch: trigger_switch,
       send_sms: send_sms,
       send_notification: send_notification,
+      operator: operator,
+      value: value,
     });
   };
 
   getRowDatas = (row) => {
-    const { operator , value } = row;
+    const { operator, value } = row;
     this.setState({
       operator: operator,
       value: value,
@@ -121,7 +124,7 @@ class Trigger extends React.Component {
     const selectedOptions = Array.from(event.target.selectedOptions).map(option => option.value);
 
     this.setState({
-      notification_message: selectedOptions
+      notification_message: selectedOptions.join(', ')
     });
   };
 
@@ -136,7 +139,22 @@ class Trigger extends React.Component {
       send_notification,
       operator,
     } = this.state;
-  
+    if (!trigger_name) {
+      alert('Trigger name must be provided.');
+      return;
+    }
+    if (!trigger_field) {
+      alert('Field must be selected.');
+      return;
+    }
+    if (!group_to_send) {
+      alert('User group must be selected.');
+      return;
+    }
+    if (!notification_message) {
+      alert('Notification message must be provided.');
+      return;
+    }
     const newTriggerData = {
       trigger_name,
       trigger_field,
@@ -147,7 +165,8 @@ class Trigger extends React.Component {
       send_notification,
       operator,
     };
-    console.log(newTriggerData)
+  
+    console.log(newTriggerData);
   
     axios
       .post(BaseURL + "emailtracking/trigger/", newTriggerData)
@@ -224,13 +243,13 @@ class Trigger extends React.Component {
                 </CRow>
                   <CRow className="mb-3">
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="user_group" className="col-form-label">Field</CFormLabel>
+                      <CFormLabel htmlFor="trigger_field" className="col-form-label">Field</CFormLabel>
                     </CCol>
                       <CCol md={6}>
-                      <CFormSelect id="trigger_field" name="trigger_field" value={trigger_field} onChange={this.handleInputChange} readOnly>
+                      <CFormSelect id="trigger_field" name="trigger_field" value={trigger_field} onChange={this.handleInputChange}>
                         <option value="">Select Field</option>
                         {trigger.map((field, index) => (
-                          <option key={index}>
+                          <option key={index} value={field.trigger_field}>
                             {field.trigger_field}
                           </option>
                         ))}
@@ -239,13 +258,13 @@ class Trigger extends React.Component {
                   </CRow>
                   <CRow className="mb-3">
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="user_group" className="col-form-label">User Group</CFormLabel>
+                      <CFormLabel htmlFor="group_to_send" className="col-form-label">User Group</CFormLabel>
                     </CCol>
                       <CCol md={6}>
-                      <CFormSelect id="group_to_send" name="group_to_send" value={group_to_send} onChange={this.handleInputChange} readOnly>
+                      <CFormSelect id="group_to_send" name="group_to_send" value={group_to_send} onChange={this.handleInputChange}>
                         <option value="">Select User Group</option>
                         {trigger.map((group, index) => (
-                          <option key={index}>
+                          <option key={index} value={group.group_to_send}>
                             {group.group_to_send}
                           </option>
                         ))}
@@ -254,13 +273,13 @@ class Trigger extends React.Component {
                   </CRow>
                   <CRow className="mb-3">
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="user_group" className="col-form-label">Notification Message</CFormLabel>
+                      <CFormLabel htmlFor="notification_message" className="col-form-label">Notification Message</CFormLabel>
                     </CCol>
                       <CCol md={6}>
-                      <CFormSelect id="notification_message" name="notification_message" multiple value={notification_message} onChange={this.getMultipleSelect} readOnly>
-                        {trigger.map((message, index) => (
-                          <option key={index}>
-                            {message.notification_message}
+                      <CFormSelect id="notification_message" name="notification_message" multiple value={notification_message.split(',')} onChange={this.getMultipleSelect}>
+                        {trigger.flatMap(triggerItem => triggerItem.notification_message.split(',')).map((message, index) => (
+                          <option key={index} value={message} selected={notification_message.includes(message)}>
+                            {message}
                           </option>
                         ))}
                       </CFormSelect>
@@ -268,7 +287,7 @@ class Trigger extends React.Component {
                   </CRow>
                   <CRow className="mb-3">
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="user_group" className="col-form-label">Status</CFormLabel>
+                      <CFormLabel htmlFor="trigger_switch" className="col-form-label">Status</CFormLabel>
                     </CCol>
                       <CCol md={6}>
                       <CFormCheck
@@ -282,7 +301,7 @@ class Trigger extends React.Component {
                   </CRow>
                   <CRow className="mb-3">
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="user_group" className="col-form-label">SMS</CFormLabel>
+                      <CFormLabel htmlFor="send_sms" className="col-form-label">SMS</CFormLabel>
                     </CCol>
                       <CCol md={6}>
                       <CFormCheck
@@ -411,7 +430,7 @@ class Trigger extends React.Component {
                         <CTableDataCell>{row.trigger_field}</CTableDataCell>
                         <CTableDataCell>{row.group_to_send}</CTableDataCell>
                         <CTableDataCell>{row.notification_message}</CTableDataCell>
-                        <CTableDataCell>{row.trigger_switch}</CTableDataCell>
+                        <CTableDataCell>{row.trigger_switch ? 'Active' : 'Inactive'}</CTableDataCell>
                         <CTableDataCell>
                           <CButton onClick={(e) => { e.stopPropagation(); this.handleDelete(row.id)}}>
                             <CIcon icon={cilTrash} />
