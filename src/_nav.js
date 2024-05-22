@@ -34,6 +34,7 @@ import {
   cilRunning,
   cilSignLanguage,
   cilShortText,
+  cilColumns,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -145,6 +146,12 @@ const _nav = [
       name: 'Trigger',
       to: '/emailtracking/trigger',
       icon: <CIcon icon={cilSignLanguage} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavItem,
+      name: 'Ticket',
+      to: '/emailtracking/ticket',
+      icon: <CIcon icon={cilColumns} customClassName="nav-icon" />,
     },
     {
       component: CNavItem,

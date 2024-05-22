@@ -22,6 +22,7 @@ const EmailSubpage = React.lazy(() => import('./views/base/emailtracking/EmailSu
 const Parameter = React.lazy(() => import('./views/base/emailtracking/parameter'))
 const Trigger = React.lazy(() => import('./views/base/emailtracking/trigger'))
 const TicketReport = React.lazy(() => import('./views/base/emailtracking/ticketreport'))
+const Ticket = React.lazy(() => import('./views/base/emailtracking/ticket'))
 
 //PushNotification
 const SendReport = React.lazy(() => import('./views/base/pushnotification/sendreport'))
@@ -121,6 +122,7 @@ const routes = [
   { path: '/emailtracking/parameter', name: 'EmailSubpage', element: Parameter}, //EmailTracking
   { path: '/emailtracking/trigger', name: 'Trigger', element: Trigger}, //EmailTracking
   { path: '/emailtracking/ticketreport', name: 'TicketReport', element: TicketReport}, //EmailTracking
+  { path: '/emailtracking/ticket', name: 'TicketReport', element: Ticket}, //EmailTracking
 
   { path: '/pushnotification/sendreport', name: 'SendReport', element: SendReport}, //PushNotification
   { path: '/pushnotification/useridentifier', name: 'UserIdentifier', element: UserIdentifier}, //PushNotification
