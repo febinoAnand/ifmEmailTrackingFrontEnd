@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import React from 'react'
 import BaseURL from 'src/assets/contants/BaseURL';
 import { cilTrash, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
+=======
+import React, { useState, useEffect }  from 'react'
+import BaseURL from 'src/assets/contants/BaseURL';
+import { cilFilter, cilMagnifyingGlass } from '@coreui/icons';
+>>>>>>> current_merge_branch
 
 import {
     CButton,
@@ -8,11 +14,16 @@ import {
     CCardBody,
     CCardHeader,
     CCol,
+<<<<<<< HEAD
     CForm,
     // CFormCheck,
     CFormInput,
     CFormLabel,
     CFormSelect,
+=======
+    // CFormCheck,
+    CFormInput,
+>>>>>>> current_merge_branch
     CRow,
     CInputGroup,
     CInputGroupText,
@@ -27,10 +38,45 @@ import CIcon from '@coreui/icons-react';
 import axios from 'axios';
 
 
+<<<<<<< HEAD
 
 class Groups extends React.Component{
 
   render(){
+=======
+const Groups = () => {
+  const [groups, setGroups] = useState([]);
+  const [filteredgroups, setFilteredgroups] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  const fetchGroups = () => {
+    axios.get(BaseURL + 'Userauth/setting/')
+      .then(response => {
+        console.log(response.data);
+        setGroups(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching users:', error);
+      });
+  };
+  const handleSearch = () => {
+    const filteredgroups = groups.filter(group =>
+      group.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      group.message.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredgroups(filteredgroups);
+  };
+
+  const handleInputChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+  const groupsToDisplay = filteredgroups.length > 0 ? filteredgroups : groups || [];
+
+>>>>>>> current_merge_branch
     return (
       <>
       <CRow>
@@ -40,6 +86,7 @@ class Groups extends React.Component{
               <strong>USER LIST</strong>
             </CCardHeader>
             <CCardBody>
+<<<<<<< HEAD
             <CRow className="mb-3">
                 <CFormLabel htmlFor="GroupName" className="col-sm-2 col-form-label">Group Name</CFormLabel>
                 <CCol sm={10}>
@@ -69,15 +116,27 @@ class Groups extends React.Component{
             </CRow>
             </CCardBody>
             <CCardBody>
+=======
+>>>>>>> current_merge_branch
             <CCol md={12}>
             <CInputGroup className="flex-nowrap mt-3 col-sg-3">
                 <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass}/></CInputGroupText>
                 <CFormInput
+<<<<<<< HEAD
                   placeholder="Username"
                   aria-label="Username"
                   aria-describedby="addon-wrapping"
                 />
                 <CButton type="button" color="secondary"  id="button-addon2">
+=======
+                  placeholder="Search by Subject or Message"
+                  aria-label="Search"
+                  aria-describedby="addon-wrapping"
+                  value={searchQuery}
+                  onChange={handleInputChange}
+                />
+                <CButton type="button" color="secondary" onClick={handleSearch} id="button-addon2">
+>>>>>>> current_merge_branch
                   Search
                 </CButton>
                 <CButton color="primary">
@@ -91,6 +150,7 @@ class Groups extends React.Component{
                   <CTableHead>
                     <CTableRow>
                       <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
+<<<<<<< HEAD
                       <CTableHeaderCell scope="col">Name</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Users</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Count</CTableHeaderCell>
@@ -107,6 +167,26 @@ class Groups extends React.Component{
                           <CButton><CIcon icon={cilTrash} /></CButton>
                         </CTableDataCell>
                       </CTableRow>
+=======
+                      <CTableHeaderCell scope="col">Expiry Time</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Resend Interval</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Valid Time</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Call Count</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Wrong Count</CTableHeaderCell>
+                    </CTableRow>
+                  </CTableHead>
+                  <CTableBody>
+                  {groupsToDisplay.map((group, index) => (
+                      <CTableRow key={index}>
+                        <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                        <CTableDataCell>{group.all_user_expiry_time}</CTableDataCell>
+                        <CTableDataCell>{group.OTP_resend_interval}</CTableDataCell>
+                        <CTableDataCell>{group.OTP_valid_time}</CTableDataCell>
+                        <CTableDataCell>{group.OTP_call_count}</CTableDataCell>
+                        <CTableDataCell>{group.OTP_wrong_count}</CTableDataCell>
+                      </CTableRow>
+                  ))}
+>>>>>>> current_merge_branch
                   </CTableBody>
                 </CTable>
                 <CRow className="justify-content-center">
@@ -121,7 +201,10 @@ class Groups extends React.Component{
 
       </>
     )
+<<<<<<< HEAD
   }
+=======
+>>>>>>> current_merge_branch
 }
 
 export default Groups

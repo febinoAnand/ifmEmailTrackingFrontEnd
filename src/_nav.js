@@ -24,6 +24,20 @@ import {
   cilArrowCircleBottom,
   cilSettings,
   cilSearch,
+<<<<<<< HEAD
+=======
+  cilSwapHorizontal,
+  cilVoiceOverRecord,
+  cilShieldAlt,
+  cilPrint,
+  cilLan,
+  cilBoltCircle,
+  cilBellExclamation,
+  cilRunning,
+  cilSignLanguage,
+  cilShortText,
+  cilColumns,
+>>>>>>> current_merge_branch
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -126,18 +140,106 @@ const _nav = [
     },
     {
       component: CNavItem,
+<<<<<<< HEAD
       name: 'search parameter',
       to: '/emailtracking/search',
+=======
+      name: 'Parameter',
+      to: '/emailtracking/parameter',
+>>>>>>> current_merge_branch
       icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
     },
     {
       component: CNavItem,
+<<<<<<< HEAD
+=======
+      name: 'Trigger',
+      to: '/emailtracking/trigger',
+      icon: <CIcon icon={cilSignLanguage} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavItem,
+      name: 'Ticket',
+      to: '/emailtracking/ticket',
+      icon: <CIcon icon={cilColumns} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavItem,
+      name: 'Ticket Report',
+      to: '/emailtracking/ticketreport',
+      icon: <CIcon icon={cilShortText} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavItem,
+>>>>>>> current_merge_branch
       name: 'Setting',
       to: '/emailtracking/setting',
       icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
     },
 
     ]
+<<<<<<< HEAD
+=======
+
+  },
+  {
+    component: CNavGroup,
+    name: 'Actions',
+    
+    icon: <CIcon icon={cilRunning} customClassName="nav-icon" />,
+    items:[
+      {
+        component: CNavGroup,
+        name: 'Notifications',
+        
+        icon: <CIcon icon={cilBellExclamation} customClassName="nav-icon" />,
+        items:[
+        {
+          component: CNavItem,
+          name: 'Send Report',
+          to: '/pushnotification/sendreport',
+          icon: <CIcon icon={cilSwapHorizontal} customClassName="nav-icon" />,
+        },
+        {
+          component: CNavItem,
+          name: 'User Identifier',
+          to: '/pushnotification/useridentifier',
+          icon: <CIcon icon={cilVoiceOverRecord} customClassName="nav-icon" />,
+        },
+        {
+          component: CNavItem,
+          name: 'Setting',
+          to: '/pushnotification/setting',
+          icon: <CIcon icon={cilShieldAlt} customClassName="nav-icon" />,
+        },
+    
+        ]
+        
+      },
+      {
+        component: CNavGroup,
+        name: 'SMS Gateway',
+        
+        icon: <CIcon icon={cilBoltCircle} customClassName="nav-icon" />,
+        items:[
+          {
+            component: CNavItem,
+            name: 'SMS Report',
+            to: '/smsgateway/sendreport',
+            icon: <CIcon icon={cilPrint} customClassName="nav-icon" />,
+          },
+          {
+            component: CNavItem,
+            name: 'Settings',
+            to: '/smsgateway/settings',
+            icon: <CIcon icon={cilLan} customClassName="nav-icon" />,
+          },
+        ]
+        
+      },
+
+    ]
+>>>>>>> current_merge_branch
     
   },
   {

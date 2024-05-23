@@ -19,6 +19,22 @@ const EmailTable = React.lazy(() => import('./views/base/emailtracking/EmailTabl
 const SettingData = React.lazy(() => import('./views/base/emailtracking/SettingData'))
 const SearchParameter = React.lazy(() => import('./views/base/emailtracking/SearchParameter'))
 const EmailSubpage = React.lazy(() => import('./views/base/emailtracking/EmailSubpage'))
+<<<<<<< HEAD
+=======
+const Parameter = React.lazy(() => import('./views/base/emailtracking/parameter'))
+const Trigger = React.lazy(() => import('./views/base/emailtracking/trigger'))
+const TicketReport = React.lazy(() => import('./views/base/emailtracking/ticketreport'))
+const Ticket = React.lazy(() => import('./views/base/emailtracking/ticket'))
+
+//PushNotification
+const SendReport = React.lazy(() => import('./views/base/pushnotification/sendreport'))
+const UserIdentifier = React.lazy(() => import('./views/base/pushnotification/useridentifier'))
+const Setting = React.lazy(() => import('./views/base/pushnotification/setting'))
+
+//SMSGateway
+const SendReports = React.lazy(() => import('./views/base/smsgateway/sendreport'))
+const Settings = React.lazy(() => import('./views/base/smsgateway/settings'))
+>>>>>>> current_merge_branch
 
 //datas
 const HMIRaw = React.lazy(() => import('./views/base/data/HMIRaw_function'))
@@ -106,6 +122,20 @@ const routes = [
   { path: '/emailtracking/setting', name: 'SettingData', element: SettingData}, //EmailTracking
   { path: '/emailtracking/search', name: 'SearchParameter', element: SearchParameter}, //EmailTracking
   { path: '/emailtracking/emailsubpage', name: 'EmailSubpage', element: EmailSubpage}, //EmailTracking
+<<<<<<< HEAD
+=======
+  { path: '/emailtracking/parameter', name: 'EmailSubpage', element: Parameter}, //EmailTracking
+  { path: '/emailtracking/trigger', name: 'Trigger', element: Trigger}, //EmailTracking
+  { path: '/emailtracking/ticketreport', name: 'TicketReport', element: TicketReport}, //EmailTracking
+  { path: '/emailtracking/ticket', name: 'TicketReport', element: Ticket}, //EmailTracking
+
+  { path: '/pushnotification/sendreport', name: 'SendReport', element: SendReport}, //PushNotification
+  { path: '/pushnotification/useridentifier', name: 'UserIdentifier', element: UserIdentifier}, //PushNotification
+  { path: '/pushnotification/setting', name: 'Setting', element: Setting}, //PushNotification
+
+  { path: '/smsgateway/sendreport', name: 'SendReport', element: SendReports}, //SMSGateway
+  { path: '/smsgateway/settings', name: 'Settings', element: Settings}, //SMSGateway
+>>>>>>> current_merge_branch
 
   { path: '/data/activeproblem', name: 'ActiveProblem', element: ActiveProblem}, //data
   { path: '/data/problemdata', name: 'ProblemData', element: ProblemData}, //data

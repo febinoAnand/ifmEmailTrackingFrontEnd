@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+<<<<<<< HEAD
 import { cilTrash, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
+=======
+import { cilFilter, cilMagnifyingGlass, cilMediaSkipForward } from '@coreui/icons';
+>>>>>>> current_merge_branch
 import {
   CButton,
   CCard,
@@ -23,6 +27,7 @@ import { NavLink } from 'react-router-dom'
 
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
+<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom';
 
 const EmailTable = () => {
@@ -86,6 +91,27 @@ const EmailTable = () => {
           {successMessage}
         </div>
       )}
+=======
+
+const EmailTable = () => {
+  const [emails, setEmails] = useState([]);
+
+  useEffect(() => {
+    fetchEmails();
+  }, []);
+
+  const fetchEmails = async () => {
+    try {
+      const response = await axios.get(BaseURL+ "emailtracking/inbox/");
+      setEmails(response.data);
+    } catch (error) {
+      console.error('Error fetching emails:', error);
+    }
+  };
+
+  return (
+    <>
+>>>>>>> current_merge_branch
       <CRow>
         <CCol xs={12}>
           <CCard className="mb-4">
@@ -99,10 +125,15 @@ const EmailTable = () => {
                   placeholder="Search by Subject or Message"
                   aria-label="Search"
                   aria-describedby="addon-wrapping"
+<<<<<<< HEAD
                   value={searchQuery}
                   onChange={handleInputChange}
                 />
                 <CButton type="button" color="secondary" onClick={handleSearch} id="button-addon2">
+=======
+                />
+                <CButton type="button" color="secondary" id="button-addon2">
+>>>>>>> current_merge_branch
                   Search
                 </CButton>
                 <CButton color="primary">
@@ -121,21 +152,35 @@ const EmailTable = () => {
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
+<<<<<<< HEAD
                   {emailsToDisplay.map((email, index) => (
                     <CTableRow key={index}>
                     {/* <CTableRow key={index} onClick={() => handleRowClick(email.id)}> */}
                       <CNavLink to={"/emailtracking/emailsubpage/?emailid=" + email.id} component={NavLink}>
                       
                     
+=======
+                  {emails.map((email, index) => (
+                    <CTableRow key={index}>
+>>>>>>> current_merge_branch
                       <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                       <CTableDataCell>{email.date}</CTableDataCell>
                       <CTableDataCell>{email.time}</CTableDataCell>
                       <CTableDataCell>{email.subject}</CTableDataCell>
                       <CTableDataCell>{email.message}</CTableDataCell>
                       <CTableDataCell>
+<<<<<<< HEAD
                         <CButton onClick={() => handleDelete(email.id)}><CIcon icon={cilTrash} /></CButton>
                       </CTableDataCell>
                       </CNavLink>
+=======
+                        <CButton>
+                          <CNavLink to={`/emailtracking/emailsubpage/${email.id}`} component={NavLink}>
+                            <CIcon icon={cilMediaSkipForward} />
+                          </CNavLink>
+                        </CButton>
+                      </CTableDataCell>
+>>>>>>> current_merge_branch
                     </CTableRow>
                   ))}
                 </CTableBody>

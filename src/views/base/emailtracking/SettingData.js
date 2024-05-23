@@ -19,15 +19,22 @@ class SettingData extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+<<<<<<< HEAD
+=======
+            id: '',
+>>>>>>> current_merge_branch
             host: '',
             port: '',
             username: '',
             password: '',
             checkInterval: '',
             checkStatus: false,
+<<<<<<< HEAD
             sid: '',
             authToken: '',
             phone: '',
+=======
+>>>>>>> current_merge_branch
             errors: {},
             successMessage: ''
         };
@@ -38,6 +45,7 @@ class SettingData extends React.Component {
     }
 
     fetchSettings() {
+<<<<<<< HEAD
         axios.get(BaseURL + 'EmailTracking/settings')
             .then(response => {
                 const { host, port, username, password, checkInterval, sid, authToken, phone, checkStatus } = response.data;
@@ -58,6 +66,29 @@ class SettingData extends React.Component {
             })
             .catch(error => {
                 console.error('Error fetching settings:', error);
+=======
+        axios.get(BaseURL + 'emailtracking/setting/')
+            .then(response => {
+                const data = response.data[0];
+                if (data) {
+                    const { id, host, port, username, password, checkInterval, checkStatus } = data;
+                    const validCheckInterval = typeof checkInterval !== 'undefined' ? String(checkInterval) : '';
+
+                    this.setState({ 
+                        id,
+                        host, 
+                        port, 
+                        username, 
+                        password, 
+                        checkInterval: validCheckInterval, 
+                        checkStatus,
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching settings:', error);
+                toast.error('Failed to fetch settings');
+>>>>>>> current_merge_branch
             });
     }
     
@@ -81,14 +112,22 @@ class SettingData extends React.Component {
         const errors = this.validate();
         if (Object.keys(errors).length === 0) {
             console.log('Submitted data:', this.state);
+<<<<<<< HEAD
 
             const { host, port, username, password, checkInterval, checkStatus, sid, authToken, phone } = this.state;
             const data = {
+=======
+    
+            const { id, host, port, username, password, checkInterval, checkStatus } = this.state;
+            const data = {
+                id,
+>>>>>>> current_merge_branch
                 host,
                 port: parseInt(port),
                 username,
                 password,
                 checkInterval: checkInterval !== '' ? parseInt(checkInterval) : null,
+<<<<<<< HEAD
                 checkStatus: checkStatus === 'true',
                 sid,
                 authToken,
@@ -96,6 +135,12 @@ class SettingData extends React.Component {
             };
 
             axios.put(BaseURL + 'EmailTracking/settings', data)
+=======
+                checkStatus,
+            };
+    
+            axios.put(`${BaseURL}emailtracking/setting/${id}/`, data)
+>>>>>>> current_merge_branch
             .then(() => {
                 this.setState({ successMessage: 'Settings updated successfully', errors: {} });
             })
@@ -110,7 +155,11 @@ class SettingData extends React.Component {
     };
 
     validate = () => {
+<<<<<<< HEAD
         const { host, port, username, password, checkInterval, sid, authToken, phone } = this.state;
+=======
+        const { host, port, username, password, checkInterval } = this.state;
+>>>>>>> current_merge_branch
         const errors = {};
 
         if (!host || !host.trim()) {
@@ -139,6 +188,7 @@ class SettingData extends React.Component {
         if (checkInterval !== '' && (isNaN(checkInterval) || checkInterval < 0 || checkInterval > 3600)) {
             errors.checkInterval = 'Check Interval must be a number between 0 to 3600';
         }
+<<<<<<< HEAD
         if (!sid || !sid.trim()) {
             errors.sid = 'SID is required';
         } else if (sid.length > 100) {
@@ -152,12 +202,18 @@ class SettingData extends React.Component {
         if (!phone || !phone.trim()) {
             errors.phone = 'Phone is required';
         }
+=======
+>>>>>>> current_merge_branch
     
         return errors;
     };    
 
     render() {
+<<<<<<< HEAD
         const { host, port, username, password, checkInterval, checkStatus, sid, authToken, phone, errors, successMessage } = this.state;
+=======
+        const { host, port, username, password, checkInterval, checkStatus, errors, successMessage } = this.state;
+>>>>>>> current_merge_branch
 
         return (
             <>
@@ -232,6 +288,7 @@ class SettingData extends React.Component {
                                             {errors.checkInterval && (<div className="text-danger">{errors.checkInterval}</div>)}
                                         </CCol>
                                     </CRow><br />
+<<<<<<< HEAD
                                     <CCardHeader>
                                         <strong>SMS Gateway</strong>
                                     </CCardHeader>
@@ -258,6 +315,8 @@ class SettingData extends React.Component {
                                                 </CCol>
                                             </CRow>
                                     </CCardBody>
+=======
+>>>>>>> current_merge_branch
                                     <CRow className="justify-content-center">
                                         <CCol md="auto">
                                             <CButton color="primary" type="submit">Update</CButton>
