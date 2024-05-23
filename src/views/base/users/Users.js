@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-import React from 'react'
-import { cilTrash, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
-import { useNavigate } from 'react-router-dom';
-=======
 import React, { useState, useEffect }  from 'react'
 import axios from 'axios';
 import { cilMediaSkipForward, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
 import { NavLink } from 'react-router-dom'
->>>>>>> current_merge_branch
 import {
     CButton,
     CCard,
@@ -19,10 +13,7 @@ import {
     CInputGroup,
     CInputGroupText,
     CRow,
-<<<<<<< HEAD
-=======
     CNavLink,
->>>>>>> current_merge_branch
     CTable,
     CTableBody,
     CTableDataCell,
@@ -31,16 +22,6 @@ import {
     CTableRow,
   } from '@coreui/react'
 import CIcon from '@coreui/icons-react';
-<<<<<<< HEAD
-
-const Users = () => {
-  const navigate = useNavigate();
-  
-  const handleRowClick = () => {
-    navigate("/users/usersubpage");
-  };
-  
-=======
 import BaseURL from 'src/assets/contants/BaseURL';
 
 const Users = () => {
@@ -81,7 +62,6 @@ const Users = () => {
   
   const usersToDisplay = filteredusers.length > 0 ? filteredusers : users;
 
->>>>>>> current_merge_branch
   return (
     <>
      <CRow>
@@ -106,13 +86,6 @@ const Users = () => {
             <CInputGroup className="flex-nowrap mt-3 col-sg-3">
                 <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass}/></CInputGroupText>
                 <CFormInput
-<<<<<<< HEAD
-                  placeholder="Username"
-                  aria-label="Username"
-                  aria-describedby="addon-wrapping"
-                />
-                <CButton type="button" color="secondary"  id="button-addon2">
-=======
                   placeholder="Search by Subject or Message"
                   aria-label="Search"
                   aria-describedby="addon-wrapping"
@@ -120,7 +93,6 @@ const Users = () => {
                   onChange={handleInputChange}
                 />
                 <CButton type="button" color="secondary" onClick={handleSearch} id="button-addon2">
->>>>>>> current_merge_branch
                   Search
                 </CButton>
                 <CButton color="primary">
@@ -138,11 +110,7 @@ const Users = () => {
                 <CTableHead>
                   <CTableRow>
                     <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-<<<<<<< HEAD
-                    <CTableHeaderCell scope="col">Name</CTableHeaderCell>
-=======
                     <CTableHeaderCell scope="col">Device ID</CTableHeaderCell>
->>>>>>> current_merge_branch
                     <CTableHeaderCell scope="col">Mobile</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Email</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Designation</CTableHeaderCell>
@@ -153,90 +121,6 @@ const Users = () => {
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-<<<<<<< HEAD
-                  <CTableRow  onClick={handleRowClick}>
-                    <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                    <CTableDataCell>Anandkumar</CTableDataCell>
-                    <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
-                    <CTableDataCell>Richianand1990@gmail.com</CTableDataCell>
-                    <CTableDataCell>Manager</CTableDataCell>
-                    <CTableDataCell><CFormCheck/></CTableDataCell>
-                    <CTableDataCell>
-                      <CButton><CIcon icon={cilTrash} /></CButton>
-                    </CTableDataCell>
-                    
-                    
-                 
-                   
-                    
-                    
-                  </CTableRow>
-                  <CTableRow  onClick={handleRowClick}>
-                  <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                    <CTableDataCell>Kumar</CTableDataCell>
-                    <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
-                    <CTableDataCell>Richianand1990@gmail.com</CTableDataCell>
-                    <CTableDataCell>Technician</CTableDataCell>
-                    <CTableDataCell><CFormCheck/></CTableDataCell>
-                    <CTableDataCell>
-                      <CButton><CIcon icon={cilTrash} /></CButton>
-                    </CTableDataCell>
-                    
-                  </CTableRow>
-                  <CTableRow  onClick={handleRowClick}>
-                  <CTableHeaderCell scope="row">3</CTableHeaderCell>
-                    <CTableDataCell>Anand</CTableDataCell>
-                    <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
-                    <CTableDataCell>Richianand1990@gmail.com</CTableDataCell>
-                    <CTableDataCell>CEO</CTableDataCell>
-                    <CTableDataCell><CFormCheck/></CTableDataCell>
-                    <CTableDataCell>
-                      <CButton><CIcon icon={cilTrash} /></CButton>
-                    </CTableDataCell>
-                   
-                    
-                  </CTableRow>
-                  <CTableRow  onClick={handleRowClick}>
-                  <CTableHeaderCell scope="row">4</CTableHeaderCell>
-                    <CTableDataCell>Anand</CTableDataCell>
-                    <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
-                    <CTableDataCell>Richianand1990@gmail.com</CTableDataCell>
-                    <CTableDataCell>CEO</CTableDataCell>
-                    <CTableDataCell><CFormCheck/></CTableDataCell>
-                    <CTableDataCell>
-                      <CButton><CIcon icon={cilTrash} /></CButton>
-                    </CTableDataCell>
-                   
-                    
-                  </CTableRow>
-                  <CTableRow  onClick={handleRowClick}>
-                  <CTableHeaderCell scope="row">5</CTableHeaderCell>
-                    <CTableDataCell>Anand</CTableDataCell>
-                    <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
-                    <CTableDataCell>Richianand1990@gmail.com</CTableDataCell>
-                    <CTableDataCell>CEO</CTableDataCell>
-                    <CTableDataCell><CFormCheck/></CTableDataCell>
-                    <CTableDataCell>
-                      <CButton><CIcon icon={cilTrash} /></CButton>
-                    </CTableDataCell>
-                   
-                    
-                  </CTableRow>
-                  <CTableRow  onClick={handleRowClick}>
-                  <CTableHeaderCell scope="row">6</CTableHeaderCell>
-                    <CTableDataCell>Anand</CTableDataCell>
-                    <CTableDataCell>+91-xxxxxxxxx</CTableDataCell>
-                    <CTableDataCell>Richianand1990@gmail.com</CTableDataCell>
-                    <CTableDataCell>CEO</CTableDataCell>
-                    <CTableDataCell><CFormCheck /></CTableDataCell>
-                    <CTableDataCell>
-                      <CButton><CIcon icon={cilTrash} /></CButton>
-                    </CTableDataCell>
-                   
-                    
-                  </CTableRow>
-                  
-=======
                 {usersToDisplay.map((user, index) => (
                   <CTableRow key={index}>
                     <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
@@ -252,7 +136,6 @@ const Users = () => {
                     </CTableDataCell>
                   </CTableRow>
                 ))}
->>>>>>> current_merge_branch
                 </CTableBody>
               </CTable>
             

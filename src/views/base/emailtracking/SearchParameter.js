@@ -1,10 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-<<<<<<< HEAD
-import { cilTrash, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
-=======
 import { cilMediaSkipForward, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
->>>>>>> current_merge_branch
 import {
   CButton,
   CCard,
@@ -36,11 +32,7 @@ class SearchParameter extends React.Component {
       name: '',
       hunt_word: '',
       message: '',
-<<<<<<< HEAD
-      usergroup: '',
-=======
       user_group: '',
->>>>>>> current_merge_branch
       errors: {},
       successMessage: '',
       data: [],
@@ -64,20 +56,12 @@ class SearchParameter extends React.Component {
   };
 
   postData = () => {
-<<<<<<< HEAD
-    const { name, hunt_word, message, usergroup } = this.state;
-=======
     const { name, hunt_word, message, user_group } = this.state;
->>>>>>> current_merge_branch
     axios.post(BaseURL + 'EmailTracking/searchparameters', {
       name,
       hunt_word,
       message,
-<<<<<<< HEAD
-      usergroup
-=======
       user_group
->>>>>>> current_merge_branch
     })
       .then(response => {
         console.log('Data added successfully:', response.data);
@@ -95,15 +79,9 @@ class SearchParameter extends React.Component {
   };
 
   updateData = (index) => {
-<<<<<<< HEAD
-    const { data, name, hunt_word, message,usergroup } = this.state;
-    const updatedData = [...data];
-    updatedData[index] = { name, hunt_word, message, usergroup };
-=======
     const { data, name, hunt_word, message, user_group } = this.state;
     const updatedData = [...data];
     updatedData[index] = { name, hunt_word, message, user_group };
->>>>>>> current_merge_branch
     this.setState({ data: updatedData, successMessage: 'Data updated successfully', errors: {} });
 
     this.setState({ data: updatedData });
@@ -144,11 +122,7 @@ class SearchParameter extends React.Component {
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.hunt_word.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-<<<<<<< HEAD
-      item.mobile.includes(searchQuery)
-=======
       item.user_group.includes(searchQuery)
->>>>>>> current_merge_branch
     );
     this.setState({ filteredData });
   };
@@ -158,11 +132,7 @@ class SearchParameter extends React.Component {
   };
 
   validate = () => {
-<<<<<<< HEAD
-    const { name, hunt_word, message, usergroup} = this.state;
-=======
     const { name, hunt_word, message, user_group} = this.state;
->>>>>>> current_merge_branch
     const errors = {};
 
     if (!name.trim()) {
@@ -183,13 +153,8 @@ class SearchParameter extends React.Component {
       errors.message = 'Message must be less than 250 characters';
     }
 
-<<<<<<< HEAD
-    if (!usergroup.trim()) {
-      errors.usergroup = 'User Group is required';
-=======
     if (!user_group.trim()) {
       errors.user_group = 'User Group is required';
->>>>>>> current_merge_branch
     }
 
     return errors;
@@ -240,14 +205,6 @@ class SearchParameter extends React.Component {
                       <CFormLabel htmlFor="user_group" className="col-form-label">User Group</CFormLabel>
                     </CCol>
                       <CCol md={6}>
-<<<<<<< HEAD
-                      <CFormSelect id="button" >
-                        <option></option>
-                        <option>group 1</option>
-                        <option>group 2</option>
-                      </CFormSelect>
-                      {errors.usergroup && <div className="text-danger">{errors.usergroup}</div>}
-=======
                       <CFormSelect id="user_group" name="user_group" onChange={this.handleChange}>
                         <option value=""></option>
                         {itemsToDisplay.map((item, index) => (
@@ -255,7 +212,6 @@ class SearchParameter extends React.Component {
                         ))}
                       </CFormSelect>
                       {errors.usergroup && <div className="text-danger">{errors.user_group}</div>}
->>>>>>> current_merge_branch
                   </CCol>
                   </CRow>
                   <CRow className="justify-content-center">
@@ -309,15 +265,9 @@ class SearchParameter extends React.Component {
                         <CTableDataCell>{item.name}</CTableDataCell>
                         <CTableDataCell>{item.hunt_word}</CTableDataCell>
                         <CTableDataCell>{item.message}</CTableDataCell>
-<<<<<<< HEAD
-                        <CTableDataCell>{item.usergroup}</CTableDataCell>
-                        <CTableDataCell>
-                          <CButton><CIcon icon={cilTrash} /></CButton>
-=======
                         <CTableDataCell>{item.user_group}</CTableDataCell>
                         <CTableDataCell>
                           <CButton><CIcon icon={cilMediaSkipForward} /></CButton>
->>>>>>> current_merge_branch
                         </CTableDataCell>
                       </CTableRow>
                     ))}

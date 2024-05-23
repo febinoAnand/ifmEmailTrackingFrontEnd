@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-import React from 'react'
-import BaseURL from 'src/assets/contants/BaseURL';
-import { cilTrash, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
-=======
 import React, { useState, useEffect }  from 'react'
 import BaseURL from 'src/assets/contants/BaseURL';
 import { cilFilter, cilMagnifyingGlass } from '@coreui/icons';
->>>>>>> current_merge_branch
 
 import {
     CButton,
@@ -14,16 +8,8 @@ import {
     CCardBody,
     CCardHeader,
     CCol,
-<<<<<<< HEAD
-    CForm,
     // CFormCheck,
     CFormInput,
-    CFormLabel,
-    CFormSelect,
-=======
-    // CFormCheck,
-    CFormInput,
->>>>>>> current_merge_branch
     CRow,
     CInputGroup,
     CInputGroupText,
@@ -38,12 +24,6 @@ import CIcon from '@coreui/icons-react';
 import axios from 'axios';
 
 
-<<<<<<< HEAD
-
-class Groups extends React.Component{
-
-  render(){
-=======
 const Groups = () => {
   const [groups, setGroups] = useState([]);
   const [filteredgroups, setFilteredgroups] = useState([]);
@@ -76,7 +56,6 @@ const Groups = () => {
   };
   const groupsToDisplay = filteredgroups.length > 0 ? filteredgroups : groups || [];
 
->>>>>>> current_merge_branch
     return (
       <>
       <CRow>
@@ -86,49 +65,10 @@ const Groups = () => {
               <strong>USER LIST</strong>
             </CCardHeader>
             <CCardBody>
-<<<<<<< HEAD
-            <CRow className="mb-3">
-                <CFormLabel htmlFor="GroupName" className="col-sm-2 col-form-label">Group Name</CFormLabel>
-                <CCol sm={10}>
-                    <CFormInput type="text" id="GroupName" name="GroupName"/>
-                </CCol>
-            </CRow>
-            <CRow className="mb-3">
-                <CFormLabel htmlFor="userlist" className="col-sm-2 col-form-label">User List</CFormLabel>
-                <CCol sm={10}>
-                  <CFormSelect id="userlist" multiple value={[]}>
-                      {/*<option>Users 2</option>
-                      <option>Users 3</option> */}
-                    </CFormSelect> 
-                </CCol> 
-            </CRow>
-            <CRow className="justify-content-center">
-                <CCol xs={1}>
-                  <div className='d-grid gap-2'>
-                    <CButton color="primary" type="submit">Add</CButton>
-                  </div>
-                </CCol>
-                <CCol xs={1}>
-                  <div className='d-grid gap-2'>
-                    <CButton  color="primary" type="submit">Update</CButton>
-                  </div>
-                </CCol>
-            </CRow>
-            </CCardBody>
-            <CCardBody>
-=======
->>>>>>> current_merge_branch
             <CCol md={12}>
             <CInputGroup className="flex-nowrap mt-3 col-sg-3">
                 <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass}/></CInputGroupText>
                 <CFormInput
-<<<<<<< HEAD
-                  placeholder="Username"
-                  aria-label="Username"
-                  aria-describedby="addon-wrapping"
-                />
-                <CButton type="button" color="secondary"  id="button-addon2">
-=======
                   placeholder="Search by Subject or Message"
                   aria-label="Search"
                   aria-describedby="addon-wrapping"
@@ -136,7 +76,6 @@ const Groups = () => {
                   onChange={handleInputChange}
                 />
                 <CButton type="button" color="secondary" onClick={handleSearch} id="button-addon2">
->>>>>>> current_merge_branch
                   Search
                 </CButton>
                 <CButton color="primary">
@@ -150,24 +89,6 @@ const Groups = () => {
                   <CTableHead>
                     <CTableRow>
                       <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-<<<<<<< HEAD
-                      <CTableHeaderCell scope="col">Name</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Users</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Count</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Action</CTableHeaderCell>
-                    </CTableRow>
-                  </CTableHead>
-                  <CTableBody>
-                      <CTableRow>
-                        <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                        <CTableDataCell>Operators</CTableDataCell>
-                        <CTableDataCell>ram,ravi,raja,...</CTableDataCell>
-                        <CTableDataCell>5</CTableDataCell>
-                        <CTableDataCell>
-                          <CButton><CIcon icon={cilTrash} /></CButton>
-                        </CTableDataCell>
-                      </CTableRow>
-=======
                       <CTableHeaderCell scope="col">Expiry Time</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Resend Interval</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Valid Time</CTableHeaderCell>
@@ -186,7 +107,6 @@ const Groups = () => {
                         <CTableDataCell>{group.OTP_wrong_count}</CTableDataCell>
                       </CTableRow>
                   ))}
->>>>>>> current_merge_branch
                   </CTableBody>
                 </CTable>
                 <CRow className="justify-content-center">
@@ -201,10 +121,6 @@ const Groups = () => {
 
       </>
     )
-<<<<<<< HEAD
-  }
-=======
->>>>>>> current_merge_branch
 }
 
 export default Groups
