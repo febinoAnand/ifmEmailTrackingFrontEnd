@@ -24,8 +24,6 @@ import {
   cilArrowCircleBottom,
   cilSettings,
   cilSearch,
-<<<<<<< HEAD
-=======
   cilSwapHorizontal,
   cilVoiceOverRecord,
   cilShieldAlt,
@@ -37,7 +35,6 @@ import {
   cilSignLanguage,
   cilShortText,
   cilColumns,
->>>>>>> current_merge_branch
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -140,19 +137,12 @@ const _nav = [
     },
     {
       component: CNavItem,
-<<<<<<< HEAD
-      name: 'search parameter',
-      to: '/emailtracking/search',
-=======
       name: 'Parameter',
       to: '/emailtracking/parameter',
->>>>>>> current_merge_branch
       icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
     },
     {
       component: CNavItem,
-<<<<<<< HEAD
-=======
       name: 'Trigger',
       to: '/emailtracking/trigger',
       icon: <CIcon icon={cilSignLanguage} customClassName="nav-icon" />,
@@ -171,15 +161,12 @@ const _nav = [
     },
     {
       component: CNavItem,
->>>>>>> current_merge_branch
       name: 'Setting',
       to: '/emailtracking/setting',
       icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
     },
 
     ]
-<<<<<<< HEAD
-=======
 
   },
   {
@@ -239,7 +226,6 @@ const _nav = [
       },
 
     ]
->>>>>>> current_merge_branch
     
   },
   {
