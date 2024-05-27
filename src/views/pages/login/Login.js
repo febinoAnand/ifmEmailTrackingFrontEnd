@@ -50,7 +50,7 @@ const Login = () => {
                         <CButton color="primary" className="px-4">
                           Login
                         </CButton>
-                        </Link>
+                      </Link>
                       </CCol>
                       <CCol xs={6} className="text-right">
                         <CButton color="link" className="px-0">
@@ -65,6 +65,9 @@ const Login = () => {
                 <CCardBody className="text-center">
                   <div>
                     <h2>Sign up</h2>
+                    <p>
+                      Don't have an account? Register now.
+                    </p>
                     <Link to="/register">
                       <CButton color="primary" className="mt-3" active tabIndex={-1}>
                         Register Now!
