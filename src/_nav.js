@@ -23,7 +23,7 @@ import {
   cilEnvelopeLetter,
   cilArrowCircleBottom,
   cilSettings,
-  cilSearch,
+  // cilSearch,
   cilSwapHorizontal,
   cilVoiceOverRecord,
   cilShieldAlt,
@@ -135,12 +135,12 @@ const _nav = [
       to: '/emailtracking/emailtable',
       icon: <CIcon icon={cilArrowCircleBottom} customClassName="nav-icon" />,
     },
-    {
-      component: CNavItem,
-      name: 'Parameter',
-      to: '/emailtracking/parameter',
-      icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
-    },
+    // {
+    //   component: CNavItem,
+    //   name: 'Parameter',
+    //   to: '/emailtracking/parameter',
+    //   icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
+    // },
     {
       component: CNavItem,
       name: 'Trigger',
