@@ -58,7 +58,7 @@ class Trigger extends React.Component {
   fetchTriggerData = () => {
     axios.get(BaseURL+'emailtracking/trigger/')
       .then(response => {
-        this.setState({ trigger: response.data });
+        this.setState({ trigger: response.data.reverse() });
       })
       .catch(error => {
         console.error('Error fetching trigger data:', error);

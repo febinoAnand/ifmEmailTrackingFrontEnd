@@ -33,8 +33,8 @@ const EmailTable = () => {
 
   const fetchEmails = async () => {
     try {
-      const response = await axios.get(BaseURL+ "emailtracking/inbox/");
-      setEmails(response.data);
+      const response = await axios.get(BaseURL + "emailtracking/inbox/");
+      setEmails(response.data.reverse());
     } catch (error) {
       console.error('Error fetching emails:', error);
     }
@@ -63,36 +63,38 @@ const EmailTable = () => {
                   <CIcon icon={cilFilter} />
                 </CButton>
               </CInputGroup>
-              <CTable striped hover>
-                <CTableHead>
-                  <CTableRow>
-                    <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Date</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Time</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Subject</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Message</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Action</CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                  {emails.map((email, index) => (
-                    <CTableRow key={index}>
-                      <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                      <CTableDataCell>{email.date}</CTableDataCell>
-                      <CTableDataCell>{email.time}</CTableDataCell>
-                      <CTableDataCell>{email.subject}</CTableDataCell>
-                      <CTableDataCell>{email.message}</CTableDataCell>
-                      <CTableDataCell>
-                        <CButton>
-                          <CNavLink to={`/emailtracking/emailsubpage/${email.id}`} component={NavLink}>
-                            <CIcon icon={cilMediaSkipForward} />
-                          </CNavLink>
-                        </CButton>
-                      </CTableDataCell>
+              <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
+                <CTable striped hover>
+                  <CTableHead>
+                    <CTableRow>
+                      <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Date</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Time</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Subject</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Message</CTableHeaderCell>
+                      {/* <CTableHeaderCell scope="col">Action</CTableHeaderCell> */}
                     </CTableRow>
-                  ))}
-                </CTableBody>
-              </CTable>
+                  </CTableHead>
+                  <CTableBody>
+                    {emails.map((email, index) => (
+                      <CTableRow key={index}>
+                        <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                        <CTableDataCell>{email.date}</CTableDataCell>
+                        <CTableDataCell>{email.time}</CTableDataCell>
+                        <CTableDataCell>{email.subject}</CTableDataCell>
+                        <CTableDataCell>{email.message}</CTableDataCell>
+                        {/* <CTableDataCell>
+                          <CButton>
+                            <CNavLink to={`/emailtracking/emailsubpage/${email.id}`} component={NavLink}>
+                              <CIcon icon={cilMediaSkipForward} />
+                            </CNavLink>
+                          </CButton>
+                        </CTableDataCell> */}
+                      </CTableRow>
+                    ))}
+                  </CTableBody>
+                </CTable>
+              </div>
             </CCardBody>
           </CCard>
         </CCol>

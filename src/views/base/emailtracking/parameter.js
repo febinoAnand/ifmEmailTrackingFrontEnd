@@ -42,7 +42,7 @@ class Parameter extends React.Component {
   fetchParameters = () => {
     axios.get(BaseURL+"emailtracking/parameter/")
       .then(response => {
-        this.setState({ parameters: response.data });
+        this.setState({ parameters: response.data.reverse() });
       })
       .catch(error => {
         console.error('Error fetching parameters:', error);

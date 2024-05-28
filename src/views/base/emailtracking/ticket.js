@@ -29,7 +29,7 @@ class Ticket extends Component {
     this.setState({ fields: responseFields.data });
 
     const responseTickets = await axios.get(BaseURL + "emailtracking/ticket/");
-    this.setState({ ticketData: responseTickets.data });
+    this.setState({ ticketData: responseTickets.data.reverse() });
   }
 
   render() {
@@ -44,34 +44,36 @@ class Ticket extends Component {
                 <strong>TICKET TABLE</strong>
               </CCardHeader>
               <CCardBody>
-                <CTable striped hover>
-                  <CTableHead>
-                    <CTableRow>
-                      <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Date</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Time</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Ticket Name</CTableHeaderCell>
-                      {fields.map(field => (
-                        <CTableHeaderCell scope="col" key={field.field}>
-                          {field.field}
-                        </CTableHeaderCell>
-                      ))}
-                    </CTableRow>
-                  </CTableHead>
-                  <CTableBody>
-                    {ticketData.map((ticket, index) => (
-                      <CTableRow key={index}>
-                        <CTableHeaderCell>{index + 1}</CTableHeaderCell>
-                        <CTableDataCell>{ticket.date}</CTableDataCell>
-                        <CTableDataCell>{ticket.time}</CTableDataCell>
-                        <CTableDataCell>{ticket.ticketname}</CTableDataCell>
-                        {fields.map((field, i) => (
-                          <CTableDataCell key={i}>{ticket.required_json[field.field]}</CTableDataCell>
+                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                  <CTable striped hover>
+                    <CTableHead>
+                      <CTableRow>
+                        <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Date</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Time</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Ticket Name</CTableHeaderCell>
+                        {fields.map(field => (
+                          <CTableHeaderCell scope="col" key={field.field}>
+                            {field.field}
+                          </CTableHeaderCell>
                         ))}
                       </CTableRow>
-                    ))}
-                  </CTableBody>
-                </CTable>
+                    </CTableHead>
+                    <CTableBody>
+                      {ticketData.map((ticket, index) => (
+                        <CTableRow key={index}>
+                          <CTableHeaderCell>{index + 1}</CTableHeaderCell>
+                          <CTableDataCell>{ticket.date}</CTableDataCell>
+                          <CTableDataCell>{ticket.time}</CTableDataCell>
+                          <CTableDataCell>{ticket.ticketname}</CTableDataCell>
+                          {fields.map((field, i) => (
+                            <CTableDataCell key={i}>{ticket.required_json[field.field]}</CTableDataCell>
+                          ))}
+                        </CTableRow>
+                      ))}
+                    </CTableBody>
+                  </CTable>
+                </div>
               </CCardBody>
             </CCard>
           </CCol>
