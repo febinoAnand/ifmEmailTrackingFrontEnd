@@ -48,7 +48,7 @@ class Dashboard extends Component {
       const responseFields = await axios.get(BaseURL + "emailtracking/parameter/");
       const responseParameters = await axios.get(BaseURL + "emailtracking/parameter/");
 
-      const barChartLabels = this.extractLabels(responseTickets.data);
+      const barChartLabels = this.extractLabels(responseTickets.data, responseFields.data);
       const barChartData = this.extractDataCounts(responseTickets.data, responseParameters.data);
 
       this.setState({
@@ -70,31 +70,29 @@ class Dashboard extends Component {
     }
   }
 
-  extractLabels(ticketData) {
-    const labels = new Set();
-    ticketData.forEach(ticket => {
-      labels.add(ticket.ticketname);
-    });
-    return Array.from(labels);
+  extractLabels(ticketData, fields) {
+    const labels = fields.map(field => field.field);
+    return labels;
   }
 
   extractDataCounts(ticketData, parameterData) {
     const counts = {};
-    this.extractLabels(ticketData).forEach(label => {
-      counts[label] = 0;
+  
+    parameterData.forEach(param => {
+      counts[param.field] = 0;
     });
-
+  
     ticketData.forEach(ticket => {
       parameterData.forEach(param => {
-        if (ticket.ticketname === param.field) {
-          counts[ticket.ticketname] += 1;
+        if (ticket.required_json[param.field]) {
+          counts[param.field]++;
         }
       });
     });
-
+  
     return Object.values(counts);
   }
-
+  
   updateChart() {
     const { barChartLabels, barChartData } = this.state;
     const ctx = this.chartRef.current.getContext('2d');
