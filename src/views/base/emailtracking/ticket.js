@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { cilMagnifyingGlass } from '@coreui/icons';
 import {
   CCard,
   CCardBody,
@@ -7,12 +8,20 @@ import {
   CCol,
   CRow,
   CTable,
+  CButton,
+  CFormInput,
+  CInputGroupText,
+  CInputGroup,
+  CFormSelect,
+  CForm,
+  CFormLabel,
   CTableBody,
   CTableDataCell,
   CTableHead,
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react';
+import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
 
 class Ticket extends Component {
@@ -21,6 +30,7 @@ class Ticket extends Component {
     this.state = {
       fields: [],
       ticketData: [],
+      searchQuery: '',
     };
   }
 
@@ -32,8 +42,20 @@ class Ticket extends Component {
     this.setState({ ticketData: responseTickets.data.reverse() });
   }
 
+  handleSearchChange = (event) => {
+    this.setState({ searchQuery: event.target.value });
+  };
+
+  getFilteredData = () => {
+    const { ticketData, searchQuery } = this.state;
+    return ticketData.filter(ticket =>
+      ticket.ticketname.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
   render() {
-    const { fields, ticketData } = this.state;
+    const { fields } = this.state;
+    const filteredData = this.getFilteredData();
 
     return (
       <>
@@ -44,6 +66,21 @@ class Ticket extends Component {
                 <strong>TICKET TABLE</strong>
               </CCardHeader>
               <CCardBody>
+              <CCol md={4}>
+                <CInputGroup className="flex-nowrap mt-3 col-sg-3">
+                  <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass} /></CInputGroupText>
+                  <CFormInput
+                    placeholder="Search by Ticket Name"
+                    aria-label="Search"
+                    aria-describedby="addon-wrapping"
+                    value={this.state.searchQuery}
+                    onChange={this.handleSearchChange}
+                  />
+                  <CButton type="button" color="secondary" id="button-addon2">
+                    Search
+                  </CButton>
+                </CInputGroup>
+              </CCol>
                 <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
                   <CTable striped hover>
                     <CTableHead>
@@ -60,7 +97,7 @@ class Ticket extends Component {
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                      {ticketData.map((ticket, index) => (
+                      {filteredData.map((ticket, index) => (
                         <CTableRow key={index}>
                           <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                           <CTableDataCell>{ticket.date}</CTableDataCell>

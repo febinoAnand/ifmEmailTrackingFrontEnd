@@ -26,6 +26,7 @@ import BaseURL from 'src/assets/contants/BaseURL';
 
 const EmailTable = () => {
   const [emails, setEmails] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchEmails();
@@ -40,6 +41,15 @@ const EmailTable = () => {
     }
   };
 
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredEmails = emails.filter((email) =>
+    email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    email.message.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <>
       <CRow>
@@ -49,20 +59,21 @@ const EmailTable = () => {
               <strong>E-Mail box</strong>
             </CCardHeader>
             <CCardBody>
-              <CInputGroup className="flex-nowrap mt-3 col-sg-3">
-                <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass} /></CInputGroupText>
-                <CFormInput
-                  placeholder="Search by Subject or Message"
-                  aria-label="Search"
-                  aria-describedby="addon-wrapping"
-                />
-                <CButton type="button" color="secondary" id="button-addon2">
-                  Search
-                </CButton>
-                <CButton color="primary">
-                  <CIcon icon={cilFilter} />
-                </CButton>
-              </CInputGroup>
+              <CCol md={4}>
+                <CInputGroup className="flex-nowrap mt-3 col-sg-3">
+                  <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass} /></CInputGroupText>
+                  <CFormInput
+                    placeholder="Search by Subject or Message"
+                    aria-label="Search"
+                    aria-describedby="addon-wrapping"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                  />
+                  <CButton type="button" color="secondary" id="button-addon2">
+                    Search
+                  </CButton>
+                </CInputGroup>
+              </CCol>
               <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
                 <CTable striped hover>
                   <CTableHead>
@@ -76,7 +87,7 @@ const EmailTable = () => {
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
-                    {emails.map((email, index) => (
+                    {filteredEmails.map((email, index) => (
                       <CTableRow key={index}>
                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                         <CTableDataCell>{email.date}</CTableDataCell>

@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-
+import { cilMagnifyingGlass } from '@coreui/icons';
 import {
   CCard,
   CCardBody,
@@ -8,12 +8,17 @@ import {
   CCol,
   CRow,
   CTable,
+  CButton,
+  CFormInput,
+  CInputGroupText,
+  CInputGroup,
   CTableBody,
   CTableDataCell,
   CTableHead,
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react';
+import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
 
 class TicketReport extends React.Component {
@@ -21,6 +26,8 @@ class TicketReport extends React.Component {
     super(props);
     this.state = {
       tickets: [],
+      filteredTickets: [],
+      searchQuery: '',
     };
   }
 
@@ -32,15 +39,28 @@ class TicketReport extends React.Component {
     axios
       .get(BaseURL + 'emailtracking/ticket/')
       .then((response) => {
-        this.setState({ tickets: response.data.reverse() });
+        const reversedTickets = response.data.slice().reverse();
+        this.setState({ tickets: reversedTickets, filteredTickets: reversedTickets });
       })
       .catch((error) => {
         console.error('Error fetching tickets:', error);
       });
   }
+  
+
+  handleSearchChange = (event) => {
+    const searchQuery = event.target.value;
+    const { tickets } = this.state;
+
+    const filteredTickets = tickets.filter((ticket) =>
+      ticket.ticketname.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    this.setState({ searchQuery, filteredTickets });
+  };
 
   render() {
-    const { tickets } = this.state;
+    const { filteredTickets, searchQuery } = this.state;
 
     return (
       <>
@@ -51,6 +71,23 @@ class TicketReport extends React.Component {
                 <strong>TICKET TABLE</strong>
               </CCardHeader>
               <CCardBody>
+                <CCol md={4}>
+                  <CInputGroup className="flex-nowrap mt-3 col-sg-3">
+                    <CInputGroupText id="addon-wrapping">
+                      <CIcon icon={cilMagnifyingGlass} />
+                    </CInputGroupText>
+                    <CFormInput
+                      placeholder="Search by Ticket Name"
+                      aria-label="Search"
+                      aria-describedby="addon-wrapping"
+                      value={searchQuery}
+                      onChange={this.handleSearchChange}
+                    />
+                    <CButton type="button" color="secondary" id="button-addon2">
+                      Search
+                    </CButton>
+                  </CInputGroup>
+                </CCol>
                 <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
                   <CTable striped hover>
                     <CTableHead>
@@ -65,7 +102,7 @@ class TicketReport extends React.Component {
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                      {tickets.map((ticket, index) => (
+                      {filteredTickets.map((ticket, index) => (
                         <CTableRow key={index}>
                           <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                           <CTableDataCell>{ticket.ticketname}</CTableDataCell>

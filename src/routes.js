@@ -15,6 +15,7 @@ const Button = React.lazy(() => import('./views/base/events/EventButton'))
 const ProblemCode = React.lazy(() => import('./views/base/events/EventProblemcode'))
 
 //EmailTracking
+const dashboard = React.lazy(() => import('./views/base/emailtracking/dashboard'))
 const EmailTable = React.lazy(() => import('./views/base/emailtracking/EmailTable'))
 const SettingData = React.lazy(() => import('./views/base/emailtracking/SettingData'))
 const SearchParameter = React.lazy(() => import('./views/base/emailtracking/SearchParameter'))
@@ -115,6 +116,7 @@ const routes = [
   { path: '/event/button', name: 'Button', element: Button}, //Event
   { path: '/event/problemcode', name: 'ProblemCode', element: ProblemCode}, //Event
 
+  { path: '/emailtracking/dashboard', name: 'dashboard', element: dashboard}, //EmailTracking
   { path: '/emailtracking/emailtable', name: 'EmailTable', element: EmailTable}, //EmailTracking
   { path: '/emailtracking/setting', name: 'SettingData', element: SettingData}, //EmailTracking
   { path: '/emailtracking/search', name: 'SearchParameter', element: SearchParameter}, //EmailTracking

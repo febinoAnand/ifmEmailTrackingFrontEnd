@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { cilTrash } from '@coreui/icons';
+import { cilTrash, cilPen } from '@coreui/icons';
 import {
   CButton,
   CCard,
@@ -110,6 +110,7 @@ class Trigger extends React.Component {
       operator: operator,
       value: value,
     });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   getRowDatas = (row) => {
@@ -118,6 +119,7 @@ class Trigger extends React.Component {
       operator: operator,
       value: value,
     });
+    window.scrollTo({ top: 500, behavior: 'smooth' });
   };
 
   getMultipleSelect = (event) => {
@@ -335,9 +337,12 @@ class Trigger extends React.Component {
                       <CFormSelect id="user_group" name="user_group" value={operator} onChange={this.handleOperatorChange} readOnly>
                         <option></option>
                         <option>greater than</option>
+                        <option>greater than or equal</option>
+                        <option>less than or equal</option>
                         <option>less than</option>
                         <option>equals</option>
                         <option>not equals</option>
+                        <option>is exist</option>
                       </CFormSelect>
                   </CCol>
                   </CRow>
@@ -363,6 +368,7 @@ class Trigger extends React.Component {
                     <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Operation</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Value</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Action</CTableHeaderCell>
                     
                   </CTableRow>
                 </CTableHead>
@@ -372,6 +378,13 @@ class Trigger extends React.Component {
                         <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                         <CTableDataCell>{row.operator}</CTableDataCell>
                         <CTableDataCell>{row.value}</CTableDataCell>
+                        <CTableDataCell>
+                        <div className="d-flex gap-2">
+                        <CButton>
+                            <CIcon icon={cilPen} />
+                         </CButton>
+                         </div>
+                         </CTableDataCell>
                       </CTableRow>
                     ))}
                   </CTableBody>
@@ -432,9 +445,14 @@ class Trigger extends React.Component {
                         <CTableDataCell>{row.notification_message}</CTableDataCell>
                         <CTableDataCell>{row.trigger_switch ? 'Active' : 'Inactive'}</CTableDataCell>
                         <CTableDataCell>
+                        <div className="d-flex gap-2">
+                        <CButton>
+                            <CIcon icon={cilPen} />
+                         </CButton>
                           <CButton onClick={(e) => { e.stopPropagation(); this.handleDelete(row.id)}}>
                             <CIcon icon={cilTrash} />
                           </CButton>
+                          </div>
                         </CTableDataCell>
                       </CTableRow>
                     ))}

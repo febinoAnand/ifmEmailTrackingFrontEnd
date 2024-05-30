@@ -1,6 +1,6 @@
 import React, { useState, useEffect }  from 'react';
 import axios from 'axios';
-import { cilFilter, cilMagnifyingGlass, cilTrash } from '@coreui/icons';
+import { cilFilter, cilMagnifyingGlass, cilTrash, cilPen } from '@coreui/icons';
 import {
     CButton,
     CCard,
@@ -47,13 +47,23 @@ const Users = () => {
     };
 
     const handleSearch = () => {
-        const filtered = users.filter(user =>
-            user.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.message.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        const filtered = users.filter(user => {
+            const searchFields = [
+                user.usermod.username,
+                user.designation,
+                user.mobile_no,
+                user.device_id,
+                user.auth_state,
+                user.expiry_time,
+            ];
+            const query = searchQuery.toLowerCase();
+            return searchFields.some(field =>
+                field ? field.toString().toLowerCase().includes(query) : false
+            );
+        });
         setFilteredUsers(filtered);
     };
-
+    
     const handleInputChange = (event) => {
         setSearchQuery(event.target.value);
     };
@@ -65,6 +75,7 @@ const Users = () => {
         document.getElementById('email').value = user.usermod.email;
         document.getElementById('designation').value = user.designation;
         document.getElementById('mobileno').value = user.mobile_no;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleToggleChange = (event) => {
@@ -211,9 +222,9 @@ const handleUpdateUser = () => {
                                     <CButton type="button" color="secondary" onClick={handleSearch} id="button-addon2">
                                         Search
                                     </CButton>
-                                    <CButton color="primary">
+                                    {/* <CButton color="primary">
                                         <CIcon icon={cilFilter} />
-                                    </CButton>
+                                    </CButton> */}
                                 </CInputGroup>
                             </CCol>
                             <CTable striped hover>
@@ -240,9 +251,14 @@ const handleUpdateUser = () => {
                                             <CTableDataCell>{user.auth_state}</CTableDataCell>
                                             <CTableDataCell>{user.expiry_time}</CTableDataCell>
                                             <CTableDataCell>
-                                                <CButton onClick={() => handleDeleteUser(user.userdetail_id)}>
-                                                    <CIcon icon={cilTrash} />
-                                                </CButton>
+                                                <div className="d-flex gap-2">
+                                                    <CButton>
+                                                        <CIcon icon={cilPen} />
+                                                    </CButton>
+                                                    <CButton onClick={() => handleDeleteUser(user.userdetail_id)}>
+                                                        <CIcon icon={cilTrash} />
+                                                    </CButton>
+                                                </div>
                                             </CTableDataCell>
                                         </CTableRow>
                                     ))}

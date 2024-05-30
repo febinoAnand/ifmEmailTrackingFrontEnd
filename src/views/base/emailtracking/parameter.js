@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { cilTrash, cilFilter, cilMagnifyingGlass } from '@coreui/icons';
+import { cilTrash, cilFilter, cilMagnifyingGlass, cilPen } from '@coreui/icons';
 import {
   CButton,
   CCard,
@@ -27,12 +27,14 @@ import BaseURL from 'src/assets/contants/BaseURL';
 class Parameter extends React.Component {
   state = {
     parameters: [],
+    filteredParameters: [],
     formData: {
       id: '',
       alias: '',
       field: '',
       datatype: '',
     },
+    searchQuery: '',
   };
 
   componentDidMount() {
@@ -42,7 +44,7 @@ class Parameter extends React.Component {
   fetchParameters = () => {
     axios.get(BaseURL+"emailtracking/parameter/")
       .then(response => {
-        this.setState({ parameters: response.data.reverse() });
+        this.setState({ parameters: response.data.reverse(), filteredParameters: response.data.reverse() });
       })
       .catch(error => {
         console.error('Error fetching parameters:', error);
@@ -105,6 +107,7 @@ class Parameter extends React.Component {
       }
     });
     console.log(parameter);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   handleDelete = (id) => {
@@ -112,7 +115,8 @@ class Parameter extends React.Component {
       .then(response => {
         console.log('Parameter deleted successfully');
         this.setState(prevState => ({
-          parameters: prevState.parameters.filter(parameter => parameter.id !== id)
+          parameters: prevState.parameters.filter(parameter => parameter.id !== id),
+          filteredParameters: prevState.filteredParameters.filter(parameter => parameter.id !== id),
         }));
       })
       .catch(error => {
@@ -120,8 +124,23 @@ class Parameter extends React.Component {
       });
   };
 
+  handleSearch = () => {
+    const { parameters, searchQuery } = this.state;
+    const filteredParameters = parameters.filter(parameter => 
+      parameter.alias.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      parameter.field.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      parameter.datatype.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    this.setState({ filteredParameters });
+  };
+
+  handleSearchInputChange = (e) => {
+    const { value } = e.target;
+    this.setState({ searchQuery: value });
+  };
+
   render() {
-    const { parameters, formData } = this.state;
+    const { filteredParameters, formData, searchQuery } = this.state;
 
     return (
       <>
@@ -188,22 +207,21 @@ class Parameter extends React.Component {
                 </CForm>
               </CCardBody>
               <CCardBody>
-                <CInputGroup className="flex-nowrap mt-3 col-sg-3">
-                  <CInputGroupText id="addon-wrapping">
-                    <CIcon icon={cilMagnifyingGlass} />
-                  </CInputGroupText>
-                  <CFormInput
-                    placeholder="Search"
-                    aria-label="Search"
-                    aria-describedby="addon-wrapping"
-                  />
-                  <CButton type="button" color="secondary"  id="button-addon2">
-                    Search
-                  </CButton>
-                  <CButton color="primary">
-                    <CIcon icon={cilFilter} />
-                  </CButton>
-                </CInputGroup>
+              <CCol md={4}>
+              <CInputGroup className="flex-nowrap mt-3 col-sg-3">
+                    <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass} /></CInputGroupText>
+                    <CFormInput
+                      placeholder="Search by Alias, Field, or Data Type"
+                      aria-label="Search"
+                      aria-describedby="addon-wrapping"
+                      value={searchQuery}
+                      onChange={this.handleSearchInputChange}
+                    />
+                    <CButton type="button" color="secondary" onClick={this.handleSearch}>
+                      Search
+                    </CButton>
+                  </CInputGroup>
+              </CCol>
                 <CTable striped hover>
                   <CTableHead>
                     <CTableRow>
@@ -215,14 +233,19 @@ class Parameter extends React.Component {
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
-                    {parameters.map((parameter, index) => (
+                    {filteredParameters.map((parameter, index) => (
                       <CTableRow  key={parameter.id} onClick={()=>this.getRowData(parameter)}>
                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                         <CTableDataCell>{parameter.alias}</CTableDataCell>
                         <CTableDataCell>{parameter.field}</CTableDataCell>
                         <CTableDataCell>{parameter.datatype}</CTableDataCell>
                         <CTableDataCell>
+                        <div className="d-flex gap-2">
+                        <CButton>
+                            <CIcon icon={cilPen} />
+                         </CButton>
                           <CButton onClick={(e) => { e.stopPropagation(); this.handleDelete(parameter.id)}}><CIcon icon={cilTrash} /></CButton>
+                          </div>
                         </CTableDataCell>
                       </CTableRow>
                     ))}

@@ -15,6 +15,7 @@ import {
   cilCenterFocus,
   cilUserX,
   cilGroup,
+  cilLaptop,
   cilListRich,
   cilObjectGroup,
   cilBraille,
@@ -129,6 +130,12 @@ const _nav = [
     
     icon: <CIcon icon={cilEnvelopeLetter} customClassName="nav-icon" />,
     items:[
+      {
+        component: CNavItem,
+        name: 'Dashboard',
+        to: '/emailtracking/dashboard',
+        icon: <CIcon icon={cilLaptop} customClassName="nav-icon" />,
+      },
     {
       component: CNavItem,
       name: 'Inbox',
