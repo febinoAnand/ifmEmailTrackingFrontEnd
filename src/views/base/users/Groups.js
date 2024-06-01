@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { cilFilter, cilMagnifyingGlass, cilPen } from '@coreui/icons';
+import { cilMagnifyingGlass, cilPen } from '@coreui/icons';
 import {
     CButton,
     CCard,
@@ -7,7 +7,6 @@ import {
     CCardHeader,
     CCol,
     CFormInput,
-    CFormSwitch,
     CFormLabel,
     CForm,
     CRow,
@@ -19,98 +18,98 @@ import {
     CTableHead,
     CTableHeaderCell,
     CTableRow,
+    CFormSelect,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import axios from 'axios';
 import BaseURL from 'src/assets/contants/BaseURL';
 
 const Groups = () => {
+    const [groupData, setGroupData] = useState([]);
     const [userData, setUserData] = useState([]);
-    const [filteredUserData, setFilteredUserData] = useState([]);
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [filteredGroupData, setFilteredGroupData] = useState([]);
+    const [selectedGroup, setSelectedGroup] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        fetchData();
+        fetchGroupData();
+        fetchUserData();
     }, []);
 
     useEffect(() => {
         handleSearch(searchQuery);
-    }, [userData, searchQuery]);
+    }, [groupData, searchQuery]);
 
-    const fetchData = async () => {
+    const fetchGroupData = async () => {
         try {
-            const responseGroups = await axios.get(BaseURL + 'Userauth/groups/');
-            const groupData = responseGroups.data;
-            const usersPromises = groupData.map(async group => {
-                const responseUsers = await axios.get(BaseURL + `Userauth/groups/${group.id}/users/`);
-                const usersData = responseUsers.data.map(user => ({
-                    id: user.id,
-                    name: group.name,
-                    ...user
-                }));
-                return usersData;
-            });
-            const usersResponses = await Promise.all(usersPromises);
-            const allUsers = usersResponses.flat();
-            setUserData(allUsers);
+            const response = await axios.get(BaseURL + "app/groups/");
+            setGroupData(response.data);
+            setFilteredGroupData(response.data);
+            console.log(response.data);
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error('Error fetching group data:', error);
         }
     };
 
-    const handleUserSelect = (user) => {
-        setSelectedUser(user);
+    const fetchUserData = async () => {
+        try {
+            const response = await axios.get(BaseURL + "app/groups/");
+            setUserData(response.data);
+            console.log(response.data);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
+
+    const handleGroupSelect = (group) => {
+        setSelectedGroup(group);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const handleUsernameChange = (event) => {
-        const newValue = event.target.value;
-        setSelectedUser(prevUser => ({
-            ...prevUser,
-            username: newValue
+    const handleUserSetChange = (event) => {
+        const options = event.target.options;
+        const selectedUsers = [];
+        for (let i = 0, l = options.length; i < l; i++) {
+            if (options[i].selected) {
+                selectedUsers.push(parseInt(options[i].value));
+            }
+        }
+        setSelectedGroup(prevGroup => ({
+            ...prevGroup,
+            user_set: selectedUsers
         }));
     };
 
-    const handleUpdateUser = async () => {
-        try {
-            if (!selectedUser) return;
+    const handleSearch = (query) => {
+        setSearchQuery(query);
+        if (!groupData) return;
 
-            const response = await axios.put(BaseURL + `Userauth/groups/${selectedUser.id}/add-users/`, {
-                username: selectedUser.username
+        if (query === '') {
+            setFilteredGroupData(groupData);
+        } else {
+            const lowercasedQuery = query.toLowerCase();
+            const filteredData = groupData.filter(group => {
+                const name = group.name?.toLowerCase() || '';
+                const userSet = group.user_set ? group.user_set.map(userId => userId.toString().toLowerCase()).join(' ') : '';
+
+                return (
+                    name.includes(lowercasedQuery) ||
+                    userSet.includes(lowercasedQuery)
+                );
             });
-            const updatedUser = response.data;
-            setUserData(prevData => prevData.map(user => user.id === updatedUser.id ? updatedUser : user));
-            setSelectedUser(null);
-        } catch (error) {
-            console.error('Error updating user:', error);
+            setFilteredGroupData(filteredData);
         }
     };
 
-    const handleSearch = (query) => {
-      setSearchQuery(query);
-      if (!userData) return;
-    
-      if (query === '') {
-        setFilteredUserData(userData);
-      } else {
-        const lowercasedQuery = query.toLowerCase();
-        const filteredData = userData.filter(user => {
-          const name = user.name?.toLowerCase() || '';
-          const email = user.email?.toLowerCase() || '';
-          const username = user.username?.toLowerCase() || '';
-          const mobileNo = user.mobile_no?.toLowerCase() || '';
-    
-          return (
-            name.includes(lowercasedQuery) ||
-            email.includes(lowercasedQuery) ||
-            username.includes(lowercasedQuery) ||
-            mobileNo.includes(lowercasedQuery)
-          );
-        });
-        setFilteredUserData(filteredData);
-      }
-    };    
+    const handleUpdateGroup = async () => {
+        try {
+            await axios.put(`${BaseURL}app/groups/${selectedGroup.id}/`, selectedGroup);
+            fetchGroupData();
+            setSelectedGroup(null);
+        } catch (error) {
+            console.error('Error updating group:', error);
+        }
+    };
 
     return (
         <>
@@ -125,36 +124,22 @@ const Groups = () => {
                                 <CRow className="mb-3">
                                     <CFormLabel htmlFor="group" className="col-sm-2 col-form-label">Group</CFormLabel>
                                     <CCol md={6}>
-                                        <CFormInput type="text" id="group" name="group" value={selectedUser ? selectedUser.name : ''} readOnly />
+                                        <CFormInput type="text" id="group" name="group" value={selectedGroup ? selectedGroup.name : ''} readOnly />
                                     </CCol>
                                 </CRow>
                                 <CRow className="mb-3">
-                                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">User Name</CFormLabel>
+                                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">User List</CFormLabel>
                                     <CCol md={6}>
-                                        <CFormInput type="text" id="name" name="name" value={selectedUser ? selectedUser.username : ''} onChange={handleUsernameChange} />
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3">
-                                    <CFormLabel htmlFor="email" className="col-sm-2 col-form-label">Email Address</CFormLabel>
-                                    <CCol md={6}>
-                                        <CFormInput type="text" id="email" name="email" value={selectedUser ? selectedUser.email : ''} readOnly />
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3">
-                                    <CFormLabel htmlFor="mobileno" className="col-sm-2 col-form-label">Mobile Number</CFormLabel>
-                                    <CCol md={6}>
-                                        <CFormInput type="text" id="mobileno" name="mobileno" value={selectedUser ? selectedUser.mobile_no : ''} readOnly />
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3">
-                                    <CFormLabel htmlFor="toggle" className="col-sm-2 col-form-label">Login Status</CFormLabel>
-                                    <CCol md={6}>
-                                        <CFormSwitch defaultChecked />
+                                        <CFormSelect id="name" name="name" multiple value={selectedGroup ? selectedGroup.user_set : []} onChange={handleUserSetChange}>
+                                            {userData.map(user => (
+                                                <option key={user.id} value={user.id}>{user.user_set}</option>
+                                            ))}
+                                        </CFormSelect>
                                     </CCol>
                                 </CRow>
                                 <CRow className="justify-content-center">
                                     <CCol md="auto">
-                                        <CButton color="primary" onClick={handleUpdateUser}>Update</CButton>
+                                        <CButton color="primary" onClick={handleUpdateGroup}>Update</CButton>
                                     </CCol>
                                 </CRow>
                             </CForm>
@@ -173,7 +158,7 @@ const Groups = () => {
                                 <CInputGroup className="flex-nowrap mt-3 col-sg-3">
                                     <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass} /></CInputGroupText>
                                     <CFormInput
-                                        placeholder="Search by Subject or Message"
+                                        placeholder="Search by Group Name or User IDs"
                                         aria-label="Search"
                                         aria-describedby="addon-wrapping"
                                         value={searchQuery}
@@ -189,24 +174,22 @@ const Groups = () => {
                                 <CTableHead>
                                     <CTableRow>
                                         <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-                                        <CTableHeaderCell scope="col">Groups</CTableHeaderCell>
-                                        <CTableHeaderCell scope="col">Email</CTableHeaderCell>
-                                        <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+                                        <CTableHeaderCell scope="col">Group</CTableHeaderCell>
+                                        <CTableHeaderCell scope="col">User-Email</CTableHeaderCell>
                                         <CTableHeaderCell scope="col">Mobile No</CTableHeaderCell>
                                         <CTableHeaderCell scope="col">Action</CTableHeaderCell>
                                     </CTableRow>
                                 </CTableHead>
                                 <CTableBody>
-                                    {filteredUserData.map((user, index) => (
+                                    {filteredGroupData.map((group, index) => (
                                         <CTableRow
-                                            key={user.id}
-                                            onClick={() => handleUserSelect(user)}
+                                            key={group.id}
+                                            onClick={() => handleGroupSelect(group)}
                                         >
                                             <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                                            <CTableDataCell>{user.name}</CTableDataCell>
-                                            <CTableDataCell>{user.email}</CTableDataCell>
-                                            <CTableDataCell>{user.username}</CTableDataCell>
-                                            <CTableDataCell>{user.mobile_no}</CTableDataCell>
+                                            <CTableDataCell>{group.name}</CTableDataCell>
+                                            <CTableDataCell>{group.user_set ? group.user_set.join(', ') : ''}</CTableDataCell>
+                                            <CTableDataCell>{group.mobileno}</CTableDataCell>
                                             <CTableDataCell>
                                                 <div className="d-flex gap-2">
                                                     <CButton>
@@ -223,7 +206,7 @@ const Groups = () => {
                 </CCol>
             </CRow>
         </>
-    )
-}
+    );
+};
 
 export default Groups;

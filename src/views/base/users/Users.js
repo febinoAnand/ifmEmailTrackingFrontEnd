@@ -1,6 +1,6 @@
 import React, { useState, useEffect }  from 'react';
 import axios from 'axios';
-import { cilFilter, cilMagnifyingGlass, cilTrash, cilPen } from '@coreui/icons';
+import { cilMagnifyingGlass, cilTrash, cilPen } from '@coreui/icons';
 import {
     CButton,
     CCard,
@@ -35,6 +35,10 @@ const Users = () => {
         fetchUsers();
     }, []);
 
+    useEffect(() => {
+        handleSearch();
+    }, [searchQuery]);
+
     const fetchUsers = () => {
         axios.get(BaseURL + 'Userauth/userdetail/')
             .then(response => {
@@ -63,7 +67,7 @@ const Users = () => {
         });
         setFilteredUsers(filtered);
     };
-    
+
     const handleInputChange = (event) => {
         setSearchQuery(event.target.value);
     };

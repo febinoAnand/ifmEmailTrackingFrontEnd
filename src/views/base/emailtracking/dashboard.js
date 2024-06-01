@@ -1,28 +1,30 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { cilChartPie } from '@coreui/icons';
 import {
-  CButton,
+  // CButton,
   CCard,
   CCardBody,
   CCardHeader,
-  CCardTitle,
-  CCardSubtitle,
-  CCardText,
-  CCardLink,
+  // CCardTitle,
+  // CCardSubtitle,
+  // CCardText,
+  // CCardLink,
   CCol,
-  CFormInput,
-  CInputGroup,
-  CNavLink,
-  CInputGroupText,
+  // CFormInput,
+  // CInputGroup,
+  // CNavLink,
+  // CInputGroupText,
   CRow,
   CTable,
   CTableBody,
   CTableDataCell,
+  CWidgetStatsC,
   CTableHead,
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react';
-import { NavLink } from 'react-router-dom';
+// import { NavLink } from 'react-router-dom';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
 import Chart from 'chart.js/auto';
@@ -129,31 +131,28 @@ class Dashboard extends Component {
     return (
       <>
         <CRow>
-          <CCol xs={12}>
-            <CCard className="mb-4">
-              <CCardHeader>
-                <strong>E-Mail Received</strong>
-              </CCardHeader>
-              <CCardBody className="d-flex justify-content-center">
-                <CCard style={{ width: '18rem', height: '12rem', backgroundColor: '#f8d7da' }} className="me-3">
-                  <CCardBody>
-                    <CCardHeader><strong>Inbox Total</strong></CCardHeader>
-                    <CCardText className="text-center" style={{ fontSize: '5rem' }}>
-                      {inboxCount}
-                    </CCardText>
-                  </CCardBody>
-                </CCard>
-                <CCard style={{ width: '18rem', height: '12rem', backgroundColor: '#d1ecf1' }}>
-                  <CCardBody>
-                    <CCardHeader><strong>Ticket Total</strong></CCardHeader>
-                    <CCardText className="text-center" style={{ fontSize: '5rem' }}>
-                      {ticketCount}
-                    </CCardText>
-                  </CCardBody>
-                </CCard>
-              </CCardBody>
-            </CCard>
-          </CCol>
+        <CCol xs={6}>
+          <CWidgetStatsC
+            className="mb-3"
+            icon={<CIcon icon={cilChartPie} height={36} />}
+            progress={{ color: 'success', value: 75 }}
+            text={inboxCount}
+            title="Inbox Total"
+            value={inboxCount}
+          />
+        </CCol>
+        <CCol xs={6}>
+          <CWidgetStatsC
+            className="mb-3"
+            icon={<CIcon icon={cilChartPie} height={36} />}
+            color="primary"
+            inverse
+            progress={{ value: 75 }}
+            text={ticketCount}
+            title="Ticket Total"
+            value={ticketCount}
+          />
+        </CCol>
         </CRow>
         <CRow>
           <CCol xs={12}>
@@ -171,7 +170,7 @@ class Dashboard extends Component {
           <CCol xs={12}>
             <CCard className="mb-4">
               <CCardHeader>
-                <strong>TICKET TABLE</strong>
+                <strong>TICKETS</strong>
               </CCardHeader>
               <CCardBody>
                 <div style={{ maxHeight: '400px', overflowY: 'auto' }}>

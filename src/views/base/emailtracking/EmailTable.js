@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { cilFilter, cilMagnifyingGlass, cilMediaSkipForward } from '@coreui/icons';
+import { cilMagnifyingGlass } from '@coreui/icons';
 import {
   CButton,
   CCard,
@@ -9,7 +9,7 @@ import {
   CCol,
   CFormInput,
   CInputGroup,
-  CNavLink,
+  // CNavLink,
   CInputGroupText,
   CRow,
   CTable,
@@ -19,7 +19,7 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react';
-import { NavLink } from 'react-router-dom'
+// import { NavLink } from 'react-router-dom'
 
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
@@ -90,7 +90,7 @@ const EmailTable = () => {
                     {filteredEmails.map((email, index) => (
                       <CTableRow key={index}>
                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                        <CTableDataCell>{email.date}</CTableDataCell>
+                        <CTableDataCell style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email.date}</CTableDataCell>
                         <CTableDataCell>{email.time}</CTableDataCell>
                         <CTableDataCell>{email.subject}</CTableDataCell>
                         <CTableDataCell>{email.message}</CTableDataCell>

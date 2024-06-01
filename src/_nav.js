@@ -150,7 +150,7 @@ const _nav = [
     },
     {
       component: CNavItem,
-      name: 'Trigger',
+      name: 'Rules',
       to: '/emailtracking/trigger',
       icon: <CIcon icon={cilSignLanguage} customClassName="nav-icon" />,
     },
