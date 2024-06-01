@@ -22,6 +22,7 @@ import {
   CModal,
   CModalHeader,
   CModalBody,
+  CTooltip,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
@@ -260,9 +261,11 @@ class Trigger extends React.Component {
             <strong>Rules</strong>
           </CCardHeader>
           <CCardBody>
+          <CTooltip content="Add new Rule">
           <CButton type="button" color="primary"  onClick={this.toggleAddModal}>
             Add
           </CButton>
+          </CTooltip>
             
             
             
@@ -290,12 +293,16 @@ class Trigger extends React.Component {
                         <CTableDataCell>{row.trigger_switch ? 'Active' : 'Inactive'}</CTableDataCell>
                         <CTableDataCell>
                         <div className="d-flex gap-2">
+                        <CTooltip content="Edit">
                         <CButton>
                             <CIcon  onClick={this.toggleUpdateModal}  icon={cilPen} />
                          </CButton>
+                         </CTooltip>
+                         <CTooltip content="Delete">
                           <CButton onClick={(e) => { e.stopPropagation(); this.handleDelete(row.id)}}>
                             <CIcon icon={cilTrash} />
                           </CButton>
+                          </CTooltip>
                           </div>
                         </CTableDataCell>
                       </CTableRow>
@@ -348,10 +355,14 @@ class Trigger extends React.Component {
         <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
-            <strong>FILTER TABLE</strong>
+            <strong>FILTERS</strong>
           </CCardHeader>
           <CCardBody>
-            
+            <CTooltip content="Add new Filter">
+          <CButton type="button" color="primary"  onClick={this.toggleAddModalBut}>
+            Add
+          </CButton>
+          </CTooltip>
             
             
               <CTable striped hover>
@@ -372,9 +383,11 @@ class Trigger extends React.Component {
                         <CTableDataCell>{row.value}</CTableDataCell>
                         <CTableDataCell>
                         <div className="d-flex gap-2">
+                        <CTooltip content="Delete">
                         <CButton>
-                            <CIcon onClick={this.toggleAddModalBut} icon={cilPen} />
+                            <CIcon icon={cilTrash} />
                          </CButton>
+                         </CTooltip>
                          </div>
                          </CTableDataCell>
                       </CTableRow>

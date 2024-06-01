@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { cilMagnifyingGlass } from '@coreui/icons';
 import {
   CButton,
   CCard,
@@ -10,7 +9,6 @@ import {
   CFormInput,
   CInputGroup,
   // CNavLink,
-  CInputGroupText,
   CRow,
   CTable,
   CTableBody,
@@ -20,8 +18,6 @@ import {
   CTableRow,
 } from '@coreui/react';
 // import { NavLink } from 'react-router-dom'
-
-import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
 
 const EmailTable = () => {
@@ -61,7 +57,6 @@ const EmailTable = () => {
             <CCardBody>
               <CCol md={4}>
                 <CInputGroup className="flex-nowrap mt-3 col-sg-3">
-                  <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass} /></CInputGroupText>
                   <CFormInput
                     placeholder="Search by Subject or Message"
                     aria-label="Search"

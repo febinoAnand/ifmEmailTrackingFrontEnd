@@ -116,22 +116,22 @@ const routes = [
   { path: '/event/button', name: 'Button', element: Button}, //Event
   { path: '/event/problemcode', name: 'ProblemCode', element: ProblemCode}, //Event
 
-  { path: '/emailtracking/dashboard', name: 'dashboard', element: dashboard}, //EmailTracking
-  { path: '/emailtracking/emailtable', name: 'EmailTable', element: EmailTable}, //EmailTracking
-  { path: '/emailtracking/setting', name: 'SettingData', element: SettingData}, //EmailTracking
-  { path: '/emailtracking/search', name: 'SearchParameter', element: SearchParameter}, //EmailTracking
+  { path: '/emailtracking/dashboard', name: 'EmailTracking / Dashboard', element: dashboard}, //EmailTracking
+  { path: '/emailtracking/emailtable', name: 'EmailTracking / Inbox', element: EmailTable}, //EmailTracking
+  { path: '/emailtracking/setting', name: 'EmailTracking / Setting', element: SettingData}, //EmailTracking
+  { path: '/emailtracking/search', name: 'EmailTracking / SearchParameter', element: SearchParameter}, //EmailTracking
   { path: '/emailtracking/emailsubpage', name: 'EmailSubpage', element: EmailSubpage}, //EmailTracking
-  { path: '/emailtracking/parameter', name: 'EmailSubpage', element: Parameter}, //EmailTracking
-  { path: '/emailtracking/trigger', name: 'Trigger', element: Trigger}, //EmailTracking
-  { path: '/emailtracking/ticketreport', name: 'TicketReport', element: TicketReport}, //EmailTracking
-  { path: '/emailtracking/ticket', name: 'TicketReport', element: Ticket}, //EmailTracking
+  { path: '/emailtracking/parameter', name: 'EmailTracking / Create Fields', element: Parameter}, //EmailTracking
+  { path: '/emailtracking/trigger', name: 'EmailTracking / Rules Engine', element: Trigger}, //EmailTracking
+  { path: '/emailtracking/ticketreport', name: 'EmailTracking / TicketReport', element: TicketReport}, //EmailTracking
+  { path: '/emailtracking/ticket', name: 'EmailTracking / Ticket', element: Ticket}, //EmailTracking
 
-  { path: '/pushnotification/sendreport', name: 'SendReport', element: SendReport}, //PushNotification
-  { path: '/pushnotification/useridentifier', name: 'UserIdentifier', element: UserIdentifier}, //PushNotification
-  { path: '/pushnotification/setting', name: 'Setting', element: Setting}, //PushNotification
+  { path: '/pushnotification/sendreport', name: 'Actions / Notifications / Send Report', element: SendReport}, //PushNotification
+  { path: '/pushnotification/useridentifier', name: 'Actions / Notifications / User Identifier', element: UserIdentifier}, //PushNotification
+  { path: '/pushnotification/setting', name: 'Actions / Notifications / Setting', element: Setting}, //PushNotification
 
-  { path: '/smsgateway/sendreport', name: 'SendReport', element: SendReports}, //SMSGateway
-  { path: '/smsgateway/settings', name: 'Settings', element: Settings}, //SMSGateway
+  { path: '/smsgateway/sendreport', name: 'Actions / SMS Gateway / Send Report', element: SendReports}, //SMSGateway
+  { path: '/smsgateway/settings', name: 'Actions / SMS Gateway / Settings', element: Settings}, //SMSGateway
 
   { path: '/data/activeproblem', name: 'ActiveProblem', element: ActiveProblem}, //data
   { path: '/data/problemdata', name: 'ProblemData', element: ProblemData}, //data

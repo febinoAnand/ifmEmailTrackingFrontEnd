@@ -144,13 +144,13 @@ const _nav = [
     },
     {
       component: CNavItem,
-      name: 'Parameter',
+      name: 'Create Fields',
       to: '/emailtracking/parameter',
       icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
     },
     {
       component: CNavItem,
-      name: 'Rules',
+      name: 'Rules Engine',
       to: '/emailtracking/trigger',
       icon: <CIcon icon={cilSignLanguage} customClassName="nav-icon" />,
     },

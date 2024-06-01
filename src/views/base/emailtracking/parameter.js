@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { cilTrash, cilMagnifyingGlass, cilPen } from '@coreui/icons';
+import { cilTrash, cilPen } from '@coreui/icons';
 import {
   CButton,
   CCard,
@@ -12,7 +12,6 @@ import {
   CFormLabel,
   CFormSelect,
   CInputGroup,
-  CInputGroupText,
   CRow,
   CTable,
   CTableBody,
@@ -23,6 +22,7 @@ import {
   CModal,
   CModalHeader,
   CModalBody,
+  CTooltip,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
@@ -171,12 +171,11 @@ class Parameter extends React.Component {
           <CCol xs={12}>
             <CCard className="mb-4">
               <CCardHeader>
-                <strong>Parameters</strong>
+                <strong>Fields</strong>
               </CCardHeader>
               <CCardBody>
                 <CCol md={4}>
                   <CInputGroup className="flex-nowrap mt-3 col-sg-3">
-                    <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass} /></CInputGroupText>
                     <CFormInput
                       placeholder="Search by Alias, Field, or Data Type"
                       aria-label="Search"
@@ -187,9 +186,11 @@ class Parameter extends React.Component {
                     <CButton type="button" color="secondary" onClick={this.handleSearch}>
                       Search
                     </CButton>
-                    <CButton type="button" color="primary"  onClick={this.toggleAddModal}>
-                      Add
-                    </CButton>
+                    <CTooltip content="Create new parameter">
+                      <CButton type="button" color="primary" onClick={this.toggleAddModal}>
+                        Create
+                      </CButton>
+                    </CTooltip>
                   </CInputGroup>
                 </CCol>
                 <CTable striped hover>
@@ -211,10 +212,14 @@ class Parameter extends React.Component {
                         <CTableDataCell>{parameter.datatype}</CTableDataCell>
                         <CTableDataCell>
                           <div className="d-flex gap-2">
+                          <CTooltip content="Edit">
                             <CButton>
                               <CIcon onClick={this.toggleUpdateModal} icon={cilPen} />
                             </CButton>
+                            </CTooltip>
+                            <CTooltip content="Delete">
                             <CButton onClick={(e) => { e.stopPropagation(); this.handleDelete(parameter.id) }}><CIcon icon={cilTrash} /></CButton>
+                            </CTooltip>
                           </div>
                         </CTableDataCell>
                       </CTableRow>

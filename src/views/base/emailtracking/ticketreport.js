@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import { cilMagnifyingGlass } from '@coreui/icons';
 import {
   CCard,
   CCardBody,
@@ -10,7 +9,6 @@ import {
   CTable,
   CButton,
   CFormInput,
-  CInputGroupText,
   CInputGroup,
   CTableBody,
   CTableDataCell,
@@ -18,7 +16,6 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
 
 class TicketReport extends React.Component {
@@ -68,14 +65,11 @@ class TicketReport extends React.Component {
           <CCol xs={12}>
             <CCard className="mb-4">
               <CCardHeader>
-                <strong>TICKET TABLE</strong>
+                <strong>TICKETS REPORT</strong>
               </CCardHeader>
               <CCardBody>
                 <CCol md={4}>
                   <CInputGroup className="flex-nowrap mt-3 col-sg-3">
-                    <CInputGroupText id="addon-wrapping">
-                      <CIcon icon={cilMagnifyingGlass} />
-                    </CInputGroupText>
                     <CFormInput
                       placeholder="Search by Ticket Name"
                       aria-label="Search"
@@ -96,9 +90,9 @@ class TicketReport extends React.Component {
                         <CTableHeaderCell scope="col">Ticket Name</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Date</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Time</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Message</CTableHeaderCell>
+                        {/* <CTableHeaderCell scope="col">Message</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Extracted json</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Actual json</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Actual json</CTableHeaderCell> */}
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
@@ -108,9 +102,9 @@ class TicketReport extends React.Component {
                           <CTableDataCell>{ticket.ticketname}</CTableDataCell>
                           <CTableDataCell>{ticket.date}</CTableDataCell>
                           <CTableDataCell>{ticket.time}</CTableDataCell>
-                          <CTableDataCell>{ticket.inboxMessage}</CTableDataCell>
+                          {/* <CTableDataCell>{ticket.inboxMessage}</CTableDataCell>
                           <CTableDataCell>{JSON.stringify(ticket.required_json)}</CTableDataCell>
-                          <CTableDataCell>{JSON.stringify(ticket.actual_json)}</CTableDataCell>
+                          <CTableDataCell>{JSON.stringify(ticket.actual_json)}</CTableDataCell> */}
                         </CTableRow>
                       ))}
                     </CTableBody>

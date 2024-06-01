@@ -23,6 +23,7 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
+  CTooltip,
 } from '@coreui/react';
 // import { NavLink } from 'react-router-dom';
 import CIcon from '@coreui/icons-react';
@@ -127,11 +128,19 @@ class Dashboard extends Component {
 
   render() {
     const { inboxCount, ticketCount, fields, ticketData } = this.state;
+    const customTooltipStyle = {
+      '--cui-tooltip-bg': 'var(--cui-primary)',
+    }
 
     return (
       <>
         <CRow>
         <CCol xs={6}>
+        <CTooltip
+          content="This widget shows the total amount of Inbox received."
+          placement="top"
+          style={customTooltipStyle}
+        >
           <CWidgetStatsC
             className="mb-3"
             icon={<CIcon icon={cilChartPie} height={36} />}
@@ -140,8 +149,14 @@ class Dashboard extends Component {
             title="Inbox Total"
             value={inboxCount}
           />
+          </CTooltip>
         </CCol>
         <CCol xs={6}>
+        <CTooltip
+          content="This widget shows the total amount of Tickets received."
+          placement="top"
+          style={customTooltipStyle}
+        >
           <CWidgetStatsC
             className="mb-3"
             icon={<CIcon icon={cilChartPie} height={36} />}
@@ -152,6 +167,7 @@ class Dashboard extends Component {
             title="Ticket Total"
             value={ticketCount}
           />
+          </CTooltip>
         </CCol>
         </CRow>
         <CRow>
