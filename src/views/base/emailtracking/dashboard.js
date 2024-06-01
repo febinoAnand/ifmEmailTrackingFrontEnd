@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { cilChartPie } from '@coreui/icons';
+import { cilInbox, cilTags } from '@coreui/icons';
+
 import {
   // CButton,
   CCard,
@@ -24,11 +25,13 @@ import {
   CTableHeaderCell,
   CTableRow,
   CTooltip,
+  CWidgetStatsD,
 } from '@coreui/react';
 // import { NavLink } from 'react-router-dom';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
 import Chart from 'chart.js/auto';
+import { Line as CChartLine } from 'react-chartjs-2';
 
 class Dashboard extends Component {
   constructor(props) {
@@ -128,47 +131,128 @@ class Dashboard extends Component {
 
   render() {
     const { inboxCount, ticketCount, fields, ticketData } = this.state;
-    const customTooltipStyle = {
-      '--cui-tooltip-bg': 'var(--cui-primary)',
-    }
 
     return (
       <>
-        <CRow>
-        <CCol xs={6}>
-        <CTooltip
-          content="This widget shows the total amount of Inbox received."
-          placement="top"
-          style={customTooltipStyle}
-        >
-          <CWidgetStatsC
-            className="mb-3"
-            icon={<CIcon icon={cilChartPie} height={36} />}
-            progress={{ color: 'success', value: 75 }}
-            text={inboxCount}
-            title="Inbox Total"
-            value={inboxCount}
-          />
-          </CTooltip>
-        </CCol>
-        <CCol xs={6}>
-        <CTooltip
-          content="This widget shows the total amount of Tickets received."
-          placement="top"
-          style={customTooltipStyle}
-        >
-          <CWidgetStatsC
-            className="mb-3"
-            icon={<CIcon icon={cilChartPie} height={36} />}
-            color="primary"
-            inverse
-            progress={{ value: 75 }}
-            text={ticketCount}
-            title="Ticket Total"
-            value={ticketCount}
-          />
-          </CTooltip>
-        </CCol>
+      <CRow>
+          <CCol xs={6}>
+          <CTooltip
+            content="This widget shows the total amount of Inbox received."
+            placement="top"
+          >
+            <CWidgetStatsD
+              className="mb-3"
+              icon={<CIcon className="my-4 text-white" icon={cilInbox} height={52} />}
+              chart={
+                <CChartLine
+                  className="position-absolute w-100 h-100"
+                  data={{
+                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                    datasets: [
+                      {
+                        backgroundColor: 'rgba(255,255,255,.1)',
+                        borderColor: 'rgba(255,255,255,.55)',
+                        pointHoverBackgroundColor: '#fff',
+                        borderWidth: 2,
+
+                        fill: true,
+                      },
+                    ],
+                  }}
+                  options={{
+                    elements: {
+                      line: {
+                        tension: 0.4,
+                      },
+                      point: {
+                        radius: 0,
+                        hitRadius: 10,
+                        hoverRadius: 4,
+                        hoverBorderWidth: 3,
+                      },
+                    },
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: false,
+                      },
+                    },
+                    scales: {
+                      x: {
+                        display: false,
+                      },
+                      y: {
+                        display: false,
+                      },
+                    },
+                  }}
+                />
+              }
+              style={{ '--cui-card-cap-bg': '#3b5998' }}
+              values={[
+                { value: inboxCount },
+                { title: 'Inbox Total' },
+              ]}
+            />
+            </CTooltip>
+          </CCol>
+          <CCol xs={6}>
+          <CTooltip content="This widget shows the total amount of Tickets received." placement="top">
+            <CWidgetStatsD
+              className="mb-3"
+              icon={<CIcon className="my-4 text-white" icon={cilTags} height={52} />}
+              chart={
+                <CChartLine
+                  className="position-absolute w-100 h-100"
+                  data={{
+                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                    datasets: [
+                      {
+                        backgroundColor: 'rgba(255,255,255,.1)',
+                        borderColor: 'rgba(255,255,255,.55)',
+                        pointHoverBackgroundColor: '#fff',
+                        borderWidth: 2,
+                        fill: true,
+                      },
+                    ],
+                  }}
+                  options={{
+                    elements: {
+                      line: {
+                        tension: 0.4,
+                      },
+                      point: {
+                        radius: 0,
+                        hitRadius: 10,
+                        hoverRadius: 4,
+                        hoverBorderWidth: 3,
+                      },
+                    },
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: false,
+                      },
+                    },
+                    scales: {
+                      x: {
+                        display: false,
+                      },
+                      y: {
+                        display: false,
+                      },
+                    },
+                  }}
+                />
+              }
+              style={{ '--cui-card-cap-bg': '#00aced' }}
+              values={[
+                { value: ticketCount },
+                { title: 'Ticket Total' },
+              ]}
+            />
+            </CTooltip>
+          </CCol>
         </CRow>
         <CRow>
           <CCol xs={12}>

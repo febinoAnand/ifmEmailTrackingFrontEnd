@@ -38,6 +38,7 @@ import {
   cilColumns,
   cilInputHdmi,
   cilInput,
+  cibKeycdn,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -172,7 +173,7 @@ const _nav = [
       component: CNavItem,
       name: 'Setting',
       to: '/emailtracking/setting',
-      icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
+      icon: <CIcon icon={cibKeycdn} customClassName="nav-icon" />,
     },
 
     ]
@@ -306,8 +307,17 @@ const _nav = [
     name: 'MQTT',
     to: '/config/mqtt',
     icon: <CIcon icon={cilEqualizer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavTitle,
+    name: 'Setting',
+  },
+  {
+    component: CNavItem,
+    name: 'Settings',
+    to:'/Page/setting',
+    icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
   }
-  
 ]
 
 export default _nav

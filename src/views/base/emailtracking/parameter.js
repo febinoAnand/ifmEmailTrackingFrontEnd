@@ -209,6 +209,7 @@ class Parameter extends React.Component {
                       <CTableHeaderCell scope="col">Alias</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Field</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Data Type</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Groups</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Action</CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
@@ -230,6 +231,7 @@ class Parameter extends React.Component {
                           </span>
                         </CTableDataCell>
                         <CTableDataCell>{parameter.datatype}</CTableDataCell>
+                        <CTableDataCell>{parameter.groups ? parameter.groups.join(', ') : ''}</CTableDataCell>
                         <CTableDataCell>
                           <div className="d-flex gap-2">
                             <CTooltip content="Edit">
@@ -261,54 +263,75 @@ class Parameter extends React.Component {
             <strong>Add Parameter</strong>
           </CModalHeader>
           <CModalBody>
-            <CForm>
-              <CRow className="mb-3">
-                <CFormLabel htmlFor="alias" className="col-sm-2 col-form-label">Alias</CFormLabel>
-                <CCol md={6}>
-                  <CFormInput
-                    type="text"
-                    id="alias"
-                    name="alias"
-                    value={formData.alias}
-                    onChange={this.handleInputChange}
-                  />
-                </CCol>
-              </CRow>
-              <CRow className="mb-3">
-                <CFormLabel htmlFor="field" className="col-sm-2 col-form-label">Field</CFormLabel>
-                <CCol md={6}>
-                  <CFormInput
-                    type="text"
-                    id="field"
-                    name="field"
-                    value={formData.field}
-                    onChange={this.handleInputChange}
-                  />
-                </CCol>
-              </CRow>
-              <CRow className="mb-3">
-                <CFormLabel htmlFor="datatype" className="col-sm-2 col-form-label">Data Type</CFormLabel>
-                <CCol md={6}>
-                  <CFormSelect
-                    id="datatype"
-                    name="datatype"
-                    value={formData.datatype}
-                    onChange={this.handleInputChange}
-                  >
-                    <option value="">Select Data Type</option>
-                    <option value="character">Character</option>
-                    <option value="number">Number</option>
-                  </CFormSelect>
-                </CCol>
-              </CRow>
-              <CRow className="justify-content-center">
-                <CCol xs={1}>
-                  <div className='d-grid gap-2'>
-                    <CButton color="primary" type="button" onClick={this.handleAdd}>Save</CButton>
-                  </div>
-                </CCol>
-              </CRow>
-            </CForm>
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <div style={{ flex: 1, marginLeft: '20px', justifyContent: 'center' }}>
+                <CForm>
+                  <CRow className="mb-3">
+                    <CFormLabel htmlFor="alias" className="col-sm-2 col-form-label">Alias</CFormLabel>
+                    <CCol md={10}>
+                      <CFormInput
+                        type="text"
+                        id="alias"
+                        name="alias"
+                        value={formData.alias}
+                        onChange={this.handleInputChange}
+                      />
+                    </CCol>
+                  </CRow>
+                  <CRow className="mb-3">
+                    <CFormLabel htmlFor="field" className="col-sm-2 col-form-label">Field</CFormLabel>
+                    <CCol md={10}>
+                      <CFormInput
+                        type="text"
+                        id="field"
+                        name="field"
+                        value={formData.field}
+                        onChange={this.handleInputChange}
+                      />
+                    </CCol>
+                  </CRow>
+                  <CRow className="mb-3">
+                    <CFormLabel htmlFor="datatype" className="col-sm-2 col-form-label">Type</CFormLabel>
+                    <CCol md={10}>
+                      <CFormSelect
+                        id="datatype"
+                        name="datatype"
+                        value={formData.datatype}
+                        onChange={this.handleInputChange}
+                      >
+                        <option value="">Select Type</option>
+                        <option value="character">Character</option>
+                        <option value="number">Number</option>
+                      </CFormSelect>
+                    </CCol>
+                  </CRow>
+                  <CRow className="mb-3">
+                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">Groups</CFormLabel>
+                    <CCol md={10}>
+                      <CFormSelect id="name" name="name" multiple value>
+                      </CFormSelect>
+                    </CCol>
+                  </CRow>
+                  <CRow className="justify-content-center">
+                    <CCol xs={1}>
+                      <div className='d-grid gap-2'>
+                        <CButton color="primary" type="button" onClick={this.handleAdd}>Save</CButton>
+                      </div>
+                    </CCol>
+                  </CRow>
+                </CForm>
+              </div>
+              <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'black' }}>
+                <div style={{ width: '200px', height: '200px',fontSize:12, backgroundColor: 'lightgray', borderRadius: '10px', textAlign: 'center' }}>
+                  <p> 
+                    <br /> * Alias is selected for 
+                    <br /> * In the Fields the needed parameter is given.
+                    <br /> * In the types in which formate the data can be readed is given.
+                    <br /> * the user required  groups where the data can be send is selected in groups.
+                  </p>
+                </div>
+              </div>
+            </div>
           </CModalBody>
         </CModal>
 
@@ -322,10 +345,12 @@ class Parameter extends React.Component {
             <strong>Update Parameter</strong>
           </CModalHeader>
           <CModalBody>
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <div style={{ flex: 1, marginLeft: '20px', justifyContent: 'center' }}>
             <CForm>
               <CRow className="mb-3">
                 <CFormLabel htmlFor="alias" className="col-sm-2 col-form-label">Alias</CFormLabel>
-                <CCol md={6}>
+                <CCol md={10}>
                   <CFormInput
                     type="text"
                     id="alias"
@@ -337,7 +362,7 @@ class Parameter extends React.Component {
               </CRow>
               <CRow className="mb-3">
                 <CFormLabel htmlFor="field" className="col-sm-2 col-form-label">Field</CFormLabel>
-                <CCol md={6}>
+                <CCol md={10}>
                   <CFormInput
                     type="text"
                     id="field"
@@ -349,7 +374,7 @@ class Parameter extends React.Component {
               </CRow>
               <CRow className="mb-3">
                 <CFormLabel htmlFor="datatype" className="col-sm-2 col-form-label">Data Type</CFormLabel>
-                <CCol md={6}>
+                <CCol md={10}>
                   <CFormSelect
                     id="datatype"
                     name="datatype"
@@ -362,6 +387,13 @@ class Parameter extends React.Component {
                   </CFormSelect>
                 </CCol>
               </CRow>
+              <CRow className="mb-3">
+                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">Groups</CFormLabel>
+                      <CCol md={10}>
+                        <CFormSelect id="name" name="name" multiple value>
+                    </CFormSelect>
+                  </CCol>
+              </CRow>
               <CRow className="justify-content-center">
                 <CCol xs={1}>
                   <div className='d-grid gap-2'>
@@ -370,6 +402,18 @@ class Parameter extends React.Component {
                 </CCol>
               </CRow>
             </CForm>
+            </div>
+              <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'black' }}>
+                <div style={{ width: '200px', height: '200px',fontSize:12, backgroundColor: 'lightgray', borderRadius: '10px', textAlign: 'center' }}>
+                  <p> 
+                    <br /> * Alias is selected for 
+                    <br /> * In the Fields the needed parameter is given.
+                    <br /> * In the types in which formate the data can be readed is given.
+                    <br /> * the user required  groups where the data can be send is selected in groups.
+                  </p>
+                </div>
+              </div>
+            </div>
           </CModalBody>
         </CModal>
       </>

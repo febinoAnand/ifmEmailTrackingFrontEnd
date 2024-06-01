@@ -110,6 +110,13 @@ class TicketReport extends React.Component {
                     </CTableBody>
                   </CTable>
                 </div>
+                <CRow className="justify-content-center mt-4">
+                    <CCol xs={1}>
+                      <div className='d-grid gap-2'>
+                          <CButton color="primary" type="submit" >Download</CButton>
+                      </div>
+                    </CCol>
+                  </CRow>
               </CCardBody>
             </CCard>
           </CCol>
