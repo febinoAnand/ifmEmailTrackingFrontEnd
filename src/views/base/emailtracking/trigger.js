@@ -23,6 +23,7 @@ import {
   CModalHeader,
   CModalBody,
   CTooltip,
+  CFormSwitch,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
@@ -249,6 +250,32 @@ class Trigger extends React.Component {
     }));
   };
 
+  handleStatusToggle = (id) => {
+    const triggerToUpdate = this.state.trigger.find(item => item.id === id);
+    const updatedStatus = !triggerToUpdate.trigger_switch;
+  
+    axios.put(`${BaseURL}emailtracking/trigger/${id}/`, { trigger_switch: updatedStatus })
+      .then(response => {
+        this.setState(prevState => ({
+          trigger: prevState.trigger.map(item => 
+            item.id === id ? { ...item, trigger_switch: updatedStatus } : item
+          )
+        }));
+      })
+      .catch(error => {
+        console.error('Error updating trigger status:', error);
+      });
+  };
+
+  generateRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
   render() {
     const { filter, trigger, operator, value, trigger_name, notification_message, group_to_send, trigger_field, send_sms, trigger_switch, send_notification, visibleUpdate, visibleAdd, visibleAddBut } = this.state;
 
@@ -262,8 +289,8 @@ class Trigger extends React.Component {
           </CCardHeader>
           <CCardBody>
           <CTooltip content="Add new Rule">
-          <CButton type="button" color="primary"  onClick={this.toggleAddModal}>
-            Add
+          <CButton type="button" color="primary" className="mb-3" onClick={this.toggleAddModal}>
+            Create
           </CButton>
           </CTooltip>
             
@@ -271,9 +298,9 @@ class Trigger extends React.Component {
             
               <CTable striped hover>
                 <CTableHead>
-                  <CTableRow>
+                  <CTableRow color="dark">
                     <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Trigger Name</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Rule Name</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Field</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Group</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Notification Message</CTableHeaderCell>
@@ -287,19 +314,33 @@ class Trigger extends React.Component {
                       <CTableRow key={index} onClick={() => this.getRowData(row)}>
                         <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                         <CTableDataCell>{row.trigger_name}</CTableDataCell>
-                        <CTableDataCell>{row.trigger_field}</CTableDataCell>
+                        <CTableDataCell>
+                          <span style={{
+                            display: 'inline-block',
+                            padding: '5px 10px',
+                            borderRadius: '12px',
+                            backgroundColor: this.generateRandomColor(),
+                            color: 'white',
+                            fontWeight: 'bold'
+                          }}>
+                            {row.trigger_field}
+                          </span>
+                        </CTableDataCell>
                         <CTableDataCell>{row.group_to_send}</CTableDataCell>
                         <CTableDataCell>{row.notification_message}</CTableDataCell>
-                        <CTableDataCell>{row.trigger_switch ? 'Active' : 'Inactive'}</CTableDataCell>
+                        <CTableDataCell><CFormSwitch
+                            checked={row.trigger_switch}
+                            onChange={() => this.handleStatusToggle(row.id)}
+                          /></CTableDataCell>
                         <CTableDataCell>
                         <div className="d-flex gap-2">
                         <CTooltip content="Edit">
-                        <CButton>
+                        <CButton  style={{ fontSize: '10px', padding: '6px 10px' }}>
                             <CIcon  onClick={this.toggleUpdateModal}  icon={cilPen} />
                          </CButton>
                          </CTooltip>
                          <CTooltip content="Delete">
-                          <CButton onClick={(e) => { e.stopPropagation(); this.handleDelete(row.id)}}>
+                          <CButton  style={{ fontSize: '10px', padding: '6px 10px' }} onClick={(e) => { e.stopPropagation(); this.handleDelete(row.id)}}>
                             <CIcon icon={cilTrash} />
                           </CButton>
                           </CTooltip>
@@ -359,15 +400,15 @@ class Trigger extends React.Component {
           </CCardHeader>
           <CCardBody>
             <CTooltip content="Add new Filter">
-          <CButton type="button" color="primary"  onClick={this.toggleAddModalBut}>
-            Add
+          <CButton type="button" color="primary" className="mb-3" onClick={this.toggleAddModalBut}>
+            Create
           </CButton>
           </CTooltip>
             
             
               <CTable striped hover>
                 <CTableHead>
-                  <CTableRow>
+                  <CTableRow color="dark">
                     <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Operation</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Value</CTableHeaderCell>
@@ -380,13 +421,24 @@ class Trigger extends React.Component {
                       <CTableRow key={index} onClick={() => this.getRowDatas(row)}>
                         <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                         <CTableDataCell>{row.operator}</CTableDataCell>
-                        <CTableDataCell>{row.value}</CTableDataCell>
+                        <CTableDataCell>
+                          <span style={{
+                            display: 'inline-block',
+                            padding: '5px 10px',
+                            borderRadius: '12px',
+                            backgroundColor: this.generateRandomColor(),
+                            color: 'white',
+                            fontWeight: 'bold'
+                          }}>
+                            {row.value}
+                          </span>
+                        </CTableDataCell>
                         <CTableDataCell>
                         <div className="d-flex gap-2">
                         <CTooltip content="Delete">
-                        <CButton>
-                            <CIcon icon={cilTrash} />
-                         </CButton>
+                        <CButton style={{ fontSize: '10px', padding: '6px 10px' }}>
+                          <CIcon icon={cilTrash} />
+                        </CButton>
                          </CTooltip>
                          </div>
                          </CTableDataCell>
@@ -400,6 +452,7 @@ class Trigger extends React.Component {
       </CCol>
       </CRow>
       <CModal
+          size="xl"
           visible={visibleUpdate}
           onClose={this.toggleUpdateModal}
           aria-labelledby="UpdateModalLabel"
@@ -512,6 +565,7 @@ class Trigger extends React.Component {
           </CModalBody>
         </CModal>
         <CModal
+          size="xl"
           visible={visibleAdd}
           onClose={this.toggleAddModal}
           aria-labelledby="UpdateModalLabel"

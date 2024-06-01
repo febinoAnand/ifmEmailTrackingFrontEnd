@@ -69,7 +69,7 @@ class TicketReport extends React.Component {
               </CCardHeader>
               <CCardBody>
                 <CCol md={4}>
-                  <CInputGroup className="flex-nowrap mt-3 col-sg-3">
+                  <CInputGroup className="flex-nowrap mt-3 mb-4">
                     <CFormInput
                       placeholder="Search by Ticket Name"
                       aria-label="Search"
@@ -84,7 +84,7 @@ class TicketReport extends React.Component {
                 </CCol>
                 <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
                   <CTable striped hover>
-                    <CTableHead>
+                    <CTableHead color='dark'>
                       <CTableRow>
                         <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Ticket Name</CTableHeaderCell>

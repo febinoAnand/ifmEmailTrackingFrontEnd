@@ -191,11 +191,10 @@ class Dashboard extends Component {
               <CCardBody>
                 <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
                   <CTable striped hover>
-                    <CTableHead>
+                    <CTableHead color='dark'>
                       <CTableRow>
                         <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Date</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Time</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Date-Time</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Ticket Name</CTableHeaderCell>
                         {fields.map(field => (
                           <CTableHeaderCell scope="col" key={field.field}>
@@ -208,8 +207,7 @@ class Dashboard extends Component {
                       {ticketData.map((ticket, index) => (
                         <CTableRow key={index}>
                           <CTableHeaderCell>{index + 1}</CTableHeaderCell>
-                          <CTableDataCell>{ticket.date}</CTableDataCell>
-                          <CTableDataCell>{ticket.time}</CTableDataCell>
+                          <CTableDataCell>{ticket.date}  {ticket.time}</CTableDataCell>
                           <CTableDataCell>{ticket.ticketname}</CTableDataCell>
                           {fields.map((field, i) => (
                             <CTableDataCell key={i}>{ticket.required_json[field.field]}</CTableDataCell>

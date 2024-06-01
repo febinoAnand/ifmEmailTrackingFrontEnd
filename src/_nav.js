@@ -36,6 +36,8 @@ import {
   cilSignLanguage,
   cilShortText,
   cilColumns,
+  cilInputHdmi,
+  cilInput,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -247,10 +249,25 @@ const _nav = [
     
   },
   {
-    component: CNavItem,
+    component: CNavGroup,
     name: 'Device',
-    to: '/details/devdetails',
+    
     icon: <CIcon icon={cilCursor} customClassName="nav-icon" />,
+    items:[
+      {
+        component: CNavItem,
+        name: 'Hard Device',
+        to: '/details/devdetails',
+        icon: <CIcon icon={cilInput} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Soft Device',
+        to: '/details/devdetails',
+        icon: <CIcon icon={cilInputHdmi} customClassName="nav-icon" />,
+      },
+    ]
+    
   },
   {
     component: CNavItem,

@@ -100,7 +100,7 @@ const EmailTable = () => {
               </CCol>
               <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
                 <CTable striped hover>
-                  <CTableHead>
+                  <CTableHead color='dark'>
                     <CTableRow>
                       <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Date</CTableHeaderCell>

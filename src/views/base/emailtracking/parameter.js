@@ -162,6 +162,15 @@ class Parameter extends React.Component {
     }));
   };
 
+  generateRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
   render() {
     const { filteredParameters, formData, searchQuery, visibleUpdate, visibleAdd } = this.state;
 
@@ -175,7 +184,7 @@ class Parameter extends React.Component {
               </CCardHeader>
               <CCardBody>
                 <CCol md={4}>
-                  <CInputGroup className="flex-nowrap mt-3 col-sg-3">
+                  <CInputGroup className="flex-nowrap mt-3 mb-4">
                     <CFormInput
                       placeholder="Search by Alias, Field, or Data Type"
                       aria-label="Search"
@@ -195,7 +204,7 @@ class Parameter extends React.Component {
                 </CCol>
                 <CTable striped hover>
                   <CTableHead>
-                    <CTableRow>
+                    <CTableRow color="dark">
                       <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Alias</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Field</CTableHeaderCell>
@@ -208,17 +217,28 @@ class Parameter extends React.Component {
                       <CTableRow key={parameter.id} onClick={() => this.getRowData(parameter)}>
                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                         <CTableDataCell>{parameter.alias}</CTableDataCell>
-                        <CTableDataCell>{parameter.field}</CTableDataCell>
+                        <CTableDataCell>
+                          <span style={{
+                            display: 'inline-block',
+                            padding: '5px 10px',
+                            borderRadius: '12px',
+                            backgroundColor: this.generateRandomColor(),
+                            color: 'white',
+                            fontWeight: 'bold'
+                          }}>
+                            {parameter.field}
+                          </span>
+                        </CTableDataCell>
                         <CTableDataCell>{parameter.datatype}</CTableDataCell>
                         <CTableDataCell>
                           <div className="d-flex gap-2">
-                          <CTooltip content="Edit">
-                            <CButton>
-                              <CIcon onClick={this.toggleUpdateModal} icon={cilPen} />
-                            </CButton>
+                            <CTooltip content="Edit">
+                              <CButton  style={{ fontSize: '10px', padding: '6px 10px' }}>
+                                <CIcon onClick={this.toggleUpdateModal} icon={cilPen} />
+                              </CButton>
                             </CTooltip>
                             <CTooltip content="Delete">
-                            <CButton onClick={(e) => { e.stopPropagation(); this.handleDelete(parameter.id) }}><CIcon icon={cilTrash} /></CButton>
+                              <CButton  style={{ fontSize: '10px', padding: '6px 10px' }} onClick={(e) => { e.stopPropagation(); this.handleDelete(parameter.id) }}><CIcon icon={cilTrash} /></CButton>
                             </CTooltip>
                           </div>
                         </CTableDataCell>
@@ -232,6 +252,7 @@ class Parameter extends React.Component {
         </CRow>
 
         <CModal
+          size="lg"
           visible={visibleAdd}
           onClose={this.toggleAddModal}
           aria-labelledby="AddModalLabel"
@@ -292,6 +313,7 @@ class Parameter extends React.Component {
         </CModal>
 
         <CModal
+          size="lg"
           visible={visibleUpdate}
           onClose={this.toggleUpdateModal}
           aria-labelledby="UpdateModalLabel"

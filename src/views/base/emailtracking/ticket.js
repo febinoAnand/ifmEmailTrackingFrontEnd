@@ -64,7 +64,7 @@ class Ticket extends Component {
               </CCardHeader>
               <CCardBody>
               <CCol md={4}>
-                <CInputGroup className="flex-nowrap mt-3 col-sg-3">
+                <CInputGroup className="flex-nowrap mt-3 mb-4">
                   <CFormInput
                     placeholder="Search by Ticket Name"
                     aria-label="Search"
@@ -79,11 +79,10 @@ class Ticket extends Component {
               </CCol>
                 <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
                   <CTable striped hover>
-                    <CTableHead>
+                    <CTableHead color='dark'>
                       <CTableRow>
                         <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Date</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Time</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Date-Time</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Ticket Name</CTableHeaderCell>
                         {fields.map(field => (
                           <CTableHeaderCell scope="col" key={field.field}>
@@ -96,8 +95,7 @@ class Ticket extends Component {
                       {filteredData.map((ticket, index) => (
                         <CTableRow key={index}>
                           <CTableHeaderCell>{index + 1}</CTableHeaderCell>
-                          <CTableDataCell>{ticket.date}</CTableDataCell>
-                          <CTableDataCell>{ticket.time}</CTableDataCell>
+                          <CTableDataCell>{ticket.date}  {ticket.time}</CTableDataCell>
                           <CTableDataCell>{ticket.ticketname}</CTableDataCell>
                           {fields.map((field, i) => (
                             <CTableDataCell key={i}>{ticket.required_json[field.field]}</CTableDataCell>
