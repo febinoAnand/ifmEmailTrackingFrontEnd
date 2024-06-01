@@ -6,7 +6,7 @@ COPY package-lock.json .
 RUN npm install
 
 COPY . .
-RUN export NODE_OPTIONS="--max-old-space-size=2048"
+ENV GENERATE_SOURCEMAP=false
 RUN npm run build
 
 
