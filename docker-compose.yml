@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    container_name: docker-react-c
+    container_name: andonReact
     image: docker-react-i
     build: 
       context: .
