@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { cibBuffer, cibEmlakjet, cibStackexchange, cibUnsplash } from '@coreui/icons';
 import {
   CButton,
   CCard,
@@ -8,7 +9,6 @@ import {
   CCol,
   CFormInput,
   CInputGroup,
-  // CNavLink,
   CRow,
   CTable,
   CTableBody,
@@ -16,8 +16,11 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
+  CNav,
+  CNavItem,
+  CBadge,
 } from '@coreui/react';
-// import { NavLink } from 'react-router-dom'
+import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
 
 const EmailTable = () => {
@@ -51,12 +54,38 @@ const EmailTable = () => {
       <CRow>
         <CCol xs={12}>
           <CCard className="mb-4">
-            <CCardHeader>
+            <CCardHeader className="d-flex justify-content-between align-items-center">
               <strong>E-Mail box</strong>
+              <CNav>
+                <CNavItem className="mx-2 position-relative">
+                  <CIcon icon={cibBuffer} />
+                  <CBadge color="danger" className="position-absolute top-0 start-100 translate-middle" size="sm">
+                    5
+                  </CBadge>
+                </CNavItem>
+                <CNavItem className="mx-2 position-relative">
+                  <CIcon icon={cibEmlakjet} />
+                  <CBadge color="danger" className="position-absolute top-0 start-100 translate-middle" size="sm">
+                    2
+                  </CBadge>
+                </CNavItem>
+                <CNavItem className="mx-2 position-relative">
+                  <CIcon icon={cibStackexchange} />
+                  <CBadge color="danger" className="position-absolute top-0 start-100 translate-middle" size="sm">
+                    7
+                  </CBadge>
+                </CNavItem>
+                <CNavItem className="mx-2 position-relative">
+                  <CIcon icon={cibUnsplash} />
+                  <CBadge color="danger" className="position-absolute top-0 start-100 translate-middle" size="sm">
+                    3
+                  </CBadge>
+                </CNavItem>
+              </CNav>
             </CCardHeader>
             <CCardBody>
               <CCol md={4}>
-                <CInputGroup className="flex-nowrap mt-3 col-sg-3">
+                <CInputGroup className="flex-nowrap mt-3 mb-4">
                   <CFormInput
                     placeholder="Search by Subject or Message"
                     aria-label="Search"
@@ -78,7 +107,6 @@ const EmailTable = () => {
                       <CTableHeaderCell scope="col">Time</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Subject</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Message</CTableHeaderCell>
-                      {/* <CTableHeaderCell scope="col">Action</CTableHeaderCell> */}
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
@@ -89,13 +117,6 @@ const EmailTable = () => {
                         <CTableDataCell>{email.time}</CTableDataCell>
                         <CTableDataCell>{email.subject}</CTableDataCell>
                         <CTableDataCell>{email.message}</CTableDataCell>
-                        {/* <CTableDataCell>
-                          <CButton>
-                            <CNavLink to={`/emailtracking/emailsubpage/${email.id}`} component={NavLink}>
-                              <CIcon icon={cilMediaSkipForward} />
-                            </CNavLink>
-                          </CButton>
-                        </CTableDataCell> */}
                       </CTableRow>
                     ))}
                   </CTableBody>
