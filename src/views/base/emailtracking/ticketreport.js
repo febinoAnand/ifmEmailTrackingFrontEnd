@@ -86,10 +86,11 @@ class TicketReport extends React.Component {
                   <CTable striped hover>
                     <CTableHead color='dark'>
                       <CTableRow>
-                        <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Ticket Name</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Date</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Time</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Notification Message</CTableHeaderCell>
                         {/* <CTableHeaderCell scope="col">Message</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Extracted json</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Actual json</CTableHeaderCell> */}
@@ -102,6 +103,7 @@ class TicketReport extends React.Component {
                           <CTableDataCell>{ticket.ticketname}</CTableDataCell>
                           <CTableDataCell>{ticket.date}</CTableDataCell>
                           <CTableDataCell>{ticket.time}</CTableDataCell>
+                          <CTableDataCell></CTableDataCell>
                           {/* <CTableDataCell>{ticket.inboxMessage}</CTableDataCell>
                           <CTableDataCell>{JSON.stringify(ticket.required_json)}</CTableDataCell>
                           <CTableDataCell>{JSON.stringify(ticket.actual_json)}</CTableDataCell> */}

@@ -388,7 +388,7 @@ class Trigger extends React.Component {
           aria-labelledby="UpdateModalLabel"
         >
           <CModalHeader>
-            <strong>Add Rule</strong>
+            <strong>Add Filter</strong>
           </CModalHeader>
           <CModalBody>
           {/* <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -396,7 +396,7 @@ class Trigger extends React.Component {
           <CForm>
           <CRow className="mb-3">
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="user_group" className="col-form-label">Operator</CFormLabel>
+                      <CFormLabel htmlFor="user_group" className="col-form-label"><strong>Operator</strong></CFormLabel>
                     </CCol>
                       <CCol md={10}>
                       <CFormSelect id="user_group" name="user_group" value={operator} onChange={this.handleOperatorChange} readOnly>
@@ -412,7 +412,7 @@ class Trigger extends React.Component {
                   </CCol>
                   </CRow>
                   <CRow className="mb-3">
-                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">Value</CFormLabel>
+                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label"><strong>Value</strong></CFormLabel>
                     <CCol md={10}>
                       <CFormInput type="text" id="name" name="name" value={value} onChange={this.handleValueChange}  /><br />
                       <CButton color="primary" type="submit"  onClick={this.handleAddButtonClick} >Save</CButton>
@@ -508,13 +508,13 @@ class Trigger extends React.Component {
                 <CForm>
                 <CRow className="mb-3">
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="trigger_name" className="col-form-label">Trigger Name</CFormLabel>
+                      <CFormLabel htmlFor="trigger_name" className="col-form-label"><strong>Rule Name</strong></CFormLabel>
                     </CCol>
                     <CCol md={4}>
                       <CFormInput type="text" id="trigger_name" name="trigger_name" value={trigger_name} onChange={this.handleInputChange} />
                     </CCol>
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="group_to_send" className="col-form-label">User Group</CFormLabel>
+                      <CFormLabel htmlFor="group_to_send" className="col-form-label"><strong>User Group</strong></CFormLabel>
                     </CCol>
                     <CCol md={4}>
                       <CFormSelect id="group_to_send" name="group_to_send" value={group_to_send} onChange={this.handleInputChange}>
@@ -529,7 +529,7 @@ class Trigger extends React.Component {
                   </CRow>
                   <CRow className="mb-3">
                   <CCol sm={2}>
-                    <CFormLabel htmlFor="trigger_field" className="col-form-label">Field</CFormLabel>
+                    <CFormLabel htmlFor="trigger_field" className="col-form-label"><strong>Field</strong></CFormLabel>
                   </CCol>
                   <CCol md={10}>
                     <CFormSelect id="trigger_field" name="trigger_field" value={trigger_field} onChange={this.handleInputChange}>
@@ -544,7 +544,7 @@ class Trigger extends React.Component {
                 </CRow>
                   <CRow className="mb-3">
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="notification_message" className="col-form-label">Notification Message</CFormLabel>
+                      <CFormLabel htmlFor="notification_message" className="col-form-label"><strong>Notification Message</strong></CFormLabel>
                     </CCol>
                       <CCol md={10}>
                       {/* <CFormSelect id="notification_message" name="notification_message" multiple value={notification_message.split(',')} onChange={this.getMultipleSelect}>
@@ -560,7 +560,7 @@ class Trigger extends React.Component {
                   </CRow>
                   <CRow className="mb-3">
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="trigger_switch" className="col-form-label">Active Status</CFormLabel>
+                      <CFormLabel htmlFor="trigger_switch" className="col-form-label"><strong>Active Status</strong></CFormLabel>
                     </CCol>
                     <CCol md={2}>
                       <CFormSwitch
@@ -571,7 +571,7 @@ class Trigger extends React.Component {
                       />
                     </CCol>
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="send_sms" className="col-form-label">SMS</CFormLabel>
+                      <CFormLabel htmlFor="send_sms" className="col-form-label"><strong>SMS</strong></CFormLabel>
                     </CCol>
                     <CCol md={2}>
                       <CFormSwitch
@@ -582,7 +582,7 @@ class Trigger extends React.Component {
                       />
                     </CCol>
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="send_notification" className="col-form-label">Notify</CFormLabel>
+                      <CFormLabel htmlFor="send_notification" className="col-form-label"><strong>Notify</strong></CFormLabel>
                     </CCol>
                     <CCol md={2}>
                       <CFormSwitch
@@ -633,13 +633,13 @@ class Trigger extends React.Component {
                 <CForm>
                   <CRow className="mb-3">
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="trigger_name" className="col-form-label">Trigger Name</CFormLabel>
+                      <CFormLabel htmlFor="trigger_name" className="col-form-label"><strong>Rule Name</strong></CFormLabel>
                     </CCol>
                     <CCol md={4}>
                       <CFormInput type="text" id="trigger_name" name="trigger_name" value={trigger_name} onChange={this.handleInputChange} />
                     </CCol>
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="group_to_send" className="col-form-label">User Group</CFormLabel>
+                      <CFormLabel htmlFor="group_to_send" className="col-form-label"><strong>User Group</strong></CFormLabel>
                     </CCol>
                     <CCol md={4}>
                     <CFormSelect id="group_to_send" name="group_to_send" value={group_to_send} onChange={this.handleInputChange}>
@@ -654,7 +654,7 @@ class Trigger extends React.Component {
                   </CRow>
                   <CRow className="mb-3">
                   <CCol sm={2}>
-                    <CFormLabel htmlFor="trigger_field" className="col-form-label">Field</CFormLabel>
+                    <CFormLabel htmlFor="trigger_field" className="col-form-label"><strong>Field</strong></CFormLabel>
                   </CCol>
                   <CCol md={10}>
                   <CFormSelect id="trigger_field" name="trigger_field" value={trigger_field} onChange={this.handleInputChange}>
@@ -669,7 +669,7 @@ class Trigger extends React.Component {
                 </CRow>
                   <CRow className="mb-3">
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="notification_message" className="col-form-label">Notification Message</CFormLabel>
+                      <CFormLabel htmlFor="notification_message" className="col-form-label"><strong>Notification Message</strong></CFormLabel>
                     </CCol>
                     <CCol md={10}>
                       {/* <CFormSelect id="notification_message" name="notification_message" multiple value={notification_message.split(',')} onChange={this.getMultipleSelect}>
@@ -687,7 +687,7 @@ class Trigger extends React.Component {
                   </CRow>
                   <CRow className="mb-3">
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="trigger_switch" className="col-form-label">Active Status</CFormLabel>
+                      <CFormLabel htmlFor="trigger_switch" className="col-form-label"><strong>Active Status</strong></CFormLabel>
                     </CCol>
                     <CCol md={2}>
                       <CFormSwitch
@@ -698,7 +698,7 @@ class Trigger extends React.Component {
                       />
                     </CCol>
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="send_sms" className="col-form-label">SMS</CFormLabel>
+                      <CFormLabel htmlFor="send_sms" className="col-form-label"><strong>SMS</strong></CFormLabel>
                     </CCol>
                     <CCol md={2}>
                       <CFormSwitch
@@ -709,7 +709,7 @@ class Trigger extends React.Component {
                       />
                     </CCol>
                     <CCol sm={2}>
-                      <CFormLabel htmlFor="send_notification" className="col-form-label">Notify</CFormLabel>
+                      <CFormLabel htmlFor="send_notification" className="col-form-label"><strong>Notify</strong></CFormLabel>
                     </CCol>
                     <CCol md={2}>
                       <CFormSwitch

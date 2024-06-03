@@ -117,7 +117,7 @@ const EmailTable = () => {
                 <CTable striped hover>
                   <CTableHead color='dark'>
                     <CTableRow>
-                      <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Date</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Time</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Subject</CTableHeaderCell>

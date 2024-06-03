@@ -101,11 +101,33 @@ class Dashboard extends Component {
   updateChart() {
     const { barChartLabels, barChartData } = this.state;
     const ctx = this.chartRef.current.getContext('2d');
-
+  
     if (this.chartInstance) {
       this.chartInstance.destroy();
     }
-
+    const barColors = [
+      'rgba(255, 99, 132, 0.5)',
+    'rgba(54, 162, 235, 0.5)',
+    'rgba(255, 206, 86, 0.5)',
+    'rgba(75, 192, 192, 0.5)',
+    'rgba(153, 102, 255, 0.5)',
+    'rgba(255, 159, 64, 0.5)',
+    'rgba(199, 199, 199, 0.5)',
+    'rgba(255, 99, 71, 0.5)',
+    'rgba(144, 238, 144, 0.5)',
+    'rgba(173, 216, 230, 0.5)',
+    'rgba(240, 128, 128, 0.5)',
+    'rgba(32, 178, 170, 0.5)',
+    'rgba(240, 230, 140, 0.5)',
+    'rgba(123, 104, 238, 0.5)',
+    'rgba(255, 105, 180, 0.5)',
+    'rgba(205, 92, 92, 0.5)',
+    'rgba(50, 205, 50, 0.5)',
+    'rgba(100, 149, 237, 0.5)',
+    'rgba(255, 228, 181, 0.5)',
+    'rgba(147, 112, 219, 0.5)'
+    ];
+  
     this.chartInstance = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -113,8 +135,8 @@ class Dashboard extends Component {
         datasets: [{
           label: 'Ticket Data',
           data: barChartData,
-          backgroundColor: 'rgba(54, 162, 235, 0.5)',
-          borderColor: 'rgba(54, 162, 235, 1)',
+          backgroundColor: barColors.slice(0, barChartData.length),
+          borderColor: barColors.map(color => color.replace('0.5', '1')),
           borderWidth: 1
         }]
       },
@@ -126,7 +148,7 @@ class Dashboard extends Component {
         }
       }
     });
-  }
+  }  
 
   render() {
     const { inboxCount, ticketCount, fields, ticketData } = this.state;
@@ -276,7 +298,7 @@ class Dashboard extends Component {
                   <CTable striped hover>
                     <CTableHead color='dark'>
                       <CTableRow>
-                        <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Date-Time</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Ticket Name</CTableHeaderCell>
                         {fields.map(field => (

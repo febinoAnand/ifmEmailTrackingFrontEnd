@@ -81,7 +81,7 @@ class Ticket extends Component {
                   <CTable striped hover>
                     <CTableHead color='dark'>
                       <CTableRow>
-                        <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Date-Time</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Ticket Name</CTableHeaderCell>
                         {fields.map(field => (

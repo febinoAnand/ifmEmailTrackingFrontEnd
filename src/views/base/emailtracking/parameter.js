@@ -208,17 +208,19 @@ class Parameter extends React.Component {
                     <CButton type="button" color="secondary" onClick={this.handleSearch}>
                       Search
                     </CButton>
-                    <CTooltip content="Create new parameter">
-                      <CButton type="button" color="primary" onClick={this.toggleAddModal}>
-                        Create
-                      </CButton>
-                    </CTooltip>
                   </CInputGroup>
                 </CCol>
+                <CInputGroup className="flex-nowrap mt-3 mb-4">
+                <CTooltip content="Create new parameter">
+                  <CButton type="button" color="primary" onClick={this.toggleAddModal}>
+                    Create
+                  </CButton>
+                </CTooltip>
+                </CInputGroup>
                 <CTable striped hover>
                   <CTableHead>
                     <CTableRow color="dark">
-                      <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Alias</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Field</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Data Type</CTableHeaderCell>
@@ -287,7 +289,7 @@ class Parameter extends React.Component {
               <div style={{ flex: 1, marginLeft: '20px', justifyContent: 'center' }}>
                 <CForm>
                   <CRow className="mb-3">
-                    <CFormLabel htmlFor="alias" className="col-sm-2 col-form-label">Alias</CFormLabel>
+                    <CFormLabel htmlFor="alias" className="col-sm-2 col-form-label"><strong>Alias:</strong></CFormLabel>
                     <CCol md={10}>
                       <CFormInput
                         type="text"
@@ -299,7 +301,7 @@ class Parameter extends React.Component {
                     </CCol>
                   </CRow>
                   <CRow className="mb-3">
-                    <CFormLabel htmlFor="field" className="col-sm-2 col-form-label">Field</CFormLabel>
+                    <CFormLabel htmlFor="field" className="col-sm-2 col-form-label"><strong>Field:</strong></CFormLabel>
                     <CCol md={10}>
                       <CFormInput
                         type="text"
@@ -311,7 +313,7 @@ class Parameter extends React.Component {
                     </CCol>
                   </CRow>
                   <CRow className="mb-3">
-                    <CFormLabel htmlFor="datatype" className="col-sm-2 col-form-label">Type</CFormLabel>
+                    <CFormLabel htmlFor="datatype" className="col-sm-2 col-form-label"><strong>Data Type:</strong></CFormLabel>
                     <CCol md={10}>
                       <CFormSelect
                         id="datatype"
@@ -326,7 +328,7 @@ class Parameter extends React.Component {
                     </CCol>
                   </CRow>
                   <CRow className="mb-3">
-                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">Groups</CFormLabel>
+                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label"><strong>Groups:</strong></CFormLabel>
                     <CCol md={10}>
                     <CFormSelect
                         id="groups"
@@ -361,7 +363,7 @@ class Parameter extends React.Component {
               <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'black' }}>
                 <div style={{ width: '200px', height: '200px',fontSize:12, backgroundColor: 'lightgray', borderRadius: '10px', textAlign: 'center' }}>
                   <p> 
-                    <br /> * Alias is selected for 
+                    <br /> * Alias is selected for giving an unique name.
                     <br /> * In the Fields the needed parameter is given.
                     <br /> * In the types in which formate the data can be readed is given.
                     <br /> * the user required  groups where the data can be send is selected in groups.
@@ -388,7 +390,7 @@ class Parameter extends React.Component {
               <div style={{ flex: 1, marginLeft: '20px', justifyContent: 'center' }}>
             <CForm>
               <CRow className="mb-3">
-                <CFormLabel htmlFor="alias" className="col-sm-2 col-form-label">Alias</CFormLabel>
+                <CFormLabel htmlFor="alias" className="col-sm-2 col-form-label"><strong>Alias:</strong></CFormLabel>
                 <CCol md={10}>
                   <CFormInput
                     type="text"
@@ -400,7 +402,7 @@ class Parameter extends React.Component {
                 </CCol>
               </CRow>
               <CRow className="mb-3">
-                <CFormLabel htmlFor="field" className="col-sm-2 col-form-label">Field</CFormLabel>
+                <CFormLabel htmlFor="field" className="col-sm-2 col-form-label"><strong>Field:</strong></CFormLabel>
                 <CCol md={10}>
                   <CFormInput
                     type="text"
@@ -412,7 +414,7 @@ class Parameter extends React.Component {
                 </CCol>
               </CRow>
               <CRow className="mb-3">
-                <CFormLabel htmlFor="datatype" className="col-sm-2 col-form-label">Data Type</CFormLabel>
+                <CFormLabel htmlFor="datatype" className="col-sm-2 col-form-label"><strong>Data Type:</strong></CFormLabel>
                 <CCol md={10}>
                   <CFormSelect
                     id="datatype"
@@ -427,7 +429,7 @@ class Parameter extends React.Component {
                 </CCol>
               </CRow>
               <CRow className="mb-3">
-                <CFormLabel htmlFor="groups" className="col-sm-2 col-form-label">Groups</CFormLabel>
+                <CFormLabel htmlFor="groups" className="col-sm-2 col-form-label"><strong>Groups:</strong></CFormLabel>
                 <CCol md={10}>
                       <CFormSelect
                         id="groups"
@@ -462,7 +464,7 @@ class Parameter extends React.Component {
               <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'black' }}>
                 <div style={{ width: '200px', height: '200px',fontSize:12, backgroundColor: 'lightgray', borderRadius: '10px', textAlign: 'center' }}>
                   <p> 
-                    <br /> * Alias is selected for 
+                    <br /> * Alias is selected for giving an unique name.
                     <br /> * In the Fields the needed parameter is given.
                     <br /> * In the types in which formate the data can be readed is given.
                     <br /> * the user required  groups where the data can be send is selected in groups.
