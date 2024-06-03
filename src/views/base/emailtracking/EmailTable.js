@@ -132,7 +132,9 @@ const EmailTable = () => {
                         <CTableDataCell style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email.date}</CTableDataCell>
                         <CTableDataCell>{email.time}</CTableDataCell>
                         <CTableDataCell>{email.subject}</CTableDataCell>
+                        <CTooltip placement="top" content="Click to view fully.">
                         <CTableDataCell>{email.message}</CTableDataCell>
+                        </CTooltip>
                         <CTableDataCell>
                         <CTooltip content="Delete">
                           <CButton  style={{ fontSize: '10px', padding: '6px 10px' }}>

@@ -23,6 +23,7 @@ import {
   CModalBody,
   CTooltip,
   CFormSwitch,
+  CFormTextarea,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
@@ -546,15 +547,15 @@ class Trigger extends React.Component {
                       <CFormLabel htmlFor="notification_message" className="col-form-label">Notification Message</CFormLabel>
                     </CCol>
                       <CCol md={10}>
-                      <CFormSelect id="notification_message" name="notification_message" multiple value={notification_message.split(',')} onChange={this.getMultipleSelect}>
+                      {/* <CFormSelect id="notification_message" name="notification_message" multiple value={notification_message.split(',')} onChange={this.getMultipleSelect}>
                         {trigger.flatMap(triggerItem => triggerItem.notification_message.split(',')).map((message, index) => (
                           <option key={index} value={message} selected={notification_message.includes(message)}>
                             {message}
                           </option>
                         ))}
                       </CFormSelect>
-                      <br />
-                        <CFormInput type="text" id="notification_message" name="notification_message" value={notification_message} onChange={this.handleInputChange} />
+                      <br /> */}
+                        <CFormTextarea type="text" id="notification_message" name="notification_message" value={notification_message} onChange={this.handleInputChange} rows={5} />
                   </CCol>
                   </CRow>
                   <CRow className="mb-3">
@@ -671,17 +672,17 @@ class Trigger extends React.Component {
                       <CFormLabel htmlFor="notification_message" className="col-form-label">Notification Message</CFormLabel>
                     </CCol>
                     <CCol md={10}>
-                      <CFormSelect id="notification_message" name="notification_message" multiple value={notification_message.split(',')} onChange={this.getMultipleSelect}>
+                      {/* <CFormSelect id="notification_message" name="notification_message" multiple value={notification_message.split(',')} onChange={this.getMultipleSelect}>
                         {trigger.flatMap(triggerItem => triggerItem.notification_message.split(',')).map((message, index) => (
                           <option key={index} value={message} selected={notification_message.includes(message)}>
                             {message}
                           </option>
                         ))}
                       </CFormSelect>
-                      <br />
-                      <CFormInput type="text" id="notification_message" name="notification_message" value={notification_message} onChange={this.handleInputChange} />
-                      <br />
-                      <CButton color="primary" type="button" >Add</CButton>
+                      <br /> */}
+                      <CFormTextarea type="text" id="notification_message" name="notification_message" value={notification_message} onChange={this.handleInputChange} rows={5}/>
+                      {/* <br />
+                      <CButton color="primary" type="button" >Add</CButton> */}
                     </CCol>
                   </CRow>
                   <CRow className="mb-3">
