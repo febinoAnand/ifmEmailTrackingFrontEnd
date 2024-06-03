@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { cibBuffer, cibEmlakjet, cibStackexchange, cibUnsplash } from '@coreui/icons';
+import { cibBuffer, cibEmlakjet, cibStackexchange, cibUnsplash, cilTrash } from '@coreui/icons';
 import {
   CButton,
   CCard,
@@ -8,6 +8,7 @@ import {
   CCardHeader,
   CCol,
   CFormInput,
+  CFormLabel,
   CInputGroup,
   CRow,
   CTable,
@@ -19,6 +20,13 @@ import {
   CNav,
   CNavItem,
   CBadge,
+  CFormTextarea,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CModalTitle,
+  CTooltip
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
@@ -26,6 +34,8 @@ import BaseURL from 'src/assets/contants/BaseURL';
 const EmailTable = () => {
   const [emails, setEmails] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedEmail, setSelectedEmail] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     fetchEmails();
@@ -42,6 +52,11 @@ const EmailTable = () => {
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
+  };
+
+  const handleRowClick = (email) => {
+    setSelectedEmail(email);
+    setModalVisible(true);
   };
 
   const filteredEmails = emails.filter((email) =>
@@ -107,16 +122,24 @@ const EmailTable = () => {
                       <CTableHeaderCell scope="col">Time</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Subject</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Message</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
                     {filteredEmails.map((email, index) => (
-                      <CTableRow key={index}>
+                      <CTableRow key={index} onClick={() => handleRowClick(email)} style={{ cursor: 'pointer' }}>
                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                         <CTableDataCell style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email.date}</CTableDataCell>
                         <CTableDataCell>{email.time}</CTableDataCell>
                         <CTableDataCell>{email.subject}</CTableDataCell>
                         <CTableDataCell>{email.message}</CTableDataCell>
+                        <CTableDataCell>
+                        <CTooltip content="Delete">
+                          <CButton  style={{ fontSize: '10px', padding: '6px 10px' }}>
+                            <CIcon icon={cilTrash} />
+                          </CButton>
+                        </CTooltip>
+                        </CTableDataCell>
                       </CTableRow>
                     ))}
                   </CTableBody>
@@ -126,6 +149,42 @@ const EmailTable = () => {
           </CCard>
         </CCol>
       </CRow>
+      <CModal size='lg' visible={modalVisible} onClose={() => setModalVisible(false)} backdrop="static" keyboard={false}>
+        <CModalHeader onClose={() => setModalVisible(false)}>
+          <CModalTitle>E-Mail Details</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          {selectedEmail ? (
+            <>
+              <CRow className="mb-3">
+                <CFormLabel htmlFor="fromEmail" className="col-sm-3 col-form-label"><strong>From Email:</strong></CFormLabel>
+                <CCol sm={9}>
+                  <CFormInput type="text" id="fromEmail" value={selectedEmail.from_email} readOnly plainText/>
+                </CCol>
+              </CRow>
+              <CRow className="mb-3">
+                <CFormLabel htmlFor="toEmail" className="col-sm-3 col-form-label"><strong>To Email:</strong></CFormLabel>
+                <CCol sm={9}>
+                  <CFormInput type="text" id="toEmail" value={selectedEmail.to_email} readOnly plainText/>
+                </CCol>
+              </CRow>
+              <CRow className="mb-3">
+                <CFormLabel htmlFor="message" className="col-sm-3 col-form-label"><strong>Message:</strong></CFormLabel>
+                <CCol sm={9}>
+                  <CFormTextarea as="textarea" id="message" value={selectedEmail.message} readOnly rows="15"/>
+                </CCol>
+              </CRow>
+            </>
+          ) : (
+            <p></p>
+          )}
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setModalVisible(false)}>
+            Close
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </>
   );
 };

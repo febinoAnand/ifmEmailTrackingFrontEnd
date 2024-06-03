@@ -20,7 +20,6 @@ import {
   CTable,
   CTableBody,
   CTableDataCell,
-  CWidgetStatsC,
   CTableHead,
   CTableHeaderCell,
   CTableRow,

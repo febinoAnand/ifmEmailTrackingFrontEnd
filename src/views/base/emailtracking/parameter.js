@@ -38,15 +38,18 @@ class Parameter extends React.Component {
         alias: '',
         field: '',
         datatype: '',
+        groups: [],
       },
       searchQuery: '',
       visibleUpdate: false,
       visibleAdd: false,
+      groups: [],
     };
   }
 
   componentDidMount() {
     this.fetchParameters();
+    this.fetchGroups(); 
   }
 
   fetchParameters = () => {
@@ -171,8 +174,18 @@ class Parameter extends React.Component {
     return color;
   };
 
+  fetchGroups = () => {
+    axios.get(BaseURL + "app/groups/")
+      .then(response => {
+        this.setState({ groups: response.data });
+      })
+      .catch(error => {
+        console.error('Error fetching groups:', error);
+      });
+  };
+
   render() {
-    const { filteredParameters, formData, searchQuery, visibleUpdate, visibleAdd } = this.state;
+    const { filteredParameters, formData, searchQuery, visibleUpdate, visibleAdd, groups } = this.state;
 
     return (
       <>
@@ -231,7 +244,12 @@ class Parameter extends React.Component {
                           </span>
                         </CTableDataCell>
                         <CTableDataCell>{parameter.datatype}</CTableDataCell>
-                        <CTableDataCell>{parameter.groups ? parameter.groups.join(', ') : ''}</CTableDataCell>
+                        <CTableDataCell>
+                          {parameter.groups && parameter.groups.map(groupId => {
+                            const group = groups.find(group => group.id === groupId);
+                            return group ? group.name : '';
+                          }).join(', ')}
+                        </CTableDataCell>
                         <CTableDataCell>
                           <div className="d-flex gap-2">
                             <CTooltip content="Edit">
@@ -256,6 +274,8 @@ class Parameter extends React.Component {
         <CModal
           size="lg"
           visible={visibleAdd}
+          backdrop="static" 
+          keyboard={false}
           onClose={this.toggleAddModal}
           aria-labelledby="AddModalLabel"
         >
@@ -308,7 +328,24 @@ class Parameter extends React.Component {
                   <CRow className="mb-3">
                     <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">Groups</CFormLabel>
                     <CCol md={10}>
-                      <CFormSelect id="name" name="name" multiple value>
+                    <CFormSelect
+                        id="groups"
+                        name="groups"
+                        multiple
+                        value={formData.groups}
+                        onChange={(e) => {
+                          const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+                          this.setState(prevState => ({
+                            formData: {
+                              ...prevState.formData,
+                              groups: selectedOptions,
+                            },
+                          }));
+                        }}
+                      >
+                        {groups.map(group => (
+                          <option key={group.id} value={group.id}>{group.name}</option>
+                        ))}
                       </CFormSelect>
                     </CCol>
                   </CRow>
@@ -338,6 +375,8 @@ class Parameter extends React.Component {
         <CModal
           size="lg"
           visible={visibleUpdate}
+          backdrop="static" 
+          keyboard={false}
           onClose={this.toggleUpdateModal}
           aria-labelledby="UpdateModalLabel"
         >
@@ -388,12 +427,29 @@ class Parameter extends React.Component {
                 </CCol>
               </CRow>
               <CRow className="mb-3">
-                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">Groups</CFormLabel>
-                      <CCol md={10}>
-                        <CFormSelect id="name" name="name" multiple value>
-                    </CFormSelect>
-                  </CCol>
-              </CRow>
+                <CFormLabel htmlFor="groups" className="col-sm-2 col-form-label">Groups</CFormLabel>
+                <CCol md={10}>
+                      <CFormSelect
+                        id="groups"
+                        name="groups"
+                        multiple
+                        value={formData.groups}
+                        onChange={(e) => {
+                          const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+                          this.setState(prevState => ({
+                            formData: {
+                              ...prevState.formData,
+                              groups: selectedOptions,
+                            },
+                          }));
+                        }}
+                      >
+                        {groups.map(group => (
+                          <option key={group.id} value={group.id}>{group.name}</option>
+                        ))}
+                      </CFormSelect>
+                    </CCol>
+                  </CRow>
               <CRow className="justify-content-center">
                 <CCol xs={1}>
                   <div className='d-grid gap-2'>

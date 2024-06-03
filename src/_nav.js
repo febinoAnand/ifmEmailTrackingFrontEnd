@@ -264,7 +264,7 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Soft Device',
-        to: '/details/devdetails',
+        to: '/details/softdetails',
         icon: <CIcon icon={cilInputHdmi} customClassName="nav-icon" />,
       },
     ]
