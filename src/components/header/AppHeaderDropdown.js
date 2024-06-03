@@ -1,28 +1,28 @@
 import React from 'react'
 import {
-  CAvatar,
-  CBadge,
+  // CAvatar,
+  // CBadge,
   CDropdown,
-  CDropdownDivider,
-  CDropdownHeader,
+  // CDropdownDivider,
+  // CDropdownHeader,
   CDropdownItem,
   CDropdownMenu,
   CDropdownToggle,
 } from '@coreui/react'
 import {
-  cilBell,
-  cilCreditCard,
-  cilCommentSquare,
-  cilEnvelopeOpen,
-  cilFile,
+  // cilBell,
+  // cilCreditCard,
+  // cilCommentSquare,
+  // cilEnvelopeOpen,
+  // cilFile,
   cilLockLocked,
-  cilSettings,
-  cilTask,
+  // cilSettings,
+  // cilTask,
   cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 
-import avatar8 from './../../assets/images/avatars/8.jpg'
+// import avatar8 from './../../assets/images/avatars/8.jpg'
 
 const AppHeaderDropdown = () => {
   return (
@@ -31,7 +31,7 @@ const AppHeaderDropdown = () => {
         <CIcon icon={cilUser}></CIcon>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownHeader className="bg-light fw-semibold py-2">Account</CDropdownHeader>
+        {/* <CDropdownHeader className="bg-light fw-semibold py-2">Account</CDropdownHeader>
         <CDropdownItem href="#">
           <CIcon icon={cilBell} className="me-2" />
           Updates
@@ -83,10 +83,10 @@ const AppHeaderDropdown = () => {
             42
           </CBadge>
         </CDropdownItem>
-        <CDropdownDivider />
+        <CDropdownDivider /> */}
         <CDropdownItem href="#">
           <CIcon icon={cilLockLocked} className="me-2" />
-          Lock Account
+          Log Out
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>

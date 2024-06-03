@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { cilTrash } from '@coreui/icons';
+import { cilTrash, cilPen } from '@coreui/icons';
 import {
   CButton,
   CCard,
@@ -12,13 +12,18 @@ import {
   CFormLabel,
   CFormSelect,
   CRow,
-  CFormCheck,
   CTable,
   CTableBody,
   CTableDataCell,
   CTableHead,
   CTableHeaderCell,
   CTableRow,
+  CModal,
+  CModalHeader,
+  CModalBody,
+  CTooltip,
+  CFormSwitch,
+  CFormTextarea,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
@@ -37,12 +42,19 @@ class Trigger extends React.Component {
     trigger_switch: false,
     send_sms: false,
     send_notification: false,
-    parameter_filter_list: []
+    parameter_filter_list: [],
+    parameterFields: [],
+    groups: [],
+    visibleUpdate: false,
+    visibleAdd: false,
+    visibleAddBut: false,
   };
 
   componentDidMount() {
     this.fetchFilterData();
     this.fetchTriggerData();
+    this.fetchParameterFields();
+    this.fetchGroups();
   }
 
   fetchFilterData = () => {
@@ -55,10 +67,30 @@ class Trigger extends React.Component {
       });
   };
 
+  fetchParameterFields = () => {
+    axios.get(BaseURL + "emailtracking/parameter/")
+      .then(response => {
+        this.setState({ parameterFields: response.data.map(item => item.field)}); 
+      })
+      .catch(error => {
+        console.error('Error fetching parameter fields:', error);
+      });
+  };
+
+  fetchGroups = () => {
+    axios.get(BaseURL + "app/groups/")
+      .then(response => {
+        this.setState({ groups: response.data.map(groups => groups.name)});
+      })
+      .catch(error => {
+        console.error('Error fetching groups:', error);
+      });
+  };
+
   fetchTriggerData = () => {
     axios.get(BaseURL+'emailtracking/trigger/')
       .then(response => {
-        this.setState({ trigger: response.data });
+        this.setState({ trigger: response.data.reverse() });
       })
       .catch(error => {
         console.error('Error fetching trigger data:', error);
@@ -84,6 +116,7 @@ class Trigger extends React.Component {
     axios.post(BaseURL +"emailtracking/filter/", newData)
       .then(response => {
         console.log('Data added successfully:', response.data);
+        this.toggleAddModalBut();
       })
       .catch(error => {
         console.error('Error adding data:', error);
@@ -172,6 +205,7 @@ class Trigger extends React.Component {
       .post(BaseURL + "emailtracking/trigger/", newTriggerData)
       .then(response => {
         console.log('Data added successfully:', response.data);
+        this.toggleAddModal();
       })
       .catch(error => {
         console.error('Error adding data:', error);
@@ -201,6 +235,7 @@ class Trigger extends React.Component {
       .then(response => {
         console.log('Data updated successfully:', response.data);
         this.fetchTriggerData();
+        this.toggleUpdateModal();
       })
       .catch(error => {
         console.error('Error updating data:', error);
@@ -221,199 +256,75 @@ class Trigger extends React.Component {
       });
   };
 
+  toggleUpdateModal = () => {
+    this.setState(prevState => ({
+      visibleUpdate: !prevState.visibleUpdate,
+    }));
+  };
+
+  toggleAddModal = () => {
+    this.setState(prevState => ({
+      visibleAdd: !prevState.visibleAdd,
+    }));
+  };
+
+  toggleAddModalBut = () => {
+    this.setState(prevState => ({
+      visibleAddBut: !prevState.visibleAddBut,
+    }));
+  };
+
+  handleStatusToggle = (id) => {
+    const triggerToUpdate = this.state.trigger.find(item => item.id === id);
+    const updatedStatus = !triggerToUpdate.trigger_switch;
+  
+    axios.put(`${BaseURL}emailtracking/trigger/${id}/`, { trigger_switch: updatedStatus })
+      .then(response => {
+        this.setState(prevState => ({
+          trigger: prevState.trigger.map(item => 
+            item.id === id ? { ...item, trigger_switch: updatedStatus } : item
+          )
+        }));
+      })
+      .catch(error => {
+        console.error('Error updating trigger status:', error);
+      });
+  };
+
+  generateRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
   render() {
-    const { filter, trigger, operator, value, trigger_name, notification_message, group_to_send, trigger_field, send_sms, trigger_switch, send_notification } = this.state;
+    const { filter, trigger, operator, value, trigger_name, notification_message, group_to_send, trigger_field, send_sms, trigger_switch, send_notification, visibleUpdate, visibleAdd, visibleAddBut, parameterFields, groups  } = this.state;
 
     return (
       <>
-    
-        <CRow>
-          <CCol xs={12}>
-            <CCard className="mb-4">
-              <CCardHeader>
-                <strong>Trigger</strong>
-              </CCardHeader>
-              <CCardBody>
-                <CForm>
-                <CRow className="mb-3">
-                  <CFormLabel htmlFor="trigger_name" className="col-sm-2 col-form-label">Trigger Name</CFormLabel>
-                  <CCol md={6}>
-                    <CFormInput type="text" id="trigger_name" name="trigger_name" value={trigger_name} onChange={this.handleInputChange}/>
-                  </CCol>
-                </CRow>
-                  <CRow className="mb-3">
-                    <CCol sm={2}>
-                      <CFormLabel htmlFor="trigger_field" className="col-form-label">Field</CFormLabel>
-                    </CCol>
-                      <CCol md={6}>
-                      <CFormSelect id="trigger_field" name="trigger_field" value={trigger_field} onChange={this.handleInputChange}>
-                        <option value="">Select Field</option>
-                        {trigger.map((field, index) => (
-                          <option key={index} value={field.trigger_field}>
-                            {field.trigger_field}
-                          </option>
-                        ))}
-                      </CFormSelect>
-                  </CCol>
-                  </CRow>
-                  <CRow className="mb-3">
-                    <CCol sm={2}>
-                      <CFormLabel htmlFor="group_to_send" className="col-form-label">User Group</CFormLabel>
-                    </CCol>
-                      <CCol md={6}>
-                      <CFormSelect id="group_to_send" name="group_to_send" value={group_to_send} onChange={this.handleInputChange}>
-                        <option value="">Select User Group</option>
-                        {trigger.map((group, index) => (
-                          <option key={index} value={group.group_to_send}>
-                            {group.group_to_send}
-                          </option>
-                        ))}
-                      </CFormSelect>
-                  </CCol>
-                  </CRow>
-                  <CRow className="mb-3">
-                    <CCol sm={2}>
-                      <CFormLabel htmlFor="notification_message" className="col-form-label">Notification Message</CFormLabel>
-                    </CCol>
-                      <CCol md={6}>
-                      <CFormSelect id="notification_message" name="notification_message" multiple value={notification_message.split(',')} onChange={this.getMultipleSelect}>
-                        {trigger.flatMap(triggerItem => triggerItem.notification_message.split(',')).map((message, index) => (
-                          <option key={index} value={message} selected={notification_message.includes(message)}>
-                            {message}
-                          </option>
-                        ))}
-                      </CFormSelect>
-                  </CCol>
-                  </CRow>
-                  <CRow className="mb-3">
-                    <CCol sm={2}>
-                      <CFormLabel htmlFor="trigger_switch" className="col-form-label">Status</CFormLabel>
-                    </CCol>
-                      <CCol md={6}>
-                      <CFormCheck
-                        type="checkbox"
-                        id="trigger_switch"
-                        name="trigger_switch"
-                        checked={trigger_switch}
-                        onChange={(e) => this.setState({ trigger_switch: e.target.checked })}
-                      />
-                  </CCol>
-                  </CRow>
-                  <CRow className="mb-3">
-                    <CCol sm={2}>
-                      <CFormLabel htmlFor="send_sms" className="col-form-label">SMS</CFormLabel>
-                    </CCol>
-                      <CCol md={6}>
-                      <CFormCheck
-                        type="checkbox"
-                        id="send_sms"
-                        name="send_sms"
-                        checked={send_sms}
-                        onChange={(e) => this.setState({ send_sms: e.target.checked })}
-                      />
-                  </CCol>
-                  </CRow>
-                  <CRow className="mb-3">
-                    <CCol sm={2}>
-                      <CFormLabel htmlFor="user_group" className="col-form-label">Notify</CFormLabel>
-                    </CCol>
-                      <CCol md={6}>
-                      <CFormCheck
-                        type="checkbox"
-                        id="send_notification"
-                        name="send_notification"
-                        checked={send_notification}
-                        onChange={(e) => this.setState({ send_notification: e.target.checked })}
-                      />
-                  </CCol>
-                  </CRow>
-                  <CRow className="mb-3">
-                    <CCol sm={2}>
-                      <CFormLabel htmlFor="user_group" className="col-form-label">Operator</CFormLabel>
-                    </CCol>
-                      <CCol md={6}>
-                      <CFormSelect id="user_group" name="user_group" value={operator} onChange={this.handleOperatorChange} readOnly>
-                        <option></option>
-                        <option>greater than</option>
-                        <option>less than</option>
-                        <option>equals</option>
-                        <option>not equals</option>
-                      </CFormSelect>
-                  </CCol>
-                  </CRow>
-                  <CRow className="mb-3">
-                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">Value</CFormLabel>
-                    <CCol md={6}>
-                      <CFormInput type="text" id="name" name="name" value={value} onChange={this.handleValueChange}  /><br />
-                      <CButton color="primary" type="submit"  onClick={this.handleAddButtonClick} >Add</CButton>
-                    </CCol>
-                  </CRow>
-                </CForm>
-                <CCard className="mb-4">
-          <CCardHeader>
-            <strong>FILTER TABLE</strong>
-          </CCardHeader>
-          <CCardBody>
-            
-            
-            
-              <CTable striped hover>
-                <CTableHead>
-                  <CTableRow>
-                    <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Operation</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Value</CTableHeaderCell>
-                    
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                    {filter.map((row, index) => (
-                      <CTableRow key={index} onClick={() => this.getRowDatas(row)}>
-                        <CTableHeaderCell>{index + 1}</CTableHeaderCell>
-                        <CTableDataCell>{row.operator}</CTableDataCell>
-                        <CTableDataCell>{row.value}</CTableDataCell>
-                      </CTableRow>
-                    ))}
-                  </CTableBody>
-              </CTable>
-              
-              
-            
-          </CCardBody>
-          
-        </CCard>
-        <CRow className="justify-content-center">
-                  <CCol xs={1}>
-                    <div className='d-grid gap-2'>
-                        <CButton color="primary" type="submit"  onClick={this.handleAddTriggerButtonClick} >Add</CButton>
-                    </div>
-                  </CCol>
-                  <CCol xs={1}>
-                    <div className='d-grid gap-2'>
-                        <CButton color="primary" type="button" onClick={this.handleUpdateButtonClick} >Update</CButton>
-                    </div>
-                  </CCol>
-                  </CRow>
-              </CCardBody>
-            </CCard>
-            
-      </CCol>
-      </CRow>
-      <CRow>
+         <CRow>
         <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
-            <strong>TRIGGER TABLE</strong>
+            <strong>Rules</strong>
           </CCardHeader>
           <CCardBody>
+          <CTooltip content="Add new Rule">
+          <CButton type="button" color="primary" className="mb-3" onClick={this.toggleAddModal}>
+            Create
+          </CButton>
+          </CTooltip>
             
             
             
               <CTable striped hover>
                 <CTableHead>
-                  <CTableRow>
-                    <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Trigger Name</CTableHeaderCell>
+                  <CTableRow color="dark">
+                    <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Rule Name</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Field</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Group</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Notification Message</CTableHeaderCell>
@@ -427,14 +338,37 @@ class Trigger extends React.Component {
                       <CTableRow key={index} onClick={() => this.getRowData(row)}>
                         <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                         <CTableDataCell>{row.trigger_name}</CTableDataCell>
-                        <CTableDataCell>{row.trigger_field}</CTableDataCell>
+                        <CTableDataCell>
+                          <span style={{
+                            display: 'inline-block',
+                            padding: '5px 10px',
+                            borderRadius: '12px',
+                            backgroundColor: this.generateRandomColor(),
+                            color: 'white',
+                            fontWeight: 'bold'
+                          }}>
+                            {row.trigger_field}
+                          </span>
+                        </CTableDataCell>
                         <CTableDataCell>{row.group_to_send}</CTableDataCell>
                         <CTableDataCell>{row.notification_message}</CTableDataCell>
-                        <CTableDataCell>{row.trigger_switch ? 'Active' : 'Inactive'}</CTableDataCell>
+                        <CTableDataCell><CFormSwitch
+                            checked={row.trigger_switch}
+                            onChange={() => this.handleStatusToggle(row.id)}
+                          /></CTableDataCell>
                         <CTableDataCell>
-                          <CButton onClick={(e) => { e.stopPropagation(); this.handleDelete(row.id)}}>
+                        <div className="d-flex gap-2">
+                        <CTooltip content="Edit">
+                        <CButton  style={{ fontSize: '10px', padding: '6px 10px' }} onClick={this.toggleUpdateModal} >
+                            <CIcon icon={cilPen} />
+                         </CButton>
+                         </CTooltip>
+                         <CTooltip content="Delete">
+                          <CButton  style={{ fontSize: '10px', padding: '6px 10px' }} onClick={(e) => { e.stopPropagation(); this.handleDelete(row.id)}}>
                             <CIcon icon={cilTrash} />
                           </CButton>
+                          </CTooltip>
+                          </div>
                         </CTableDataCell>
                       </CTableRow>
                     ))}
@@ -445,6 +379,370 @@ class Trigger extends React.Component {
         </CCard>
       </CCol>
       </CRow>
+      <CModal
+          size="lg"
+          visible={visibleAddBut}
+          backdrop="static" 
+          keyboard={false}
+          onClose={this.toggleAddModalBut}
+          aria-labelledby="UpdateModalLabel"
+        >
+          <CModalHeader>
+            <strong>Add Filter</strong>
+          </CModalHeader>
+          <CModalBody>
+          {/* <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <div style={{ flex: 1, marginLeft: '20px', justifyContent: 'center' }}> */}
+          <CForm>
+          <CRow className="mb-3">
+                    <CCol sm={2}>
+                      <CFormLabel htmlFor="user_group" className="col-form-label"><strong>Operator</strong></CFormLabel>
+                    </CCol>
+                      <CCol md={10}>
+                      <CFormSelect id="user_group" name="user_group" value={operator} onChange={this.handleOperatorChange} readOnly>
+                        <option></option>
+                        <option>greater than</option>
+                        <option>greater than or equal</option>
+                        <option>less than or equal</option>
+                        <option>less than</option>
+                        <option>equals</option>
+                        <option>not equals</option>
+                        <option>is exist</option>
+                      </CFormSelect>
+                  </CCol>
+                  </CRow>
+                  <CRow className="mb-3">
+                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label"><strong>Value</strong></CFormLabel>
+                    <CCol md={10}>
+                      <CFormInput type="text" id="name" name="name" value={value} onChange={this.handleValueChange}  /><br />
+                      <CButton color="primary" type="submit"  onClick={this.handleAddButtonClick} >Save</CButton>
+                    </CCol>
+                  </CRow>
+                </CForm>
+                {/* </div>
+              <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'black' }}>
+                <div style={{ width: '200px', height: '200px',fontSize:12, backgroundColor: 'lightgray', borderRadius: '10px', textAlign: 'center' }}>
+                  <p> 
+                    <br /> * You can add the operator and value here.
+                  </p>
+                </div>
+              </div>
+            </div> */}
+          </CModalBody>
+        </CModal>
+      <CRow>
+        <CCol xs={12}>
+        <CCard className="mb-4">
+          <CCardHeader>
+            <strong>FILTERS</strong>
+          </CCardHeader>
+          <CCardBody>
+            <CTooltip content="Add new Filter">
+          <CButton type="button" color="primary" className="mb-3" onClick={this.toggleAddModalBut}>
+            Create
+          </CButton>
+          </CTooltip>
+            
+            
+              <CTable striped hover>
+                <CTableHead>
+                  <CTableRow color="dark">
+                    <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">And / Or</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Operation</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Value</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Action</CTableHeaderCell>
+                    
+                  </CTableRow>
+                </CTableHead>
+                <CTableBody>
+                    {filter.map((row, index) => (
+                      <CTableRow key={index} onClick={() => this.getRowDatas(row)}>
+                        <CTableHeaderCell>{index + 1}</CTableHeaderCell>
+                        <CTableHeaderCell></CTableHeaderCell>
+                        <CTableDataCell>{row.operator}</CTableDataCell>
+                        <CTableDataCell>
+                          <span style={{
+                            display: 'inline-block',
+                            padding: '5px 10px',
+                            borderRadius: '12px',
+                            backgroundColor: this.generateRandomColor(),
+                            color: 'white',
+                            fontWeight: 'bold'
+                          }}>
+                            {row.value}
+                          </span>
+                        </CTableDataCell>
+                        <CTableDataCell>
+                        <div className="d-flex gap-2">
+                        <CTooltip content="Delete">
+                        <CButton style={{ fontSize: '10px', padding: '6px 10px' }}>
+                          <CIcon icon={cilTrash} />
+                        </CButton>
+                         </CTooltip>
+                         </div>
+                         </CTableDataCell>
+                      </CTableRow>
+                    ))}
+                  </CTableBody>
+              </CTable>
+            
+          </CCardBody>
+        </CCard>
+      </CCol>
+      </CRow>
+      <CModal
+          size="lg"
+          visible={visibleUpdate}
+          backdrop="static" 
+          keyboard={false}
+          onClose={this.toggleUpdateModal}
+          aria-labelledby="UpdateModalLabel"
+        >
+          <CModalHeader>
+            <strong>Update Rules</strong>
+          </CModalHeader>
+          <CModalBody>
+          {/* <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <div style={{ flex: 1, marginLeft: '20px', justifyContent: 'center' }}> */}
+                <CForm>
+                <CRow className="mb-3">
+                    <CCol sm={2}>
+                      <CFormLabel htmlFor="trigger_name" className="col-form-label"><strong>Rule Name</strong></CFormLabel>
+                    </CCol>
+                    <CCol md={4}>
+                      <CFormInput type="text" id="trigger_name" name="trigger_name" value={trigger_name} onChange={this.handleInputChange} />
+                    </CCol>
+                    <CCol sm={2}>
+                      <CFormLabel htmlFor="group_to_send" className="col-form-label"><strong>User Group</strong></CFormLabel>
+                    </CCol>
+                    <CCol md={4}>
+                      <CFormSelect id="group_to_send" name="group_to_send" value={group_to_send} onChange={this.handleInputChange}>
+                        <option value=""></option>
+                        {groups.map((name, index) => (
+                          <option key={index} value={name}>
+                            {name}
+                          </option>
+                        ))}
+                      </CFormSelect>
+                    </CCol>
+                  </CRow>
+                  <CRow className="mb-3">
+                  <CCol sm={2}>
+                    <CFormLabel htmlFor="trigger_field" className="col-form-label"><strong>Field</strong></CFormLabel>
+                  </CCol>
+                  <CCol md={10}>
+                    <CFormSelect id="trigger_field" name="trigger_field" value={trigger_field} onChange={this.handleInputChange}>
+                      <option value=""></option>
+                      {parameterFields.map((field, index) => (
+                        <option key={index} value={field}>
+                          {field}
+                        </option>
+                      ))}
+                    </CFormSelect>
+                  </CCol>
+                </CRow>
+                  <CRow className="mb-3">
+                    <CCol sm={2}>
+                      <CFormLabel htmlFor="notification_message" className="col-form-label"><strong>Notification Message</strong></CFormLabel>
+                    </CCol>
+                      <CCol md={10}>
+                      {/* <CFormSelect id="notification_message" name="notification_message" multiple value={notification_message.split(',')} onChange={this.getMultipleSelect}>
+                        {trigger.flatMap(triggerItem => triggerItem.notification_message.split(',')).map((message, index) => (
+                          <option key={index} value={message} selected={notification_message.includes(message)}>
+                            {message}
+                          </option>
+                        ))}
+                      </CFormSelect>
+                      <br /> */}
+                        <CFormTextarea type="text" id="notification_message" name="notification_message" value={notification_message} onChange={this.handleInputChange} rows={5} />
+                  </CCol>
+                  </CRow>
+                  <CRow className="mb-3">
+                    <CCol sm={2}>
+                      <CFormLabel htmlFor="trigger_switch" className="col-form-label"><strong>Active Status</strong></CFormLabel>
+                    </CCol>
+                    <CCol md={2}>
+                      <CFormSwitch
+                        id="trigger_switch"
+                        name="trigger_switch"
+                        checked={trigger_switch}
+                        onChange={(e) => this.setState({ trigger_switch: e.target.checked })}
+                      />
+                    </CCol>
+                    <CCol sm={2}>
+                      <CFormLabel htmlFor="send_sms" className="col-form-label"><strong>SMS</strong></CFormLabel>
+                    </CCol>
+                    <CCol md={2}>
+                      <CFormSwitch
+                        id="send_sms"
+                        name="send_sms"
+                        checked={send_sms}
+                        onChange={(e) => this.setState({ send_sms: e.target.checked })}
+                      />
+                    </CCol>
+                    <CCol sm={2}>
+                      <CFormLabel htmlFor="send_notification" className="col-form-label"><strong>Notify</strong></CFormLabel>
+                    </CCol>
+                    <CCol md={2}>
+                      <CFormSwitch
+                        id="send_notification"
+                        name="send_notification"
+                        checked={send_notification}
+                        onChange={(e) => this.setState({ send_notification: e.target.checked })}
+                      />
+                    </CCol>
+                  </CRow>
+                </CForm>
+                <CRow className="justify-content-center">
+                  <CCol xs={1}>
+                    <div className='d-grid gap-2'>
+                        <CButton color="primary" type="button" onClick={this.handleUpdateButtonClick} >Save</CButton>
+                    </div>
+                  </CCol>
+                  </CRow>
+                  {/* </div>
+              <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'black' }}>
+                <div style={{ width: '200px', height: '200px',fontSize:12, backgroundColor: 'lightgray', borderRadius: '10px', textAlign: 'center' }}>
+                  <p> 
+                    <br /> * Trigger name must unique.
+                    <br /> * In the Fields the needed parameter is given.
+                    <br /> * the user required  groups where the data can be send is selected in groups.
+                    <br /> * Notification message is given by the user for the specific group.
+                    <br /> * In which notifications must be send are also seleted here.
+                  </p>
+                </div>
+              </div>
+            </div> */}
+          </CModalBody>
+        </CModal>
+        <CModal
+          size="lg"
+          visible={visibleAdd}
+          backdrop="static"
+          keyboard={false}
+          onClose={this.toggleAddModal}
+          aria-labelledby="UpdateModalLabel"
+        >
+          <CModalHeader>
+            <strong>Add Rule</strong>
+          </CModalHeader>
+          <CModalBody>
+            {/* <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <div style={{ flex: 1, marginLeft: '20px', justifyContent: 'center' }}> */}
+                <CForm>
+                  <CRow className="mb-3">
+                    <CCol sm={2}>
+                      <CFormLabel htmlFor="trigger_name" className="col-form-label"><strong>Rule Name</strong></CFormLabel>
+                    </CCol>
+                    <CCol md={4}>
+                      <CFormInput type="text" id="trigger_name" name="trigger_name" value={trigger_name} onChange={this.handleInputChange} />
+                    </CCol>
+                    <CCol sm={2}>
+                      <CFormLabel htmlFor="group_to_send" className="col-form-label"><strong>User Group</strong></CFormLabel>
+                    </CCol>
+                    <CCol md={4}>
+                    <CFormSelect id="group_to_send" name="group_to_send" value={group_to_send} onChange={this.handleInputChange}>
+                        <option value=""></option>
+                        {groups.map((name, index) => (
+                          <option key={index} value={name}>
+                            {name}
+                          </option>
+                        ))}
+                      </CFormSelect>
+                    </CCol>
+                  </CRow>
+                  <CRow className="mb-3">
+                  <CCol sm={2}>
+                    <CFormLabel htmlFor="trigger_field" className="col-form-label"><strong>Field</strong></CFormLabel>
+                  </CCol>
+                  <CCol md={10}>
+                  <CFormSelect id="trigger_field" name="trigger_field" value={trigger_field} onChange={this.handleInputChange}>
+                      <option value=""></option>
+                      {parameterFields.map((field, index) => (
+                        <option key={index} value={field}>
+                          {field}
+                        </option>
+                      ))}
+                    </CFormSelect>
+                  </CCol>
+                </CRow>
+                  <CRow className="mb-3">
+                    <CCol sm={2}>
+                      <CFormLabel htmlFor="notification_message" className="col-form-label"><strong>Notification Message</strong></CFormLabel>
+                    </CCol>
+                    <CCol md={10}>
+                      {/* <CFormSelect id="notification_message" name="notification_message" multiple value={notification_message.split(',')} onChange={this.getMultipleSelect}>
+                        {trigger.flatMap(triggerItem => triggerItem.notification_message.split(',')).map((message, index) => (
+                          <option key={index} value={message} selected={notification_message.includes(message)}>
+                            {message}
+                          </option>
+                        ))}
+                      </CFormSelect>
+                      <br /> */}
+                      <CFormTextarea type="text" id="notification_message" name="notification_message" value={notification_message} onChange={this.handleInputChange} rows={5}/>
+                      {/* <br />
+                      <CButton color="primary" type="button" >Add</CButton> */}
+                    </CCol>
+                  </CRow>
+                  <CRow className="mb-3">
+                    <CCol sm={2}>
+                      <CFormLabel htmlFor="trigger_switch" className="col-form-label"><strong>Active Status</strong></CFormLabel>
+                    </CCol>
+                    <CCol md={2}>
+                      <CFormSwitch
+                        id="trigger_switch"
+                        name="trigger_switch"
+                        checked={trigger_switch}
+                        onChange={(e) => this.setState({ trigger_switch: e.target.checked })}
+                      />
+                    </CCol>
+                    <CCol sm={2}>
+                      <CFormLabel htmlFor="send_sms" className="col-form-label"><strong>SMS</strong></CFormLabel>
+                    </CCol>
+                    <CCol md={2}>
+                      <CFormSwitch
+                        id="send_sms"
+                        name="send_sms"
+                        checked={send_sms}
+                        onChange={(e) => this.setState({ send_sms: e.target.checked })}
+                      />
+                    </CCol>
+                    <CCol sm={2}>
+                      <CFormLabel htmlFor="send_notification" className="col-form-label"><strong>Notify</strong></CFormLabel>
+                    </CCol>
+                    <CCol md={2}>
+                      <CFormSwitch
+                        id="send_notification"
+                        name="send_notification"
+                        checked={send_notification}
+                        onChange={(e) => this.setState({ send_notification: e.target.checked })}
+                      />
+                    </CCol>
+                  </CRow>
+                </CForm>
+                <CRow className="justify-content-center">
+                  <CCol xs={1}>
+                    <div className='d-grid gap-2'>
+                      <CButton color="primary" type="submit" onClick={this.handleAddTriggerButtonClick}>Save</CButton>
+                    </div>
+                  </CCol>
+                </CRow>
+              {/* </div>
+              <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'black' }}>
+                <div style={{ width: '200px', height: '200px', fontSize: 12, backgroundColor: 'lightgray', borderRadius: '10px', textAlign: 'center' }}>
+                  <p>
+                    <br /> * Trigger name must be unique.
+                    <br /> * In the Fields the needed parameter is given.
+                    <br /> * The user-required groups where the data can be sent are selected in groups.
+                    <br /> * Notification message is given by the user for the specific group.
+                    <br /> * In which notifications must be sent are also selected here.
+                  </p>
+                </div>
+              </div>
+            </div> */}
+          </CModalBody>
+        </CModal>
       </>
     );
   }

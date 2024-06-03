@@ -24,8 +24,8 @@ class SettingData extends React.Component {
             port: '',
             username: '',
             password: '',
-            checkInterval: '',
-            checkStatus: false,
+            checkinterval: '',
+            checkstatus: false,
             errors: {},
             successMessage: ''
         };
@@ -40,8 +40,8 @@ class SettingData extends React.Component {
             .then(response => {
                 const data = response.data[0];
                 if (data) {
-                    const { id, host, port, username, password, checkInterval, checkStatus } = data;
-                    const validCheckInterval = typeof checkInterval !== 'undefined' ? String(checkInterval) : '';
+                    const { id, host, port, username, password, checkinterval, checkstatus } = data;
+                    const validCheckInterval = typeof checkinterval !== 'undefined' ? String(checkinterval) : '';
 
                     this.setState({ 
                         id,
@@ -49,8 +49,8 @@ class SettingData extends React.Component {
                         port, 
                         username, 
                         password, 
-                        checkInterval: validCheckInterval, 
-                        checkStatus,
+                        checkinterval: validCheckInterval, 
+                        checkstatus,
                     });
                 }
             })
@@ -81,15 +81,15 @@ class SettingData extends React.Component {
         if (Object.keys(errors).length === 0) {
             console.log('Submitted data:', this.state);
     
-            const { id, host, port, username, password, checkInterval, checkStatus } = this.state;
+            const { id, host, port, username, password, checkinterval, checkstatus } = this.state;
             const data = {
                 id,
                 host,
                 port: parseInt(port),
                 username,
                 password,
-                checkInterval: checkInterval !== '' ? parseInt(checkInterval) : null,
-                checkStatus,
+                checkinterval: checkinterval !== '' ? parseInt(checkinterval) : null,
+                checkstatus,
             };
     
             axios.put(`${BaseURL}emailtracking/setting/${id}/`, data)
@@ -107,7 +107,7 @@ class SettingData extends React.Component {
     };
 
     validate = () => {
-        const { host, port, username, password, checkInterval } = this.state;
+        const { host, port, username, password, checkinterval } = this.state;
         const errors = {};
 
         if (!host || !host.trim()) {
@@ -133,15 +133,15 @@ class SettingData extends React.Component {
         } else if (password.length > 50) {
             errors.password = 'Password must be less than 50 characters';
         }
-        if (checkInterval !== '' && (isNaN(checkInterval) || checkInterval < 0 || checkInterval > 3600)) {
-            errors.checkInterval = 'Check Interval must be a number between 0 to 3600';
+        if (checkinterval !== '' && (isNaN(checkinterval) || checkinterval < 0 || checkinterval > 3600)) {
+            errors.checkinterval = 'Check Interval must be a number between 0 to 3600';
         }
     
         return errors;
     };    
 
     render() {
-        const { host, port, username, password, checkInterval, checkStatus, errors, successMessage } = this.state;
+        const { host, port, username, password, checkinterval, checkstatus, errors, successMessage } = this.state;
 
         return (
             <>
@@ -195,7 +195,7 @@ class SettingData extends React.Component {
                                             id="gridRadios1"
                                             value="true"
                                             label="Enable"
-                                            checked={checkStatus === true}
+                                            checked={checkstatus === true}
                                             onChange={this.handleRadioChange}
                                         />
                                         <CFormCheck
@@ -204,7 +204,7 @@ class SettingData extends React.Component {
                                             id="gridRadios2"
                                             value="false"
                                             label="Disable"
-                                            checked={checkStatus === false}
+                                            checked={checkstatus === false}
                                             onChange={this.handleRadioChange}
                                         />
                                         </CCol>
@@ -212,8 +212,8 @@ class SettingData extends React.Component {
                                     <CRow className="mb-3">
                                         <CFormLabel htmlFor="checkInterval" className="col-sm-2 col-form-label">Check Interval</CFormLabel>
                                         <CCol sm={10}>
-                                            <CFormInput type="text" id="checkInterval" name="checkInterval" value={checkInterval} onChange={this.handleChange} />
-                                            {errors.checkInterval && (<div className="text-danger">{errors.checkInterval}</div>)}
+                                            <CFormInput type="text" id="checkInterval" name="checkInterval" value={checkinterval} onChange={this.handleChange} />
+                                            {errors.checkinterval && (<div className="text-danger">{errors.checkinterval}</div>)}
                                         </CCol>
                                     </CRow><br />
                                     <CRow className="justify-content-center">

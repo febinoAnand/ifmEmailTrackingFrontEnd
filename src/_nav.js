@@ -15,6 +15,7 @@ import {
   cilCenterFocus,
   cilUserX,
   cilGroup,
+  cilLaptop,
   cilListRich,
   cilObjectGroup,
   cilBraille,
@@ -35,6 +36,9 @@ import {
   cilSignLanguage,
   cilShortText,
   cilColumns,
+  cilInputHdmi,
+  cilInput,
+  cibKeycdn,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -129,6 +133,12 @@ const _nav = [
     
     icon: <CIcon icon={cilEnvelopeLetter} customClassName="nav-icon" />,
     items:[
+      {
+        component: CNavItem,
+        name: 'Dashboard',
+        to: '/emailtracking/dashboard',
+        icon: <CIcon icon={cilLaptop} customClassName="nav-icon" />,
+      },
     {
       component: CNavItem,
       name: 'Inbox',
@@ -137,13 +147,13 @@ const _nav = [
     },
     {
       component: CNavItem,
-      name: 'Parameter',
+      name: 'Create Fields',
       to: '/emailtracking/parameter',
       icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
     },
     {
       component: CNavItem,
-      name: 'Trigger',
+      name: 'Rules Engine',
       to: '/emailtracking/trigger',
       icon: <CIcon icon={cilSignLanguage} customClassName="nav-icon" />,
     },
@@ -163,7 +173,7 @@ const _nav = [
       component: CNavItem,
       name: 'Setting',
       to: '/emailtracking/setting',
-      icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
+      icon: <CIcon icon={cibKeycdn} customClassName="nav-icon" />,
     },
 
     ]
@@ -240,10 +250,25 @@ const _nav = [
     
   },
   {
-    component: CNavItem,
+    component: CNavGroup,
     name: 'Device',
-    to: '/details/devdetails',
+    
     icon: <CIcon icon={cilCursor} customClassName="nav-icon" />,
+    items:[
+      {
+        component: CNavItem,
+        name: 'Hard Device',
+        to: '/details/devdetails',
+        icon: <CIcon icon={cilInput} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Soft Device',
+        to: '/details/softdetails',
+        icon: <CIcon icon={cilInputHdmi} customClassName="nav-icon" />,
+      },
+    ]
+    
   },
   {
     component: CNavItem,
@@ -282,8 +307,17 @@ const _nav = [
     name: 'MQTT',
     to: '/config/mqtt',
     icon: <CIcon icon={cilEqualizer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavTitle,
+    name: 'Setting',
+  },
+  {
+    component: CNavItem,
+    name: 'Settings',
+    to:'/Page/setting',
+    icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
   }
-  
 ]
 
 export default _nav

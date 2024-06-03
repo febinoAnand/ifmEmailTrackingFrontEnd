@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-
 import {
   CCard,
   CCardBody,
@@ -8,6 +7,9 @@ import {
   CCol,
   CRow,
   CTable,
+  CButton,
+  CFormInput,
+  CInputGroup,
   CTableBody,
   CTableDataCell,
   CTableHead,
@@ -21,6 +23,8 @@ class TicketReport extends React.Component {
     super(props);
     this.state = {
       tickets: [],
+      filteredTickets: [],
+      searchQuery: '',
     };
   }
 
@@ -32,15 +36,28 @@ class TicketReport extends React.Component {
     axios
       .get(BaseURL + 'emailtracking/ticket/')
       .then((response) => {
-        this.setState({ tickets: response.data });
+        const reversedTickets = response.data.slice().reverse();
+        this.setState({ tickets: reversedTickets, filteredTickets: reversedTickets });
       })
       .catch((error) => {
         console.error('Error fetching tickets:', error);
       });
   }
+  
+
+  handleSearchChange = (event) => {
+    const searchQuery = event.target.value;
+    const { tickets } = this.state;
+
+    const filteredTickets = tickets.filter((ticket) =>
+      ticket.ticketname.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    this.setState({ searchQuery, filteredTickets });
+  };
 
   render() {
-    const { tickets } = this.state;
+    const { filteredTickets, searchQuery } = this.state;
 
     return (
       <>
@@ -48,35 +65,60 @@ class TicketReport extends React.Component {
           <CCol xs={12}>
             <CCard className="mb-4">
               <CCardHeader>
-                <strong>TICKET TABLE</strong>
+                <strong>TICKETS REPORT</strong>
               </CCardHeader>
               <CCardBody>
-                <CTable striped hover>
-                  <CTableHead>
-                    <CTableRow>
-                      <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Ticket Name</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Date</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Time</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Message</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Extracted json</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Actual json</CTableHeaderCell>
-                    </CTableRow>
-                  </CTableHead>
-                  <CTableBody>
-                    {tickets.map((ticket, index) => (
-                      <CTableRow key={index}>
-                        <CTableHeaderCell>{index + 1}</CTableHeaderCell>
-                        <CTableDataCell>{ticket.ticketname}</CTableDataCell>
-                        <CTableDataCell>{ticket.date}</CTableDataCell>
-                        <CTableDataCell>{ticket.time}</CTableDataCell>
-                        <CTableDataCell>{ticket.inboxMessage}</CTableDataCell>
-                        <CTableDataCell>{JSON.stringify(ticket.required_json)}</CTableDataCell>
-                        <CTableDataCell>{JSON.stringify(ticket.actual_json)}</CTableDataCell>
+                <CCol md={4}>
+                  <CInputGroup className="flex-nowrap mt-3 mb-4">
+                    <CFormInput
+                      placeholder="Search by Ticket Name"
+                      aria-label="Search"
+                      aria-describedby="addon-wrapping"
+                      value={searchQuery}
+                      onChange={this.handleSearchChange}
+                    />
+                    <CButton type="button" color="secondary" id="button-addon2">
+                      Search
+                    </CButton>
+                  </CInputGroup>
+                </CCol>
+                <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
+                  <CTable striped hover>
+                    <CTableHead color='dark'>
+                      <CTableRow>
+                        <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Ticket Name</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Date</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Time</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Notification Message</CTableHeaderCell>
+                        {/* <CTableHeaderCell scope="col">Message</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Extracted json</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Actual json</CTableHeaderCell> */}
                       </CTableRow>
-                    ))}
-                  </CTableBody>
-                </CTable>
+                    </CTableHead>
+                    <CTableBody>
+                      {filteredTickets.map((ticket, index) => (
+                        <CTableRow key={index}>
+                          <CTableHeaderCell>{index + 1}</CTableHeaderCell>
+                          <CTableDataCell>{ticket.ticketname}</CTableDataCell>
+                          <CTableDataCell>{ticket.date}</CTableDataCell>
+                          <CTableDataCell>{ticket.time}</CTableDataCell>
+                          <CTableDataCell></CTableDataCell>
+                          {/* <CTableDataCell>{ticket.inboxMessage}</CTableDataCell>
+                          <CTableDataCell>{JSON.stringify(ticket.required_json)}</CTableDataCell>
+                          <CTableDataCell>{JSON.stringify(ticket.actual_json)}</CTableDataCell> */}
+                        </CTableRow>
+                      ))}
+                    </CTableBody>
+                  </CTable>
+                </div>
+                <CRow className="justify-content-center mt-4">
+                    <CCol xs={1}>
+                      <div className='d-grid gap-2'>
+                          <CButton color="primary" type="submit" >Download</CButton>
+                      </div>
+                    </CCol>
+                  </CRow>
               </CCardBody>
             </CCard>
           </CCol>
