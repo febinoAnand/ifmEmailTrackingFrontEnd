@@ -37,6 +37,7 @@ class Parameter extends React.Component {
         id: '',
         alias: '',
         field: '',
+        color:'',
         datatype: '',
         groups: [],
       },
@@ -49,7 +50,6 @@ class Parameter extends React.Component {
 
   componentDidMount() {
     this.fetchParameters();
-    this.fetchGroups(); 
   }
 
   fetchParameters = () => {
@@ -165,25 +165,6 @@ class Parameter extends React.Component {
     }));
   };
 
-  generateRandomColor = () => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  };
-
-  fetchGroups = () => {
-    axios.get(BaseURL + "app/groups/")
-      .then(response => {
-        this.setState({ groups: response.data });
-      })
-      .catch(error => {
-        console.error('Error fetching groups:', error);
-      });
-  };
-
   render() {
     const { filteredParameters, formData, searchQuery, visibleUpdate, visibleAdd, groups } = this.state;
 
@@ -238,7 +219,7 @@ class Parameter extends React.Component {
                             display: 'inline-block',
                             padding: '5px 10px',
                             borderRadius: '12px',
-                            backgroundColor: this.generateRandomColor(),
+                            backgroundColor: parameter.color,
                             color: 'white',
                             fontWeight: 'bold'
                           }}>

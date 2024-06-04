@@ -91,6 +91,8 @@ class TicketReport extends React.Component {
                         <CTableHeaderCell scope="col">Date</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Time</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Notification Message</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Groups</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Rule Name</CTableHeaderCell>
                         {/* <CTableHeaderCell scope="col">Message</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Extracted json</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Actual json</CTableHeaderCell> */}
@@ -103,6 +105,8 @@ class TicketReport extends React.Component {
                           <CTableDataCell>{ticket.ticketname}</CTableDataCell>
                           <CTableDataCell>{ticket.date}</CTableDataCell>
                           <CTableDataCell>{ticket.time}</CTableDataCell>
+                          <CTableDataCell></CTableDataCell>
+                          <CTableDataCell></CTableDataCell>
                           <CTableDataCell></CTableDataCell>
                           {/* <CTableDataCell>{ticket.inboxMessage}</CTableDataCell>
                           <CTableDataCell>{JSON.stringify(ticket.required_json)}</CTableDataCell>

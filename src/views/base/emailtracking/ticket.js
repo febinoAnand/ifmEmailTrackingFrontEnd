@@ -106,12 +106,13 @@ class Ticket extends Component {
                   </CTable>
                 </div>
                 <CRow className="justify-content-center mt-4">
-                    <CCol xs={1}>
-                      <div className='d-grid gap-2'>
-                          <CButton color="primary" type="submit" >Download</CButton>
-                      </div>
-                    </CCol>
-                  </CRow>
+                  <CCol xs={12}>
+                    <div className='d-flex justify-content-center gap-2'>
+                      <CButton color="primary" type="submit">Download as PDF</CButton>
+                      <CButton color="primary" type="submit">Download as CSV</CButton>
+                    </div>
+                  </CCol>
+                </CRow>
               </CCardBody>
             </CCard>
           </CCol>

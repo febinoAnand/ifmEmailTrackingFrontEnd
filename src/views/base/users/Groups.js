@@ -19,6 +19,11 @@ import {
     CTableHeaderCell,
     CTableRow,
     CFormSelect,
+    CModal,
+    CModalBody,
+    CModalFooter,
+    CModalHeader,
+    CModalTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import axios from 'axios';
@@ -30,6 +35,7 @@ const Groups = () => {
     const [filteredGroupData, setFilteredGroupData] = useState([]);
     const [selectedGroup, setSelectedGroup] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
         fetchGroupData();
@@ -63,7 +69,7 @@ const Groups = () => {
 
     const handleGroupSelect = (group) => {
         setSelectedGroup(group);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setModalVisible(true);
     };
 
     const handleUserSetChange = (event) => {
@@ -117,45 +123,11 @@ const Groups = () => {
                 <CCol xs={12}>
                     <CCard className="mb-4">
                         <CCardHeader>
-                            <strong>Trigger</strong>
-                        </CCardHeader>
-                        <CCardBody>
-                            <CForm>
-                                <CRow className="mb-3">
-                                    <CFormLabel htmlFor="group" className="col-sm-2 col-form-label">Group</CFormLabel>
-                                    <CCol md={6}>
-                                        <CFormInput type="text" id="group" name="group" value={selectedGroup ? selectedGroup.name : ''} readOnly />
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3">
-                                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">User List</CFormLabel>
-                                    <CCol md={6}>
-                                        <CFormSelect id="name" name="name" multiple value={selectedGroup ? selectedGroup.user_set : []} onChange={handleUserSetChange}>
-                                            {userData.map(user => (
-                                                <option key={user.id} value={user.id}>{user.user_set}</option>
-                                            ))}
-                                        </CFormSelect>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="justify-content-center">
-                                    <CCol md="auto">
-                                        <CButton color="primary" onClick={handleUpdateGroup}>Update</CButton>
-                                    </CCol>
-                                </CRow>
-                            </CForm>
-                        </CCardBody>
-                    </CCard>
-                </CCol>
-            </CRow>
-            <CRow>
-                <CCol xs={12}>
-                    <CCard className="mb-4">
-                        <CCardHeader>
-                            <strong>USER LIST</strong>
+                            <strong>Group LIST</strong>
                         </CCardHeader>
                         <CCardBody>
                             <CCol md={4}>
-                                <CInputGroup className="flex-nowrap mt-3 col-sg-3">
+                                <CInputGroup className="flex-nowrap mt-3 mb-4">
                                     <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass} /></CInputGroupText>
                                     <CFormInput
                                         placeholder="Search by Group Name or User IDs"
@@ -205,6 +177,41 @@ const Groups = () => {
                     </CCard>
                 </CCol>
             </CRow>
+            <CModal size='lg' visible={modalVisible} onClose={() => setModalVisible(false)} backdrop="static" keyboard={false}>
+        <CModalHeader onClose={() => setModalVisible(false)}>
+          <CModalTitle>Groups Details</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+        <CForm>
+                                <CRow className="mb-3">
+                                    <CFormLabel htmlFor="group" className="col-sm-2 col-form-label">Group</CFormLabel>
+                                    <CCol md={6}>
+                                        <CFormInput type="text" id="group" name="group" value={selectedGroup ? selectedGroup.name : ''} readOnly />
+                                    </CCol>
+                                </CRow>
+                                <CRow className="mb-3">
+                                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">User List</CFormLabel>
+                                    <CCol md={6}>
+                                        <CFormSelect id="name" name="name" multiple value={selectedGroup ? selectedGroup.user_set : []} onChange={handleUserSetChange}>
+                                            {userData.map(user => (
+                                                <option key={user.id} value={user.id}>{user.user_set}</option>
+                                            ))}
+                                        </CFormSelect>
+                                    </CCol>
+                                </CRow>
+                                <CRow className="justify-content-center">
+                                    <CCol md="auto">
+                                        <CButton color="primary" onClick={handleUpdateGroup}>Update</CButton>
+                                    </CCol>
+                                </CRow>
+                            </CForm>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setModalVisible(false)}>
+            Close
+          </CButton>
+        </CModalFooter>
+      </CModal>
         </>
     );
 };
