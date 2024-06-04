@@ -54,6 +54,17 @@ class Trigger extends React.Component {
     this.fetchTriggerData();
     this.fetchParameterFields();
     this.fetchGroups();
+    this.fetchColorData();
+  }
+
+  fetchColorData = () => {
+    axios.get(BaseURL + "emailtracking/parameter/")
+      .then(response => {
+        this.setState({ color: response.data });
+      })
+      .catch(error => {
+        console.error('Error fetching color data:', error);
+      });
   }
 
   fetchParameterFields = () => {
