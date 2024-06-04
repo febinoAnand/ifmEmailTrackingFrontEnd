@@ -20,6 +20,11 @@ import {
     CTableHeaderCell,
     CTableRow,
     CFormSwitch,
+    CModal,
+    CModalBody,
+    CModalFooter,
+    CModalHeader,
+    CModalTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
@@ -30,6 +35,7 @@ const Users = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
     const [userActive, setUserActive] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
         fetchUsers();
@@ -74,12 +80,12 @@ const Users = () => {
 
     const handleTableRowClick = (user) => {
         setSelectedUser(user);
+        setModalVisible(true);
         setUserActive(user.userActive);
         document.getElementById('name').value = user.usermod.username;
         document.getElementById('email').value = user.usermod.email;
         document.getElementById('designation').value = user.designation;
         document.getElementById('mobileno').value = user.mobile_no;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleToggleChange = (event) => {
@@ -145,76 +151,11 @@ const handleUpdateUser = () => {
                 <CCol xs={12}>
                     <CCard className="mb-4">
                         <CCardHeader>
-                            <strong>Trigger</strong>
-                        </CCardHeader>
-                        <CCardBody>
-                            <CForm>
-                                <CRow className="mb-3">
-                                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">User Name</CFormLabel>
-                                    <CCol md={6}>
-                                        <CFormInput type="text" id="name" name="name" />
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3">
-                                    <CFormLabel htmlFor="email" className="col-sm-2 col-form-label">Email Address</CFormLabel>
-                                    <CCol md={6}>
-                                        <CFormInput type="text" id="email" name="email" readOnly/>
-                                    </CCol>
-                                </CRow>
-                      <CRow className="mb-3">
-                        <CFormLabel htmlFor="designation" className="col-sm-2 col-form-label">Designation</CFormLabel>
-                        <CCol md={6}>
-                          <CFormInput type="text" id="designation" name="designation" />
-                        </CCol>
-                      </CRow>
-                      <CRow className="mb-3">
-                        <CFormLabel htmlFor="mobileno" className="col-sm-2 col-form-label">Mobile Number</CFormLabel>
-                        <CCol md={6}>
-                          <CFormInput type="text" id="mobileno" name="mobileno" readOnly/>
-                        </CCol>
-                      </CRow>
-                      <CRow className="mb-3">
-                        <CFormLabel htmlFor="password" className="col-sm-2 col-form-label">Password</CFormLabel>
-                        <CCol md={6}>
-                          <CFormInput type="text" id="password" name="password" readOnly/>
-                        </CCol>
-                      </CRow>
-                      <CRow className="mb-3">
-                        <CFormLabel htmlFor="confirmpassword" className="col-sm-2 col-form-label">Confirm Password</CFormLabel>
-                        <CCol md={6}>
-                          <CFormInput type="text" id="confirmpassword" name="confirmpassword" readOnly/>
-                        </CCol>
-                      </CRow>
-                      <CRow className="mb-3">
-                          <CFormLabel htmlFor="toggle" className="col-sm-2 col-form-label">Active Status</CFormLabel>
-                          <CCol md={6}>
-                          <CFormSwitch
-                              id="toggle"
-                              checked={userActive}
-                              onChange={handleToggleChange}
-                          />
-                          </CCol>
-                        </CRow>
-                      <CRow className="justify-content-center">
-                        <CCol md="auto">
-                          <CButton color="primary" onClick={handleUpdateUser}>Update</CButton>
-                        </CCol>
-                      </CRow>
-                      </CForm>
-                        </CCardBody>
-                    </CCard>
-
-                </CCol>
-            </CRow>
-            <CRow>
-                <CCol xs={12}>
-                    <CCard className="mb-4">
-                        <CCardHeader>
                             <strong>USER LIST</strong>
                         </CCardHeader>
                         <CCardBody>
                             <CCol md={4}>
-                                <CInputGroup className="flex-nowrap mt-3 col-sg-3">
+                                <CInputGroup className="flex-nowrap mt-3 mb-4">
                                     <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass}/></CInputGroupText>
                                     <CFormInput
                                         placeholder="Search by Subject or Message"
@@ -272,6 +213,71 @@ const handleUpdateUser = () => {
                     </CCard>
                 </CCol>
             </CRow>
+            <CModal size='lg' visible={modalVisible} onClose={() => setModalVisible(false)} backdrop="static" keyboard={false}>
+                <CModalHeader onClose={() => setModalVisible(false)}>
+                    <CModalTitle>User Details</CModalTitle>
+                    </CModalHeader>
+                        <CModalBody>
+                            <CForm>
+                                <CRow className="mb-3">
+                                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">User Name</CFormLabel>
+                                    <CCol md={6}>
+                                        <CFormInput type="text" id="name" name="name" />
+                                    </CCol>
+                                </CRow>
+                                <CRow className="mb-3">
+                                    <CFormLabel htmlFor="email" className="col-sm-2 col-form-label">Email Address</CFormLabel>
+                                    <CCol md={6}>
+                                        <CFormInput type="text" id="email" name="email" readOnly/>
+                                    </CCol>
+                                </CRow>
+                      <CRow className="mb-3">
+                        <CFormLabel htmlFor="designation" className="col-sm-2 col-form-label">Designation</CFormLabel>
+                        <CCol md={6}>
+                          <CFormInput type="text" id="designation" name="designation" />
+                        </CCol>
+                      </CRow>
+                      <CRow className="mb-3">
+                        <CFormLabel htmlFor="mobileno" className="col-sm-2 col-form-label">Mobile Number</CFormLabel>
+                        <CCol md={6}>
+                          <CFormInput type="text" id="mobileno" name="mobileno" readOnly/>
+                        </CCol>
+                      </CRow>
+                      <CRow className="mb-3">
+                        <CFormLabel htmlFor="password" className="col-sm-2 col-form-label">Password</CFormLabel>
+                        <CCol md={6}>
+                          <CFormInput type="text" id="password" name="password" readOnly/>
+                        </CCol>
+                      </CRow>
+                      <CRow className="mb-3">
+                        <CFormLabel htmlFor="confirmpassword" className="col-sm-2 col-form-label">Confirm Password</CFormLabel>
+                        <CCol md={6}>
+                          <CFormInput type="text" id="confirmpassword" name="confirmpassword" readOnly/>
+                        </CCol>
+                      </CRow>
+                      <CRow className="mb-3">
+                          <CFormLabel htmlFor="toggle" className="col-sm-2 col-form-label">Active Status</CFormLabel>
+                          <CCol md={6}>
+                          <CFormSwitch
+                              id="toggle"
+                              checked={userActive}
+                              onChange={handleToggleChange}
+                          />
+                          </CCol>
+                        </CRow>
+                      <CRow className="justify-content-center">
+                        <CCol md="auto">
+                          <CButton color="primary" onClick={handleUpdateUser}>Update</CButton>
+                        </CCol>
+                      </CRow>
+                      </CForm>
+                    </CModalBody>
+                <CModalFooter>
+                <CButton color="secondary" onClick={() => setModalVisible(false)}>
+                    Close
+                </CButton>
+                </CModalFooter>
+      </CModal>
         </>
     );
 };

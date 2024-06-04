@@ -132,7 +132,7 @@ const EmailTable = () => {
                         <CTableDataCell style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email.date}</CTableDataCell>
                         <CTableDataCell>{email.time}</CTableDataCell>
                         <CTableDataCell>{email.subject}</CTableDataCell>
-                        <CTooltip placement="top" content="Click to view fully.">
+                        <CTooltip placement="top" content="Click to view full Inbox.">
                         <CTableDataCell>{email.message}</CTableDataCell>
                         </CTooltip>
                         <CTableDataCell>
@@ -168,6 +168,18 @@ const EmailTable = () => {
                 <CFormLabel htmlFor="toEmail" className="col-sm-3 col-form-label"><strong>To Email:</strong></CFormLabel>
                 <CCol sm={9}>
                   <CFormInput type="text" id="toEmail" value={selectedEmail.to_email} readOnly plainText/>
+                </CCol>
+              </CRow>
+              <CRow className="mb-3">
+                <CFormLabel htmlFor="subject" className="col-sm-3 col-form-label"><strong>Subject:</strong></CFormLabel>
+                <CCol sm={9}>
+                  <CFormInput type="text" id="subject" value={selectedEmail.subject} readOnly plainText/>
+                </CCol>
+              </CRow>
+              <CRow className="mb-3">
+                <CFormLabel htmlFor="datetime" className="col-sm-3 col-form-label"><strong>Date-Time:</strong></CFormLabel>
+                <CCol sm={9}>
+                  <CFormInput type="text" id="datetime" value={`${selectedEmail.date} - ${selectedEmail.time}`} readOnly plainText/>
                 </CCol>
               </CRow>
               <CRow className="mb-3">
