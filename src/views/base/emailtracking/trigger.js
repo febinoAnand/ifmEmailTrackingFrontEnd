@@ -143,32 +143,26 @@ class Trigger extends React.Component {
     }));
   };
 
-  handleUpdateSave = async () => {
+  handleUpdateSave = () => {
     const { operator, value, logicalOperator, selectedTrigger } = this.state;
 
     if (selectedTrigger) {
-        try {
-            const newFilter = {
-                id: Date.now(),
-                operator,
-                value,
-                logical_operator: logicalOperator,
-            };
-            const updatedTrigger = {
-                ...selectedTrigger,
-                parameter_filter_list: [...selectedTrigger.parameter_filter_list, newFilter],
-            };
-            await axios.put(`${BaseURL}emailtracking/trigger/${updatedTrigger.id}/`, updatedTrigger);
-            this.setState({
-                visibleUpdate: false,
-                selectedTrigger: updatedTrigger,
-            });
-            this.fetchData();
-        } catch (error) {
-            console.error('Error adding new filter:', error);
-        }
+        const newFilter = {
+            id: Date.now(),
+            operator,
+            value,
+            logical_operator: logicalOperator,
+        };
+        const updatedTrigger = {
+            ...selectedTrigger,
+            parameter_filter_list: [...selectedTrigger.parameter_filter_list, newFilter],
+        };
+        this.setState({
+            visibleUpdate: false,
+            selectedTrigger: updatedTrigger,
+        });
     }
-};
+  };
 
   handleSave = async () => {
     const { selectedTrigger } = this.state;
@@ -445,38 +439,36 @@ class Trigger extends React.Component {
             <strong>FILTERS</strong>
           </CCardHeader>
           <CCardBody>
-            <CTable striped hover>
-              <CTableHead>
-                <CTableRow color="dark">
-                  <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">And / Or</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Operation</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Value</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Action</CTableHeaderCell>
+          <CTable striped hover>
+            <CTableHead>
+              <CTableRow color="dark">
+                <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
+                <CTableHeaderCell scope="col">And / Or</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Operation</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Value</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Action</CTableHeaderCell>
+              </CTableRow>
+            </CTableHead>
+            <CTableBody>
+              {selectedTrigger?.parameter_filter_list.map((filter, index) => (
+                <CTableRow key={index}>
+                  <CTableHeaderCell>{index + 1}</CTableHeaderCell>
+                  <CTableDataCell>{filter.logical_operator}</CTableDataCell>
+                  <CTableDataCell>{filter.operator}</CTableDataCell>
+                  <CTableDataCell>{filter.value}</CTableDataCell>
+                  <CTableDataCell>
+                    <div className="d-flex gap-2">
+                      <CTooltip content="Delete">
+                        <CButton style={{ fontSize: '10px', padding: '6px 10px' }}>
+                          <CIcon icon={cilTrash} />
+                        </CButton>
+                      </CTooltip>
+                    </div>
+                  </CTableDataCell>
                 </CTableRow>
-              </CTableHead>
-              <CTableBody>
-                          {triggers.map((trigger, triggerIndex) =>
-                            trigger.parameter_filter_list.map((filter, filterIndex) => (
-                              <CTableRow key={`${trigger.id}-${filterIndex}`}>
-                                <CTableHeaderCell>{`${triggerIndex + 1}`}</CTableHeaderCell>
-                                <CTableDataCell>{filter.logical_operator}</CTableDataCell>
-                                <CTableDataCell>{filter.operator}</CTableDataCell>
-                                <CTableDataCell>{filter.value}</CTableDataCell>
-                                <CTableDataCell>
-                                  <div className="d-flex gap-2">
-                                    <CTooltip content="Delete">
-                                      <CButton style={{ fontSize: '10px', padding: '6px 10px' }}>
-                                        <CIcon icon={cilTrash} />
-                                      </CButton>
-                                    </CTooltip>
-                                  </div>
-                                </CTableDataCell>
-                              </CTableRow>
-                            ))
-                          )}
-                        </CTableBody>
-            </CTable>
+              ))}
+            </CTableBody>
+          </CTable>
           </CCardBody>
         </CCard>
       </CCol>
@@ -612,49 +604,36 @@ class Trigger extends React.Component {
           </CCardHeader>
           <CCardBody>
             
-              <CTable striped hover>
-                <CTableHead>
-                  <CTableRow color="dark">
-                    <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">And / Or</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Operation</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Value</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">Action</CTableHeaderCell>
-                    
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                <CTableRow>
-                <CTableHeaderCell></CTableHeaderCell>
-                <CTableHeaderCell></CTableHeaderCell>
-                <CTableDataCell>
-                </CTableDataCell>
-                <CTableDataCell>
-                    {/* <div key={idx}>
-                      <span style={{
-                        display: 'inline-block',
-                        padding: '5px 10px',
-                        borderRadius: '12px',
-                        // backgroundColor: this.generateRandomColor(),
-                        color: 'white',
-                        fontWeight: 'bold'
-                      }}>
-                        {filter.value}
-                      </span>
-                    </div> */}
-                </CTableDataCell>
-                <CTableDataCell>
-                  <div className="d-flex gap-2">
-                    <CTooltip content="Delete">
-                      <CButton style={{ fontSize: '10px', padding: '6px 10px' }}>
-                        <CIcon icon={cilTrash} />
-                      </CButton>
-                    </CTooltip>
-                  </div>
-                </CTableDataCell>
+          <CTable striped hover>
+            <CTableHead>
+              <CTableRow color="dark">
+                <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
+                <CTableHeaderCell scope="col">And / Or</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Operation</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Value</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Action</CTableHeaderCell>
               </CTableRow>
-                  </CTableBody>
-              </CTable>
+            </CTableHead>
+            <CTableBody>
+              {selectedTrigger?.parameter_filter_list.map((filter, index) => (
+                <CTableRow key={index}>
+                  <CTableHeaderCell>{index + 1}</CTableHeaderCell>
+                  <CTableDataCell>{filter.logical_operator}</CTableDataCell>
+                  <CTableDataCell>{filter.operator}</CTableDataCell>
+                  <CTableDataCell>{filter.value}</CTableDataCell>
+                  <CTableDataCell>
+                    <div className="d-flex gap-2">
+                      <CTooltip content="Delete">
+                        <CButton style={{ fontSize: '10px', padding: '6px 10px' }}>
+                          <CIcon icon={cilTrash} />
+                        </CButton>
+                      </CTooltip>
+                    </div>
+                  </CTableDataCell>
+                </CTableRow>
+              ))}
+            </CTableBody>
+          </CTable>
             
           </CCardBody>
         </CCard>

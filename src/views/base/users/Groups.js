@@ -59,7 +59,7 @@ const Groups = () => {
 
     const fetchUserData = async () => {
         try {
-            const response = await axios.get(BaseURL + "app/groups/");
+            const response = await axios.get(BaseURL + "Userauth/userdetail/");
             setUserData(response.data);
             console.log(response.data);
         } catch (error) {
@@ -160,8 +160,8 @@ const Groups = () => {
                                         >
                                             <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                                             <CTableDataCell>{group.name}</CTableDataCell>
-                                            <CTableDataCell>{group.user_set ? group.user_set.join(', ') : ''}</CTableDataCell>
-                                            <CTableDataCell>{group.mobileno}</CTableDataCell>
+                                            <CTableDataCell>{group.user_details.map(user => user.email).join(', ')}</CTableDataCell>
+                                            <CTableDataCell>{group.user_details.map(user => user.mobile_no).join(', ')}</CTableDataCell>
                                             <CTableDataCell>
                                                 <div className="d-flex gap-2">
                                                     <CButton>
@@ -178,12 +178,12 @@ const Groups = () => {
                 </CCol>
             </CRow>
             <CModal size='lg' visible={modalVisible} onClose={() => setModalVisible(false)} backdrop="static" keyboard={false}>
-        <CModalHeader onClose={() => setModalVisible(false)}>
-          <CModalTitle>Groups Details</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-        <CForm>
-                                <CRow className="mb-3">
+                <CModalHeader onClose={() => setModalVisible(false)}>
+                    <CModalTitle>Groups Details</CModalTitle>
+                        </CModalHeader>
+                            <CModalBody>
+                                <CForm>
+                                    <CRow className="mb-3">
                                     <CFormLabel htmlFor="group" className="col-sm-2 col-form-label">Group</CFormLabel>
                                     <CCol md={6}>
                                         <CFormInput type="text" id="group" name="group" value={selectedGroup ? selectedGroup.name : ''} readOnly />
@@ -194,7 +194,7 @@ const Groups = () => {
                                     <CCol md={6}>
                                         <CFormSelect id="name" name="name" multiple value={selectedGroup ? selectedGroup.user_set : []} onChange={handleUserSetChange}>
                                             {userData.map(user => (
-                                                <option key={user.id} value={user.id}>{user.user_set}</option>
+                                                <option key={user.usermod.id} value={user.usermod.id}>{user.usermod.username}</option>
                                             ))}
                                         </CFormSelect>
                                     </CCol>
@@ -205,12 +205,12 @@ const Groups = () => {
                                     </CCol>
                                 </CRow>
                             </CForm>
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setModalVisible(false)}>
-            Close
-          </CButton>
-        </CModalFooter>
+                        </CModalBody>
+                <CModalFooter>
+                    <CButton color="secondary" onClick={() => setModalVisible(false)}>
+                        Close
+                    </CButton>
+                </CModalFooter>
       </CModal>
         </>
     );
