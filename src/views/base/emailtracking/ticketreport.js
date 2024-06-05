@@ -23,41 +23,27 @@ class TicketReport extends React.Component {
     super(props);
     this.state = {
       tickets: [],
-      filteredTickets: [],
-      searchQuery: '',
+      loading: false,
     };
   }
 
   componentDidMount() {
-    this.fetchTickets();
-  }
-
-  fetchTickets() {
-    axios
-      .get(BaseURL + 'emailtracking/ticket/')
-      .then((response) => {
-        const reversedTickets = response.data.slice().reverse();
-        this.setState({ tickets: reversedTickets, filteredTickets: reversedTickets });
+    this.setState({ loading: true });
+    axios.get(BaseURL+"emailtracking/report/")
+      .then(response => {
+        this.setState({
+          tickets: response.data,
+          loading: false,
+        });
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error fetching tickets:', error);
+        this.setState({ loading: false });
       });
   }
-  
-
-  handleSearchChange = (event) => {
-    const searchQuery = event.target.value;
-    const { tickets } = this.state;
-
-    const filteredTickets = tickets.filter((ticket) =>
-      ticket.ticketname.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    this.setState({ searchQuery, filteredTickets });
-  };
 
   render() {
-    const { filteredTickets, searchQuery } = this.state;
+    const { tickets, loading } = this.state;
 
     return (
       <>
@@ -74,8 +60,6 @@ class TicketReport extends React.Component {
                       placeholder="Search by Ticket Name"
                       aria-label="Search"
                       aria-describedby="addon-wrapping"
-                      value={searchQuery}
-                      onChange={this.handleSearchChange}
                     />
                     <CButton type="button" color="secondary" id="button-addon2">
                       Search
@@ -87,42 +71,42 @@ class TicketReport extends React.Component {
                     <CTableHead color='dark'>
                       <CTableRow>
                         <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Ticket Name</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Date</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Time</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Notification Message</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Groups</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Rule Name</CTableHeaderCell>
-                        {/* <CTableHeaderCell scope="col">Message</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Extracted json</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Actual json</CTableHeaderCell> */}
+                        <CTableHeaderCell scope="col">Ticket</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Rule Engine</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Actual Value</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Send to User</CTableHeaderCell>
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                      {filteredTickets.map((ticket, index) => (
-                        <CTableRow key={index}>
-                          <CTableHeaderCell>{index + 1}</CTableHeaderCell>
-                          <CTableDataCell>{ticket.ticketname}</CTableDataCell>
-                          <CTableDataCell>{ticket.date}</CTableDataCell>
-                          <CTableDataCell>{ticket.time}</CTableDataCell>
-                          <CTableDataCell></CTableDataCell>
-                          <CTableDataCell></CTableDataCell>
-                          <CTableDataCell></CTableDataCell>
-                          {/* <CTableDataCell>{ticket.inboxMessage}</CTableDataCell>
-                          <CTableDataCell>{JSON.stringify(ticket.required_json)}</CTableDataCell>
-                          <CTableDataCell>{JSON.stringify(ticket.actual_json)}</CTableDataCell> */}
-                        </CTableRow>
-                      ))}
+                      {loading ? (
+                        <tr>
+                          <td colSpan="6" className="text-center">Loading...</td>
+                        </tr>
+                      ) : (
+                        tickets.map((ticket, index) => (
+                          <CTableRow key={index}>
+                            <CTableHeaderCell>{index + 1}</CTableHeaderCell>
+                            <CTableDataCell>{ticket.date}</CTableDataCell>
+                            <CTableDataCell>{ticket.time}</CTableDataCell>
+                            <CTableDataCell>{ticket.ticket.ticketname}</CTableDataCell>
+                            <CTableDataCell>{ticket.active_trigger.trigger_name}</CTableDataCell>
+                            <CTableDataCell>{ticket.actual_value}</CTableDataCell>
+                            <CTableDataCell>{ticket.active_trigger.users_to_send}</CTableDataCell>
+                          </CTableRow>
+                        ))
+                      )}
                     </CTableBody>
                   </CTable>
                 </div>
                 <CRow className="justify-content-center mt-4">
-                    <CCol xs={1}>
-                      <div className='d-grid gap-2'>
-                          <CButton color="primary" type="submit" >Download</CButton>
-                      </div>
-                    </CCol>
-                  </CRow>
+                  <CCol xs={1}>
+                    <div className='d-grid gap-2'>
+                      <CButton color="primary" type="submit">Download</CButton>
+                    </div>
+                  </CCol>
+                </CRow>
               </CCardBody>
             </CCard>
           </CCol>

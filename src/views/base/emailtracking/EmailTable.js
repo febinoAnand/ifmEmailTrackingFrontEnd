@@ -59,9 +59,20 @@ const EmailTable = () => {
     setModalVisible(true);
   };
 
+  const deleteEmail = async (emailId) => {
+    try {
+      await axios.delete(`${BaseURL}emailtracking/inbox/${emailId}/`);
+      setEmails(emails.filter(email => email.id !== emailId));
+    } catch (error) {
+      console.error('Error deleting email:', error);
+    }
+  };
+
   const filteredEmails = emails.filter((email) =>
     email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    email.message.toLowerCase().includes(searchQuery.toLowerCase())
+    email.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    email.date.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    email.time.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -137,7 +148,7 @@ const EmailTable = () => {
                         </CTooltip>
                         <CTableDataCell>
                         <CTooltip content="Delete">
-                          <CButton  style={{ fontSize: '10px', padding: '6px 10px' }}>
+                          <CButton  style={{ fontSize: '10px', padding: '6px 10px' }} onClick={(e) => {e.stopPropagation(); deleteEmail(email.id);}}>
                             <CIcon icon={cilTrash} />
                           </CButton>
                         </CTooltip>

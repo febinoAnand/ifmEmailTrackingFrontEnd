@@ -33,6 +33,7 @@ class Parameter extends React.Component {
     this.state = {
       parameters: [],
       filteredParameters: [],
+      group_details: [],
       formData: {
         id: '',
         alias: '',
@@ -40,6 +41,7 @@ class Parameter extends React.Component {
         color:'',
         datatype: '',
         groups: [],
+        group_details: [],
       },
       searchQuery: '',
       visibleUpdate: false,
@@ -50,7 +52,18 @@ class Parameter extends React.Component {
 
   componentDidMount() {
     this.fetchParameters();
+    this.fetchGroups();
   }
+
+  fetchGroups = () => {
+    axios.get(BaseURL + "app/groups/")
+      .then(response => {
+        this.setState({ groups: response.data });
+      })
+      .catch(error => {
+        console.error('Error fetching groups:', error);
+      });
+  };
 
   fetchParameters = () => {
     axios.get(BaseURL + "emailtracking/parameter/")
@@ -110,17 +123,21 @@ class Parameter extends React.Component {
   };
 
   getRowData = (parameter) => {
-    const { id, alias, field, datatype } = parameter;
+    const { id, alias, field, datatype , groups } = parameter;
+
     this.setState({
-      formData: {
-        id: id,
-        alias: alias,
-        field: field,
-        datatype: datatype,
-      },
-      visibleUpdate: true,
+        formData: {
+            id: id,
+            alias: alias,
+            field: field,
+            datatype: datatype,
+            groups: groups,
+        },
+        visibleUpdate: true,
     });
-  };
+
+    console.log(groups);
+};
 
   handleDelete = (id) => {
     axios.delete(`${BaseURL}emailtracking/parameter/${id}/`)
@@ -164,6 +181,16 @@ class Parameter extends React.Component {
       visibleAdd: !prevState.visibleAdd,
     }));
   };
+
+  handleMultiSelect = (event) => {
+    const selectedOptions = Array.from(event.target.selectedOptions).map(option => option.value);
+    this.setState({
+        formData: {
+            ...this.state.formData,
+            groups: selectedOptions
+        }
+    });
+};
 
   render() {
     const { filteredParameters, formData, searchQuery, visibleUpdate, visibleAdd, groups } = this.state;
@@ -228,11 +255,8 @@ class Parameter extends React.Component {
                         </CTableDataCell>
                         <CTableDataCell>{parameter.datatype}</CTableDataCell>
                         <CTableDataCell>
-                          {parameter.groups && parameter.groups.map(groupId => {
-                            const group = groups.find(group => group.id === groupId);
-                            return group ? group.name : '';
-                          }).join(', ')}
-                        </CTableDataCell>
+                        {parameter.group_details && parameter.group_details.length > 0 && parameter.group_details[0].user_list.map(user => user.username).join(', ')}
+                      </CTableDataCell>
                         <CTableDataCell>
                           <div className="d-flex gap-2">
                             <CTooltip content="Edit">
@@ -316,20 +340,14 @@ class Parameter extends React.Component {
                         name="groups"
                         multiple
                         value={formData.groups}
-                        onChange={(e) => {
-                          const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
-                          this.setState(prevState => ({
-                            formData: {
-                              ...prevState.formData,
-                              groups: selectedOptions,
-                            },
-                          }));
-                        }}
-                      >
+                        onChange={this.handleMultiSelect}
+                    >
                         {groups.map(group => (
-                          <option key={group.id} value={group.id}>{group.name}</option>
-                        ))}
-                      </CFormSelect>
+                        <option key={group.id} value={group.id}>
+                            {group.name}
+                        </option>
+                    ))}
+                    </CFormSelect>
                     </CCol>
                   </CRow>
                   <CRow className="justify-content-center">
@@ -412,27 +430,21 @@ class Parameter extends React.Component {
               <CRow className="mb-3">
                 <CFormLabel htmlFor="groups" className="col-sm-2 col-form-label"><strong>Groups:</strong></CFormLabel>
                 <CCol md={10}>
-                      <CFormSelect
-                        id="groups"
-                        name="groups"
-                        multiple
-                        value={formData.groups}
-                        onChange={(e) => {
-                          const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
-                          this.setState(prevState => ({
-                            formData: {
-                              ...prevState.formData,
-                              groups: selectedOptions,
-                            },
-                          }));
-                        }}
-                      >
-                        {groups.map(group => (
-                          <option key={group.id} value={group.id}>{group.name}</option>
-                        ))}
-                      </CFormSelect>
-                    </CCol>
-                  </CRow>
+                <CFormSelect
+                    id="groups"
+                    name="groups"
+                    multiple
+                    value={formData.groups}
+                    onChange={this.handleMultiSelect}
+                >
+                    {groups.map(group => (
+                        <option key={group.id} value={group.id}>
+                            {group.name}
+                        </option>
+                    ))}
+                </CFormSelect>
+                </CCol>
+              </CRow>
               <CRow className="justify-content-center">
                 <CCol xs={1}>
                   <div className='d-grid gap-2'>
