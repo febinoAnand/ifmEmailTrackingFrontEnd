@@ -39,6 +39,7 @@ class Trigger extends React.Component {
     operator: '',
     value: '',
     logicalOperator: '',
+    newlyAddedFilters: [],
   };
 
   handleInputChange = (e) => {
@@ -143,37 +144,83 @@ class Trigger extends React.Component {
     }));
   };
 
-  handleUpdateSave = () => {
-    const { operator, value, logicalOperator, selectedTrigger } = this.state;
+  handleUpdateSave = async () => {
+    const { selectedTrigger } = this.state;
 
-    if (selectedTrigger) {
-        const newFilter = {
-            id: Date.now(),
-            operator,
-            value,
-            logical_operator: logicalOperator,
-        };
-        const updatedTrigger = {
-            ...selectedTrigger,
-            parameter_filter_list: [...selectedTrigger.parameter_filter_list, newFilter],
-        };
-        this.setState({
-            visibleUpdate: false,
-            selectedTrigger: updatedTrigger,
-        });
+    if (!selectedTrigger) return;
+
+    const { operator, value, logical_operator } = selectedTrigger.parameter_filter_list[0];
+
+    const newFilter = {
+      operator,
+      value,
+      logical_operator,
+      trigger_fields: selectedTrigger.id
+    };
+
+    try {
+      const response = await fetch(BaseURL + 'emailtracking/filter/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newFilter),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add new filter');
+      }
+
+      console.log("New filter added to different server API:", response);
+      await this.fetchFilters(selectedTrigger.id);
+
+      console.log("Filters updated successfully.");
+    } catch (error) {
+      console.error("Error adding new filter to different server API:", error);
     }
   };
 
+  handleUpdateDelete = async (id) => {
+    const { selectedTrigger } = this.state;
+    
+    try {
+      const response = await fetch(`${BaseURL}emailtracking/filter/${id}/`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to delete the filter: ${errorText}`);
+      }
+  
+      console.log('Filter deleted from different server API:', response);
+      await this.fetchFilters(selectedTrigger.id);
+  
+      console.log('Filters updated successfully.');
+    } catch (error) {
+      console.error('Error deleting filter from different server API:', error);
+    }
+  };  
+
   handleSave = async () => {
     const { selectedTrigger } = this.state;
-    if (selectedTrigger) {
-      try {
-        await axios.put(`${BaseURL}emailtracking/trigger/${selectedTrigger.id}/`, selectedTrigger);
+  
+    if (!selectedTrigger) return;
+  
+    try {
+      const response = await axios.put(`${BaseURL}emailtracking/trigger/${selectedTrigger.id}/`, selectedTrigger);
+  
+      if (response.status === 200) {
         this.setState({ visibleUpdate: false });
         this.fetchData();
-      } catch (error) {
-        console.error('Error updating trigger:', error);
+      } else {
+        console.error('Failed to update trigger:', response.statusText);
       }
+    } catch (error) {
+      console.error('Error updating trigger:', error);
     }
   };
 
@@ -450,7 +497,7 @@ class Trigger extends React.Component {
               </CTableRow>
             </CTableHead>
             <CTableBody>
-              {selectedTrigger?.parameter_filter_list.map((filter, index) => (
+            {selectedTrigger && selectedTrigger.parameter_filter_list.map((filter, index) => (
                 <CTableRow key={index}>
                   <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                   <CTableDataCell>{filter.logical_operator}</CTableDataCell>
@@ -459,7 +506,7 @@ class Trigger extends React.Component {
                   <CTableDataCell>
                     <div className="d-flex gap-2">
                       <CTooltip content="Delete">
-                        <CButton style={{ fontSize: '10px', padding: '6px 10px' }}>
+                        <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.handleUpdateDelete(filter.id)}>
                           <CIcon icon={cilTrash} />
                         </CButton>
                       </CTooltip>
@@ -615,7 +662,7 @@ class Trigger extends React.Component {
               </CTableRow>
             </CTableHead>
             <CTableBody>
-              {selectedTrigger?.parameter_filter_list.map((filter, index) => (
+            {selectedTrigger && selectedTrigger.parameter_filter_list.map((filter, index) => (
                 <CTableRow key={index}>
                   <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                   <CTableDataCell>{filter.logical_operator}</CTableDataCell>
@@ -624,7 +671,7 @@ class Trigger extends React.Component {
                   <CTableDataCell>
                     <div className="d-flex gap-2">
                       <CTooltip content="Delete">
-                        <CButton style={{ fontSize: '10px', padding: '6px 10px' }}>
+                        <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.handleUpdateDelete(filter.id)}>
                           <CIcon icon={cilTrash} />
                         </CButton>
                       </CTooltip>
