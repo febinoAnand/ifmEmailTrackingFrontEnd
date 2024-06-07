@@ -34,27 +34,66 @@ class Trigger extends React.Component {
     visibleAdd: false,
     triggers: [],
     parameterFields: [],
+    selectedUsers: [],
     selectedTrigger: null,
     operator: '',
     value: '',
     logicalOperator: '',
     filters: [],
+    newfilter: [],
     newlyAddedFilters: [],
-    newTrigger:''
+    newTrigger:'',
+    selectedUsers: [],
+    newTrigger: {
+      parameter_filter_list_details: {
+        operator: '',
+        value: '',
+        logical_operator: '',
+      },
+    },
   };
 
-  handleChange = (e) => {
-    const { name, value } = e.target;
-    this.setState(prevState => ({
+  handleChangeUser = (event) => {
+    const selectedValues = Array.from(event.target.options)
+      .filter((option) => option.selected)
+      .map((option) => parseInt(option.value));
+    this.setState((prevState) => ({
       newTrigger: {
         ...prevState.newTrigger,
-        parameter_filter_list_details: {
-          ...prevState.newTrigger.parameter_filter_list_details,
-          [name]: value
-        }
-      }
+        user_to_send: selectedValues,
+      },
     }));
+    console.log(selectedValues);
+};
+
+  handleChange = (event) => {
+    const { name, value } = event.target;
+    this.setState((prevState) => ({
+        newTrigger: {
+            ...prevState.newTrigger,
+            parameter_filter_list_details: {
+                ...prevState.newTrigger.parameter_filter_list_details,
+                [name]: value,
+            },
+        },
+    }));
+}
+
+handleNewUpdateDelete = async (id) => {
+  try {
+      const response = await fetch(BaseURL + `emailtracking/filter/${id}/`, {
+          method: 'DELETE',
+      });
+
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
+      }
+      const updatedFilters = this.state.newfilter.filter(filter => filter.id !== id);
+      this.setState({ newfilter: updatedFilters });
+  } catch (error) {
+      console.error('Error:', error);
   }
+}
 
   handleAddInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -144,7 +183,7 @@ class Trigger extends React.Component {
   fetchData = async () => {
     try {
       const response = await axios.get(BaseURL + 'emailtracking/trigger/');
-      this.setState({ triggers: response.data });
+      this.setState({ triggers: response.data.reverse() });
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -203,36 +242,49 @@ class Trigger extends React.Component {
   
   handleFinalSave = async () => {
     const { newTrigger } = this.state;
-    if (!newTrigger.trigger_name || 
-      !newTrigger.user_to_send.length || 
-      !newTrigger.trigger_field || 
-      !newTrigger.notification_message || 
-      !newTrigger.parameter_filter_list[0].operator || 
-      !newTrigger.parameter_filter_list[0].value || 
-      !newTrigger.parameter_filter_list[0].logical_operator) {
-      console.error('Please fill in all required fields.');
-      return;
-    }
-  
     try {
-      const response = await fetch(BaseURL+'emailtracking/trigger/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newTrigger),
-      });
-  
-      if (response.ok) {
-        console.log('Trigger data saved successfully');
-        this.toggleAddModal();
-      } else {
-        console.error('Failed to save trigger data');
-      }
+        const response = await axios.get(BaseURL + 'emailtracking/trigger/');
+        const triggers = response.data;
+        if (triggers.length > 0) {
+            const defaultGroupToSend = triggers[0].group_to_send;
+            newTrigger.group_to_send = defaultGroupToSend;
+        }
     } catch (error) {
-      console.error('An error occurred while saving trigger data', error);
+        console.error('Error fetching trigger data:', error);
     }
-  };
+
+    const triggerData = {
+        group_to_send: newTrigger.group_to_send,
+        trigger_field: newTrigger.trigger_field,
+        trigger_name: newTrigger.trigger_name,
+        notification_message: newTrigger.notification_message,
+        trigger_switch: newTrigger.trigger_switch,
+        send_sms: newTrigger.send_sms,
+        send_notification: newTrigger.send_notification,
+        parameter_filter_list: newTrigger.parameter_filter_list,
+        users_to_send: this.state.newTrigger.user_to_send,
+    };
+
+    try {
+        console.log("Sent Data -->", triggerData);
+        const response = await fetch(BaseURL + 'emailtracking/trigger/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(triggerData),
+        });
+
+        if (response.ok) {
+            console.log('Trigger data saved successfully', triggerData);
+            this.toggleAddModal();
+        } else {
+            console.error('Failed to save trigger data', triggerData);
+        }
+    } catch (error) {
+        console.error('An error occurred while saving trigger data', error);
+    }
+};
 
   handleUpdateSave = async () => {
     const { selectedTrigger } = this.state;
@@ -297,48 +349,45 @@ class Trigger extends React.Component {
 
 
   handleNewUpdateSave = async () => {
-    const { newTrigger, selectedTrigger } = this.state;
-  
+    const { newTrigger, newfilter } = this.state;
+
+    const payload = {
+        operator: newTrigger.parameter_filter_list_details?.operator || null,
+        value: newTrigger.parameter_filter_list_details?.value || "",
+        logical_operator: newTrigger.parameter_filter_list_details?.logical_operator || null,
+    };
+
     try {
-      const response = await fetch(BaseURL + 'emailtracking/filter/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          operator: newTrigger.operator,
-          value: newTrigger.value,
-          logical_operator: newTrigger.logical_operator,
-        }),
-      });
-  
-      if (response.ok) {
-        const responseData = await response.json();
-        const newFilterId = responseData.id;
-  
-        const updatedFilterDetails = {
-          operator: newTrigger.operator,
-          value: newTrigger.value,
-          logical_operator: newTrigger.logical_operator,
-        };
-        const updatedParameterFilterList = [...selectedTrigger.parameter_filter_list, newFilterId];
-        const updatedSelectedTrigger = {
-          ...selectedTrigger,
-          parameter_filter_list_details: updatedFilterDetails,
-          parameter_filter_list: updatedParameterFilterList,
-        };
-        this.setState({
-          selectedTrigger: updatedSelectedTrigger,
+        const response = await fetch(BaseURL + 'emailtracking/filter/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
         });
-  
-        console.log('New filter added successfully.');
-      } else {
-        console.error('Failed to add new filter:', response.statusText);
-      }
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        console.log('Success:', data);
+
+        const updatedTrigger = { ...newTrigger };
+        updatedTrigger.parameter_filter_list = [...newfilter, data.id];
+
+        this.setState({ 
+            newTrigger: updatedTrigger,
+            updatedTrigger: updatedTrigger,
+            newfilter: [...newfilter, data.id]
+        });
+
+        console.log('Trigger updated successfully:', updatedTrigger);
+
     } catch (error) {
-      console.error('Error adding new filter:', error);
+        console.error('Error:', error);
     }
-  };  
+}
 
   handleUpdateDelete = async (id) => {
     const { selectedTrigger } = this.state;
@@ -392,7 +441,7 @@ class Trigger extends React.Component {
   };
 
   render() {
-    const { triggers,visibleAdd, visibleUpdate, selectedTrigger, parameterFields, newTrigger } = this.state;
+    const { triggers,visibleAdd, visibleUpdate, selectedTrigger, parameterFields, newTrigger, selectedUsers } = this.state;
     const uniqueUsers = new Set();
 
     return (
@@ -736,51 +785,51 @@ class Trigger extends React.Component {
                   <CFormLabel htmlFor="user_name" className="col-form-label"><strong>Group User</strong></CFormLabel>
                 </CCol>
                 <CCol md={4}>
-                  <CFormSelect
+                <CFormSelect
                     id="user_to_send"
                     name="user_to_send"
                     multiple
-                    value={newTrigger ? newTrigger.user_to_send : []}
-                    onChange={this.handleMultiSelectChange}
-                  >
+                    value={selectedUsers}
+                    onChange={this.handleChangeUser}
+                >
                     {triggers.map((trigger, index) => (
-                      <React.Fragment key={index}>
-                        {trigger.trigger_field_details.group_details?.flatMap(group =>
-                          group?.user_list?.map(user => {
-                            if (!uniqueUsers.has(user.id)) {
-                              uniqueUsers.add(user.id);
-                              return (
-                                <option key={user.id} value={user.id}>
-                                  {user.username}
-                                </option>
-                              );
-                            }
-                            return null;
-                          })
-                        )}
-                      </React.Fragment>
+                        <React.Fragment key={index}>
+                            {trigger.trigger_field_details.group_details?.flatMap(group =>
+                                group?.user_list?.map(user => {
+                                    if (!uniqueUsers.has(user.id)) {
+                                        uniqueUsers.add(user.id);
+                                        return (
+                                            <option key={user.id} value={user.id} selected={selectedUsers.includes(user.id)}>
+                                                {user.username}
+                                            </option>
+                                        );
+                                    }
+                                    return null;
+                                })
+                            )}
+                        </React.Fragment>
                     ))}
-                  </CFormSelect>
+                </CFormSelect>
                 </CCol>
               </CRow>
               <CRow className="mb-3">
-                <CCol sm={2}>
-                  <CFormLabel htmlFor="trigger_field" className="col-form-label"><strong>Field</strong></CFormLabel>
-                </CCol>
-                <CCol md={10}>
-                  <CFormSelect
-                    id="trigger_field"
-                    name="trigger_field"
-                    onChange={this.handleInputChange}
-                  >
-                    <option value=""></option>
-                    {parameterFields.map((field, index) => (
-                      <option key={index} value={field}>
-                        {field}
-                      </option>
-                    ))}
-                  </CFormSelect>
-                </CCol>
+              <CCol sm={2}>
+                <CFormLabel htmlFor="trigger_field" className="col-form-label"><strong>Field</strong></CFormLabel>
+              </CCol>
+              <CCol md={10}>
+                <CFormSelect
+                  id="trigger_field"
+                  name="selectedTrigger.parameter_filter_list[0].trigger_field"
+                  onChange={this.handleAddInputChange}
+                >
+                  <option value=""></option>
+                  {parameterFields.map((field, index) => (
+                    <option key={index} value={field}>
+                      {field}
+                    </option>
+                  ))}
+                </CFormSelect>
+              </CCol>
               </CRow>
               <CRow className="mb-3">
                 <CCol sm={2}>
@@ -834,67 +883,67 @@ class Trigger extends React.Component {
               </CRow>
             </CForm>
             <CForm>
-              <CRow className="mb-3">
+            <CRow className="mb-3">
                 <CCol sm={2}>
-                  <CFormLabel htmlFor="operator" className="col-form-label"><strong>Operator</strong></CFormLabel>
+                    <CFormLabel htmlFor="operator" className="col-form-label"><strong>Operator</strong></CFormLabel>
                 </CCol>
                 <CCol md={4}>
-                  <CFormSelect
-                    id="operator"
-                    name="operator"
-                    value={newTrigger && newTrigger.parameter_filter_list_details ? newTrigger.parameter_filter_list_details.operator : ''}
-                    onChange={this.handleChange}
-                 >
-                    <option></option>
-                    <option>greater than</option>
-                    <option>greater than or equal</option>
-                    <option>less than or equal</option>
-                    <option>less than</option>
-                    <option>equals</option>
-                    <option>not equals</option>
-                    <option>is exist</option>
-                  </CFormSelect>
+                    <CFormSelect
+                        id="operator"
+                        name="operator"
+                        value={newTrigger.parameter_filter_list_details?.operator || ''}
+                        onChange={this.handleChange}
+                    >
+                        <option></option>
+                        <option>greater than</option>
+                        <option>greater than or equal</option>
+                        <option>less than or equal</option>
+                        <option>less than</option>
+                        <option>equals</option>
+                        <option>not equals</option>
+                        <option>is exist</option>
+                    </CFormSelect>
                 </CCol>
                 <CCol sm={2}>
-                  <CFormLabel htmlFor="value" className="col-sm-2 col-form-label"><strong>Value</strong></CFormLabel>
+                    <CFormLabel htmlFor="value" className="col-form-label"><strong>Value</strong></CFormLabel>
                 </CCol>
                 <CCol md={4}>
-                  <CFormInput
-                    type="text"
-                    id="value"
-                    name="value"
-                    value={newTrigger && newTrigger.parameter_filter_list_details ? newTrigger.parameter_filter_list_details.value : ''}
-                    onChange={this.handleChange}
-                  />
+                    <CFormInput
+                        type="text"
+                        id="value"
+                        name="value"
+                        value={newTrigger.parameter_filter_list_details?.value || ''}
+                        onChange={this.handleChange}
+                    />
                 </CCol>
-              </CRow>
-              <CRow className="mb-3">
+            </CRow>
+            <CRow className="mb-3">
                 <CCol sm={2}>
-                  <CFormLabel htmlFor="logicalOperator" className="col-form-label"><strong>Logical Operator</strong></CFormLabel>
+                    <CFormLabel htmlFor="logicalOperator" className="col-form-label"><strong>Logical Operator</strong></CFormLabel>
                 </CCol>
                 <CCol md={10}>
-                  <CFormSelect
-                    id="logicalOperator"
-                    name="logical_operator"
-                    value={newTrigger && newTrigger.parameter_filter_list_details ? newTrigger.parameter_filter_list_details.logical_operator : ''}
-                    onChange={this.handleChange}
-                  >
-                    <option></option>
-                    <option>AND</option>
-                    <option>OR</option>
-                  </CFormSelect>
+                    <CFormSelect
+                        id="logicalOperator"
+                        name="logical_operator"
+                        value={newTrigger.parameter_filter_list_details?.logical_operator || ''}
+                        onChange={this.handleChange}
+                    >
+                        <option></option>
+                        <option>AND</option>
+                        <option>OR</option>
+                    </CFormSelect>
                 </CCol>
-              </CRow>
-              <CRow className="justify-content-center">
-                  <CCol xs={1}>
-                  <div className='d-grid gap-2'>
-                  <CButton className="mt-2" color="primary" onClick={this.handleNewUpdateSave}>
-                    Save
-                  </CButton>
-                  </div>
+            </CRow>
+            <CRow className="justify-content-center">
+                <CCol xs={1}>
+                    <div className='d-grid gap-2'>
+                        <CButton className="mt-2" color="primary" onClick={this.handleNewUpdateSave}>
+                            Save
+                        </CButton>
+                    </div>
                 </CCol>
-              </CRow>
-            </CForm>
+            </CRow>
+        </CForm>
           </CModalBody>
           <CRow>
         <CCol xs={12}>
@@ -914,24 +963,24 @@ class Trigger extends React.Component {
               </CTableRow>
             </CTableHead>
             <CTableBody>
-            {this.state.newlyAddedFilters.map((filter, index) => (
+            {this.state.newfilter.map((filter, index) => (
                 <CTableRow key={index}>
-                  <CTableHeaderCell>{index + 1}</CTableHeaderCell>
-                  <CTableDataCell>{filter.logical_operator}</CTableDataCell>
-                  <CTableDataCell>{filter.operator}</CTableDataCell>
-                  <CTableDataCell>{filter.value}</CTableDataCell>
-                  <CTableDataCell>
-                    <div className="d-flex gap-2">
-                      <CTooltip content="Delete">
-                        <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.handleUpdateDelete(filter.id)}>
-                          <CIcon icon={cilTrash} />
-                        </CButton>
-                      </CTooltip>
-                    </div>
-                  </CTableDataCell>
+                    <CTableHeaderCell>{index + 1}</CTableHeaderCell>
+                    <CTableDataCell>{filter.logical_operator}</CTableDataCell>
+                    <CTableDataCell>{filter.operator}</CTableDataCell>
+                    <CTableDataCell>{filter.value}</CTableDataCell>
+                    <CTableDataCell>
+                        <div className="d-flex gap-2">
+                            <CTooltip content="Delete">
+                                <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.handleNewUpdateDelete(filter.id)}>
+                                    <CIcon icon={cilTrash} />
+                                </CButton>
+                            </CTooltip>
+                        </div>
+                    </CTableDataCell>
                 </CTableRow>
-              ))}
-            </CTableBody>
+            ))}
+        </CTableBody>
           </CTable>
           </CCardBody>
         </CCard>
