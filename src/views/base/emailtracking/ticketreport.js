@@ -51,7 +51,7 @@ class TicketReport extends React.Component {
           <CCol xs={12}>
             <CCard className="mb-4">
               <CCardHeader>
-                <strong>TICKETS REPORT</strong>
+                <strong> REPORT</strong>
               </CCardHeader>
               <CCardBody>
                 <CCol md={4}>

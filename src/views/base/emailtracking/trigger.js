@@ -30,6 +30,21 @@ import BaseURL from 'src/assets/contants/BaseURL';
 
 class Trigger extends React.Component {
   state = {
+    newfilterlist:[],   //my state
+    allfiledlist:[],   //my state
+    listingFieldUsers:[],
+    newTriggerData:{
+      // group_to_send: null,
+      trigger_field: null,
+      trigger_name: "",
+      notification_message: "",
+      trigger_switch: false,
+      send_sms: false,
+      send_notification: false,
+      parameter_filter_list: [],
+      users_to_send: []
+    },    //my state
+
     visibleUpdate: false,
     visibleAdd: false,
     triggers: [],
@@ -52,6 +67,36 @@ class Trigger extends React.Component {
       },
     },
   };
+
+  //my function 
+  updateGroupList = (name)=>{
+    this.setState({
+      newTriggerData:{
+        ...this.state.newTriggerData,
+        parameter_filter_list:[]
+      }
+    })
+
+    let userlistArray = []
+    let valueCatched = this.state.allfiledlist.find(filterdata =>{
+      if(filterdata.alias == name){
+        // console.log("found filter",filterdata);
+        filterdata.group_details.map((userslist=>{
+          userslist.user_list.map(users=>{
+            userlistArray.push(users)
+            
+          })
+        }))
+        return filterdata;
+      }
+    })
+    this.setState({
+      listingFieldUsers:userlistArray
+    })
+    // console.log("foundData",valueCatched)
+  }
+
+
 
   handleChangeUser = (event) => {
     const selectedValues = Array.from(event.target.options)
@@ -192,6 +237,10 @@ handleNewUpdateDelete = async (id) => {
   fetchParameterFields = async () => {
     try {
       const response = await axios.get(BaseURL + 'emailtracking/parameter/');
+      console.log("Parameter==>",response.data);
+      this.setState({
+        allfiledlist: response.data
+      })
       const parameterFields = response.data.map((field) => field.field);
       this.setState({ parameterFields });
     } catch (error) {
@@ -221,8 +270,22 @@ handleNewUpdateDelete = async (id) => {
   };
 
   toggleAddModal = () => {
+    this.setState({
+      newTriggerData:{
+        // group_to_send: null,
+        trigger_field: null,
+        trigger_name: "",
+        notification_message: "",
+        trigger_switch: false,
+        send_sms: false,
+        send_notification: false,
+        parameter_filter_list: [],
+        users_to_send: []
+      },    //my state
+      visibleAdd: true
+    })
     this.setState((prevState) => ({
-      visibleAdd: !prevState.visibleAdd,
+      // visibleAdd: !prevState.visibleAdd,
       newTrigger: {
         trigger_name: '',
         user_to_send: [],
@@ -266,18 +329,20 @@ handleNewUpdateDelete = async (id) => {
     };
 
     try {
-        console.log("Sent Data -->", triggerData);
+        console.log("Sent Data -->", this.state.newTriggerData);
         const response = await fetch(BaseURL + 'emailtracking/trigger/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(triggerData),
+            body: JSON.stringify(this.state.newTriggerData),
         });
 
         if (response.ok) {
-            console.log('Trigger data saved successfully', triggerData);
-            this.toggleAddModal();
+            console.log('Trigger data saved successfully', this.state.newTriggerData);
+            // this.toggleAddModal();
+            this.setState({visibleAdd:false})
+            this.fetchData();
         } else {
             console.error('Failed to save trigger data', triggerData);
         }
@@ -347,6 +412,19 @@ handleNewUpdateDelete = async (id) => {
     }
   };
 
+  tes
+
+  testhandleNewUpdateSave = async()=>{
+    console.log("listing users=>",this.state.listingFieldUsers)
+    console.log("paramter data =>", this.state.allfiledlist)
+    console.log("New trigger data =>", this.state.newTriggerData)
+    // const tempdata = this.state.newfilterlist
+    // if(tempdata.length>0){
+    //   for(let i = 0 ;i<tempdata.length;i++){
+    //     console.log(tempdata[i].operator)
+    //   }
+    // }
+  }
 
   handleNewUpdateSave = async () => {
     const { newTrigger, newfilter } = this.state;
@@ -372,6 +450,15 @@ handleNewUpdateDelete = async (id) => {
 
         const data = await response.json();
         console.log('Success:', data);
+        this.setState( filters => ({ 
+          newTriggerData:{
+            ...filters.newTriggerData,
+            parameter_filter_list:[...filters.newTriggerData.parameter_filter_list,data.id]
+          },
+          newfilterlist:[...filters.newfilterlist, data]
+        }))
+
+        console.log("New filter list", this.state.newfilterlist)
 
         const updatedTrigger = { ...newTrigger };
         updatedTrigger.parameter_filter_list = [...newfilter, data.id];
@@ -464,7 +551,7 @@ handleNewUpdateDelete = async (id) => {
                       <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Rule Name</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Field</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Group</CTableHeaderCell>
+                      {/* <CTableHeaderCell scope="col">Group</CTableHeaderCell> */}
                       <CTableHeaderCell scope="col">Notification Message</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Status</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Action</CTableHeaderCell>
@@ -489,7 +576,7 @@ handleNewUpdateDelete = async (id) => {
                             {trigger.trigger_field}
                           </span>
                         </CTableDataCell>
-                        <CTableDataCell>{trigger.group_to_send}</CTableDataCell>
+                        {/* <CTableDataCell>{trigger.group_to_send}</CTableDataCell> */}
                         <CTableDataCell>{trigger.notification_message}</CTableDataCell>
                         <CTableDataCell>
                           <CFormSwitch checked={trigger.trigger_switch} readOnly />
@@ -723,7 +810,8 @@ handleNewUpdateDelete = async (id) => {
               </CTableRow>
             </CTableHead>
             <CTableBody>
-            {this.state.newlyAddedFilters.map((filter, index) => (
+
+            {/* {this.state.newlyAddedFilters.map((filter, index) => (
                 <CTableRow key={index}>
                   <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                   <CTableDataCell>{filter.logical_operator}</CTableDataCell>
@@ -739,7 +827,28 @@ handleNewUpdateDelete = async (id) => {
                     </div>
                   </CTableDataCell>
                 </CTableRow>
+              ))} */}
+
+
+              {this.state.newfilterlist.map((filter, index) => (
+                <CTableRow key={index+1}>
+                  <CTableHeaderCell>{index + 1}</CTableHeaderCell>
+                  <CTableDataCell>{filter.logical_operator}</CTableDataCell>
+                  <CTableDataCell>{filter.operator}</CTableDataCell>
+                  <CTableDataCell>{filter.value}</CTableDataCell>
+                  <CTableDataCell>
+                    <div className="d-flex gap-2">
+                      <CTooltip content="Delete">
+                        <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.handleUpdateDelete(filter.id)}>
+                          <CIcon icon={cilTrash} />
+                        </CButton>
+                      </CTooltip>
+                    </div>
+                  </CTableDataCell>
+                </CTableRow>
               ))}
+
+
             </CTableBody>
           </CTable>
           </CCardBody>
@@ -760,7 +869,7 @@ handleNewUpdateDelete = async (id) => {
           visible={visibleAdd}
           backdrop="static"
           keyboard={false}
-          onClose={() => this.toggleAddModal()}
+          // onClose={() => this.toggleAddModal()}
           aria-labelledby="AddModalLabel"
         >
           <CModalHeader>
@@ -773,19 +882,33 @@ handleNewUpdateDelete = async (id) => {
                   <CFormLabel htmlFor="trigger_name" className="col-form-label"><strong>Rule Name</strong></CFormLabel>
                 </CCol>
                 <CCol md={4}>
-                <CFormInput
+                {/* <CFormInput
                   type="text"
                   id="trigger_name"
                   name="trigger_name"
                   value={newTrigger ? newTrigger.trigger_name : ''}
                   onChange={this.handleAddInputChange}
+                /> */}
+                <CFormInput
+                  type="text"
+                  id="trigger_name"
+                  name="trigger_name"
+                  value={this.state.newTriggerData.trigger_name}
+                  onChange={(text)=>{
+                    this.setState({
+                      newTriggerData:{
+                        ...this.state.newTriggerData,
+                        trigger_name: text.target.value
+                      }
+                    })
+                  }}
                 />
                 </CCol>
                 <CCol sm={2}>
                   <CFormLabel htmlFor="user_name" className="col-form-label"><strong>Group User</strong></CFormLabel>
                 </CCol>
                 <CCol md={4}>
-                <CFormSelect
+                {/* <CFormSelect
                     id="user_to_send"
                     name="user_to_send"
                     multiple
@@ -809,6 +932,58 @@ handleNewUpdateDelete = async (id) => {
                             )}
                         </React.Fragment>
                     ))}
+                </CFormSelect> */}
+                <CFormSelect
+                    id="user_to_send"
+                    name="user_to_send"
+                    multiple
+                    value={this.state.newTriggerData.users_to_send}
+                    onChange={e=>{
+                      console.log(e.target)
+                      let multipleOptions = e.target.options;
+                      let allItem = this.state.listingFieldUsers;
+                      let value = [];
+                      let selectedItems = [];
+
+                      for(let i = 0;i<multipleOptions.length;i++){
+                        if(multipleOptions[i].selected){
+                          value.push(multipleOptions[i].value)
+                          console.log("value-->",parseInt(value))
+                          for(let j = 0;j<allItem.length;j++){
+                            if(allItem[j].id === parseInt(multipleOptions[i].value)){
+                              selectedItems.push(allItem[j].id)
+                            }
+                          }
+                        }
+                      }
+
+                      this.setState({
+                        newTriggerData:{
+                          ...this.state.newTriggerData,
+                          users_to_send:selectedItems
+                        }
+                      },
+                      // ()=>{console.log("selected->",selectedItems)}
+                    )
+
+
+                      // this.setState({
+                      //   newTriggerData:{
+                      //     ...this.state.newTriggerData,
+                      //     users_to_send:[...this.state.newTriggerData.users_to_send, e.target.value]
+                      //   }
+                      // })
+                    }}
+                >
+                  
+                  {this.state.listingFieldUsers.map(users=>{
+                      
+                      return(
+                        <option key={users.id} value={users.id}>{users.username}</option>
+                      )
+                  })}
+                  
+                    
                 </CFormSelect>
                 </CCol>
               </CRow>
@@ -816,11 +991,34 @@ handleNewUpdateDelete = async (id) => {
               <CCol sm={2}>
                 <CFormLabel htmlFor="trigger_field" className="col-form-label"><strong>Field</strong></CFormLabel>
               </CCol>
-              <CCol md={10}>
+              {/* <CCol md={10}>
                 <CFormSelect
                   id="trigger_field"
                   name="selectedTrigger.parameter_filter_list[0].trigger_field"
                   onChange={this.handleAddInputChange}
+                >
+                  <option value=""></option>
+                  {parameterFields.map((field, index) => (
+                    <option key={index} value={field}>
+                      {field}
+                    </option>
+                  ))}
+                </CFormSelect>
+              </CCol> */}
+              <CCol md={10}>
+                <CFormSelect
+                  id="trigger_field"
+                  name="selectedTrigger.parameter_filter_list[0].trigger_field"
+                  onChange={(e)=>{
+                    // console.log("Field->",e.target.value)
+                    this.updateGroupList(e.target.value);
+                    this.setState({
+                      newTriggerData:{
+                        ...this.state.newTriggerData,
+                        trigger_field:e.target.value
+                      }
+                    })
+                  }}
                 >
                   <option value=""></option>
                   {parameterFields.map((field, index) => (
@@ -841,8 +1039,15 @@ handleNewUpdateDelete = async (id) => {
                     id="notification_message"
                     name="notification_message"
                     rows={5}
-                    value={newTrigger ? newTrigger.notification_message : ''}
-                    onChange={this.handleAddInputChange}
+                    value={this.state.newTriggerData.notification_message}
+                    onChange={e => {
+                      this.setState({
+                        newTriggerData:{
+                          ...this.state.newTriggerData,
+                          notification_message: e.target.value
+                        }
+                      })
+                    }}
                   />
                 </CCol>
               </CRow>
@@ -854,8 +1059,15 @@ handleNewUpdateDelete = async (id) => {
                   <CFormSwitch
                     id="trigger_switch"
                     name="trigger_switch"
-                    checked={newTrigger ? newTrigger.trigger_switch : false}
-                    onChange={this.handleAddInputChange}
+                    checked={this.state.newTriggerData.trigger_switch}
+                    onChange={e=>{
+                      this.setState({
+                        newTriggerData:{
+                          ...this.state.newTriggerData,
+                          trigger_switch:e.target.checked
+                        }
+                      })
+                    }}
                   />
                 </CCol>
                 <CCol sm={2}>
@@ -865,8 +1077,15 @@ handleNewUpdateDelete = async (id) => {
                   <CFormSwitch
                     id="send_sms"
                     name="send_sms"
-                    checked={newTrigger ? newTrigger.send_sms : false}
-                    onChange={this.handleAddInputChange}
+                    checked={this.state.newTriggerData.send_sms}
+                    onChange={e=>{
+                      this.setState({
+                        newTriggerData:{
+                          ...this.state.newTriggerData,
+                          send_sms:e.target.checked
+                        }
+                      })
+                    }}
                   />
                 </CCol>
                 <CCol sm={2}>
@@ -876,8 +1095,15 @@ handleNewUpdateDelete = async (id) => {
                   <CFormSwitch
                     id="send_notification"
                     name="send_notification"
-                    checked={newTrigger ? newTrigger.send_notification : false}
-                    onChange={this.handleAddInputChange}
+                    checked={this.state.newTriggerData.send_notification}
+                    onChange={e=>{
+                      this.setState({
+                        newTriggerData:{
+                          ...this.state.newTriggerData,
+                          send_notification: e.target.checked
+                        }
+                      })
+                    }}
                   />
                 </CCol>
               </CRow>
@@ -943,6 +1169,15 @@ handleNewUpdateDelete = async (id) => {
                     </div>
                 </CCol>
             </CRow>
+            <CRow className="justify-content-center">
+                <CCol xs={1}>
+                    <div className='d-grid gap-2'>
+                        <CButton className="mt-2" color="primary" onClick={this.testhandleNewUpdateSave}>
+                            Test
+                        </CButton>
+                    </div>
+                </CCol>
+            </CRow>
         </CForm>
           </CModalBody>
           <CRow>
@@ -963,7 +1198,24 @@ handleNewUpdateDelete = async (id) => {
               </CTableRow>
             </CTableHead>
             <CTableBody>
-            {this.state.newfilter.map((filter, index) => (
+            {/* {this.state.newfilter.map((filter, index) => (
+                <CTableRow key={index}>
+                    <CTableHeaderCell>{index + 1}</CTableHeaderCell>
+                    <CTableDataCell>{filter.logical_operator}</CTableDataCell>
+                    <CTableDataCell>{filter.operator}</CTableDataCell>
+                    <CTableDataCell>{filter.value}</CTableDataCell>
+                    <CTableDataCell>
+                        <div className="d-flex gap-2">
+                            <CTooltip content="Delete">
+                                <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.handleNewUpdateDelete(filter.id)}>
+                                    <CIcon icon={cilTrash} />
+                                </CButton>
+                            </CTooltip>
+                        </div>
+                    </CTableDataCell>
+                </CTableRow>
+            ))} */}
+            {this.state.newfilterlist.map((filter, index) => (
                 <CTableRow key={index}>
                     <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                     <CTableDataCell>{filter.logical_operator}</CTableDataCell>

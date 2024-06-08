@@ -123,7 +123,7 @@ const routes = [
   { path: '/emailtracking/emailsubpage', name: 'EmailSubpage', element: EmailSubpage}, //EmailTracking
   { path: '/emailtracking/parameter', name: 'EmailTracking / Create Fields', element: Parameter}, //EmailTracking
   { path: '/emailtracking/trigger', name: 'EmailTracking / Rules Engine', element: Trigger}, //EmailTracking
-  { path: '/emailtracking/ticketreport', name: 'EmailTracking / TicketReport', element: TicketReport}, //EmailTracking
+  { path: '/emailtracking/ticketreport', name: 'EmailTracking / Report', element: TicketReport}, //EmailTracking
   { path: '/emailtracking/ticket', name: 'EmailTracking / Ticket', element: Ticket}, //EmailTracking
 
   { path: '/pushnotification/sendreport', name: 'Actions / Notifications / Send Report', element: SendReport}, //PushNotification

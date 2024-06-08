@@ -165,7 +165,7 @@ const _nav = [
     },
     {
       component: CNavItem,
-      name: 'Ticket Report',
+      name: 'Report',
       to: '/emailtracking/ticketreport',
       icon: <CIcon icon={cilShortText} customClassName="nav-icon" />,
     },
