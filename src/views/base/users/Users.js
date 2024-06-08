@@ -174,7 +174,7 @@ const handleUpdateUser = () => {
                             </CCol>
                             <CTable striped hover>
                                 <CTableHead>
-                                    <CTableRow>
+                                    <CTableRow color="dark">
                                         <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
                                         <CTableHeaderCell scope="col">Ext User</CTableHeaderCell>
                                         <CTableHeaderCell scope="col">Designation</CTableHeaderCell>
