@@ -93,7 +93,7 @@ class TicketReport extends React.Component {
                             <CTableDataCell>{ticket.ticket.ticketname}</CTableDataCell>
                             <CTableDataCell>{ticket.active_trigger.trigger_name}</CTableDataCell>
                             <CTableDataCell>{ticket.actual_value}</CTableDataCell>
-                            <CTableDataCell>{ticket.active_trigger.users_to_send}</CTableDataCell>
+                            <CTableDataCell>{ticket.active_trigger.users_to_send.username}</CTableDataCell>
                           </CTableRow>
                         ))
                       )}

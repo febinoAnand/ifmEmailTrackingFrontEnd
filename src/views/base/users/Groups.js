@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { cilMagnifyingGlass, cilPen, cilTrash } from '@coreui/icons';
+import { cilPen, cilTrash } from '@coreui/icons';
 import {
     CButton,
     CCard,
@@ -11,7 +11,6 @@ import {
     CForm,
     CRow,
     CInputGroup,
-    CInputGroupText,
     CTable,
     CTableBody,
     CTableDataCell,
@@ -107,7 +106,7 @@ const Groups = () => {
     const handleSearch = (query) => {
         setSearchQuery(query);
         if (!groupData) return;
-
+    
         if (query === '') {
             setFilteredGroupData(groupData);
         } else {
@@ -115,15 +114,19 @@ const Groups = () => {
             const filteredData = groupData.filter(group => {
                 const name = group.name?.toLowerCase() || '';
                 const userSet = group.user_set ? group.user_set.map(userId => userId.toString().toLowerCase()).join(' ') : '';
-
+                const userEmails = group.user_details.map(user => user.email.toLowerCase()).join(' ');
+                const userMobileNumbers = group.user_details.map(user => user.mobile_no.toLowerCase()).join(' ');
+    
                 return (
                     name.includes(lowercasedQuery) ||
-                    userSet.includes(lowercasedQuery)
+                    userSet.includes(lowercasedQuery) ||
+                    userEmails.includes(lowercasedQuery) ||
+                    userMobileNumbers.includes(lowercasedQuery)
                 );
             });
             setFilteredGroupData(filteredData);
         }
-    };
+    };    
 
     const handleUpdateGroup = async () => {
         try {
@@ -175,7 +178,6 @@ const Groups = () => {
                         <CCardBody>
                             <CCol md={4}>
                                 <CInputGroup className="flex-nowrap mt-3 mb-4">
-                                    <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass} /></CInputGroupText>
                                     <CFormInput
                                         placeholder="Search by Group Name or User IDs"
                                         aria-label="Search"
@@ -183,6 +185,9 @@ const Groups = () => {
                                         value={searchQuery}
                                         onChange={(e) => handleSearch(e.target.value)}
                                     />
+                                    <CButton type="button" color="secondary" onClick={(e) => handleSearch(e.target.value)} id="button-addon2">
+                                        Search
+                                    </CButton>
                                 </CInputGroup>
                             </CCol>
                             <CTooltip content="Create new Group">

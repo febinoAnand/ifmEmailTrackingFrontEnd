@@ -579,7 +579,9 @@ handleNewUpdateDelete = async (id) => {
                         {/* <CTableDataCell>{trigger.group_to_send}</CTableDataCell> */}
                         <CTableDataCell>{trigger.notification_message}</CTableDataCell>
                         <CTableDataCell>
-                          <CFormSwitch checked={trigger.trigger_switch} readOnly />
+                          <span style={{ fontWeight: trigger.trigger_switch ? 'bold' : 'bold', color: trigger.trigger_switch ? 'green' : 'red' }}>
+                        {trigger.trigger_switch ? 'Active' : 'Inactive'}
+                        </span>
                         </CTableDataCell>
                         <CTableDataCell>
                           <div className="d-flex gap-2">
@@ -633,50 +635,78 @@ handleNewUpdateDelete = async (id) => {
                   <CFormLabel htmlFor="user_name" className="col-form-label"><strong>Group User</strong></CFormLabel>
                 </CCol>
                 <CCol md={4}>
-                  <CFormSelect
-                    id="user_to_send"
-                    name="user_to_send"
-                    multiple
-                    value={selectedTrigger ? selectedTrigger.user_to_send : []}
-                    onChange={this.handleMultiSelectChange}
-                  >
-                    {selectedTrigger?.trigger_field_details?.group_details?.flatMap(group =>
-                      group?.user_list?.map(user => {
-                        if (!uniqueUsers.has(user.id)) {
-                          uniqueUsers.add(user.id);
-                          return (
-                            <option key={user.id} value={user.id}>
-                              {user.username}
-                            </option>
-                          );
+                <CFormSelect
+                  id="user_to_send"
+                  name="user_to_send"
+                  multiple
+                  value={selectedTrigger ? selectedTrigger.users_to_send : ''}
+                  onChange={(e) => {
+                    console.log(e.target);
+                    let multipleOptions = e.target.options;
+                    let allItem = this.state.listingFieldUsers;
+                    let value = [];
+                    let selectedItems = [];
+
+                    for (let i = 0; i < multipleOptions.length; i++) {
+                      if (multipleOptions[i].selected) {
+                        value.push(multipleOptions[i].value);
+                        console.log("value-->", parseInt(value));
+                        for (let j = 0; j < allItem.length; j++) {
+                          if (allItem[j].id === parseInt(multipleOptions[i].value)) {
+                            selectedItems.push(allItem[j].id);
+                          }
                         }
-                        return null;
-                      })
-                    )}
-                  </CFormSelect>
+                      }
+                    }
+
+                    this.setState({
+                      selectedTrigger: {
+                        ...this.state.selectedTrigger,
+                        users_to_send: selectedItems,
+                      },
+                    });
+                  }}
+                >
+                  {this.state.listingFieldUsers.map((users) => {
+                    const isSelected = selectedTrigger && selectedTrigger.users_to_send.includes(users.id);
+                    return (
+                      <option key={users.id} value={users.id} selected={isSelected}>
+                        {users.username}
+                      </option>
+                    );
+                  })}
+                </CFormSelect>
                 </CCol>
               </CRow>
               <CRow className="mb-3">
-                <CCol sm={2}>
-                  <CFormLabel htmlFor="trigger_field" className="col-form-label"><strong>Field</strong></CFormLabel>
-                </CCol>
-                <CCol md={10}>
-                {selectedTrigger && selectedTrigger.trigger_field && (
-                  <CFormSelect
-                    id="trigger_field"
-                    name="trigger_field"
-                    value={selectedTrigger.trigger_field || ''}
-                    onChange={this.handleInputChange}
-                  >
-                    <option value=""></option>
-                    {parameterFields.map((field, index) => (
-                      <option key={index} value={field}>
-                        {field}
-                      </option>
-                    ))}
-                  </CFormSelect>
-                )}
-                </CCol>
+              <CCol sm={2}>
+                <CFormLabel htmlFor="trigger_field" className="col-form-label"><strong>Field</strong></CFormLabel>
+              </CCol>
+              <CCol md={10}>
+              {selectedTrigger && selectedTrigger.trigger_field && (
+                <CFormSelect
+                  id="trigger_field"
+                  name="selectedTrigger.parameter_filter_list[0].trigger_field"
+                  value={selectedTrigger.trigger_field || ''}
+                  onChange={(e)=>{
+                    this.updateGroupList(e.target.value);
+                    this.setState({
+                      selectedTrigger:{
+                        ...this.state.selectedTrigger,
+                        trigger_field:e.target.value
+                      }
+                    })
+                  }}
+                >
+                  <option value=""></option>
+                  {parameterFields.map((field, index) => (
+                    <option key={index} value={field}>
+                      {field}
+                    </option>
+                  ))}
+                </CFormSelect>
+              )}
+              </CCol>
               </CRow>
               <CRow className="mb-3">
                 <CCol sm={2}>
@@ -830,7 +860,7 @@ handleNewUpdateDelete = async (id) => {
               ))} */}
 
 
-              {this.state.newfilterlist.map((filter, index) => (
+              {this.state.newlyAddedFilters.map((filter, index) => (
                 <CTableRow key={index+1}>
                   <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                   <CTableDataCell>{filter.logical_operator}</CTableDataCell>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect }  from 'react';
 import axios from 'axios';
-import { cilMagnifyingGlass, cilTrash, cilPen } from '@coreui/icons';
+import { cilTrash, cilPen } from '@coreui/icons';
 import {
     CButton,
     CCard,
@@ -9,7 +9,6 @@ import {
     CCol,
     CFormInput,
     CInputGroup,
-    CInputGroupText,
     CRow,
     CForm,
     CFormLabel,
@@ -156,7 +155,6 @@ const handleUpdateUser = () => {
                         <CCardBody>
                             <CCol md={4}>
                                 <CInputGroup className="flex-nowrap mt-3 mb-4">
-                                    <CInputGroupText id="addon-wrapping"><CIcon icon={cilMagnifyingGlass}/></CInputGroupText>
                                     <CFormInput
                                         placeholder="Search by Subject or Message"
                                         aria-label="Search"
