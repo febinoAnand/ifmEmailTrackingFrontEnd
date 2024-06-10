@@ -1,4 +1,4 @@
-import React, { useState, useEffect }  from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { cilTrash, cilPen } from '@coreui/icons';
 import {
@@ -42,7 +42,7 @@ const Users = () => {
 
     useEffect(() => {
         handleSearch();
-    }, [searchQuery]);
+    }, [searchQuery, users]);
 
     const fetchUsers = () => {
         axios.get(BaseURL + 'Userauth/userdetail/')
@@ -79,70 +79,61 @@ const Users = () => {
 
     const handleTableRowClick = (user) => {
         setSelectedUser(user);
-        setModalVisible(true);
         setUserActive(user.userActive);
-        document.getElementById('name').value = user.usermod.username;
-        document.getElementById('email').value = user.usermod.email;
-        document.getElementById('designation').value = user.designation;
-        document.getElementById('mobileno').value = user.mobile_no;
+        setModalVisible(true);
     };
 
     const handleToggleChange = (event) => {
-      const { checked } = event.target;
-      setUserActive(checked);
-  };
+        const { checked } = event.target;
+        setUserActive(checked);
+    };
 
-const handleDeleteUser = (userdetailId) => {
-    axios.delete(`${BaseURL}Userauth/userdetail/${userdetailId}/`)
-        .then(response => {
-            fetchUsers();
-        })
-        .catch(error => {
-            console.error('Error deleting user:', error);
-        });
-};
+    const handleDeleteUser = (userdetailId) => {
+        axios.delete(`${BaseURL}Userauth/userdetail/${userdetailId}/`)
+            .then(response => {
+                fetchUsers();
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
+            });
+    };
 
-const handleUpdateUser = () => {
-  if (!selectedUser || !selectedUser.userdetail_id) {
-      console.error('Error: No user selected for update.');
-      return;
-  }
+    const handleUpdateUser = () => {
+        if (!selectedUser || !selectedUser.userdetail_id) {
+            console.error('Error: No user selected for update.');
+            return;
+        }
 
-  const designation = document.getElementById('designation').value;
-  const mobileno = document.getElementById('mobileno').value;
+        const username = document.getElementById('name').value;
+        const designation = document.getElementById('designation').value;
+        const mobileno = document.getElementById('mobileno').value;
 
-  if (!designation || !mobileno) {
-      console.error('Error: Designation or mobile number cannot be empty.');
-      return;
-  }
+        if (!username || !designation || !mobileno) {
+            console.error('Error: Username, designation, or mobile number cannot be empty.');
+            return;
+        }
 
-  const updatedUser = {
-      userdetail_id: selectedUser.userdetail_id,
-      user_id: selectedUser.user_id,
-      usermod: {
-          id: selectedUser.usermod.id,
-          username: selectedUser.usermod.username,
-          email: selectedUser.usermod.email,
-          first_name: selectedUser.usermod.first_name,
-          last_name: selectedUser.usermod.last_name
-      },
-      designation: designation,
-      mobile_no: mobileno,
-      device_id: selectedUser.device_id,
-      auth_state: selectedUser.auth_state,
-      expiry_time: selectedUser.expiry_time,
-      userActive: userActive
-  };
+        const updatedUser = {
+            ...selectedUser,
+            usermod: {
+                ...selectedUser.usermod,
+                username: username,
+            },
+            designation: designation,
+            mobile_no: mobileno,
+            userActive: userActive
+        };
 
-  axios.put(`${BaseURL}Userauth/userdetail/${selectedUser.userdetail_id}/`, updatedUser)
-      .then(response => {
-          console.log('User updated successfully:', response.data);
-          fetchUsers();
-      })
-      .catch(error => {
-          console.error('Error updating user:', error);
-      });
-};
+        axios.put(`${BaseURL}Userauth/userdetail/${selectedUser.userdetail_id}/`, updatedUser)
+            .then(response => {
+                console.log('User updated successfully:', response.data);
+                fetchUsers();
+                setModalVisible(false);
+            })
+            .catch(error => {
+                console.error('Error updating user:', error);
+            });
+    };      
 
     return (
         <>
@@ -165,9 +156,6 @@ const handleUpdateUser = () => {
                                     <CButton type="button" color="secondary" onClick={handleSearch} id="button-addon2">
                                         Search
                                     </CButton>
-                                    {/* <CButton color="primary">
-                                        <CIcon icon={cilFilter} />
-                                    </CButton> */}
                                 </CInputGroup>
                             </CCol>
                             <CTable striped hover>
@@ -198,7 +186,7 @@ const handleUpdateUser = () => {
                                                     <CButton>
                                                         <CIcon icon={cilPen} />
                                                     </CButton>
-                                                    <CButton onClick={() => handleDeleteUser(user.userdetail_id)}>
+                                                    <CButton onClick={(e) => { e.stopPropagation(); handleDeleteUser(user.userdetail_id); }}>
                                                         <CIcon icon={cilTrash} />
                                                     </CButton>
                                                 </div>
@@ -214,68 +202,64 @@ const handleUpdateUser = () => {
             <CModal size='lg' visible={modalVisible} onClose={() => setModalVisible(false)} backdrop="static" keyboard={false}>
                 <CModalHeader onClose={() => setModalVisible(false)}>
                     <CModalTitle>User Details</CModalTitle>
-                    </CModalHeader>
-                        <CModalBody>
-                            <CForm>
-                                <CRow className="mb-3">
-                                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">User Name</CFormLabel>
-                                    <CCol md={6}>
-                                        <CFormInput type="text" id="name" name="name" />
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3">
-                                    <CFormLabel htmlFor="email" className="col-sm-2 col-form-label">Email Address</CFormLabel>
-                                    <CCol md={6}>
-                                        <CFormInput type="text" id="email" name="email" readOnly/>
-                                    </CCol>
-                                </CRow>
-                      <CRow className="mb-3">
-                        <CFormLabel htmlFor="designation" className="col-sm-2 col-form-label">Designation</CFormLabel>
-                        <CCol md={6}>
-                          <CFormInput type="text" id="designation" name="designation" />
-                        </CCol>
-                      </CRow>
-                      <CRow className="mb-3">
-                        <CFormLabel htmlFor="mobileno" className="col-sm-2 col-form-label">Mobile Number</CFormLabel>
-                        <CCol md={6}>
-                          <CFormInput type="text" id="mobileno" name="mobileno" readOnly/>
-                        </CCol>
-                      </CRow>
-                      <CRow className="mb-3">
-                        <CFormLabel htmlFor="password" className="col-sm-2 col-form-label">Password</CFormLabel>
-                        <CCol md={6}>
-                          <CFormInput type="text" id="password" name="password" readOnly/>
-                        </CCol>
-                      </CRow>
-                      <CRow className="mb-3">
-                        <CFormLabel htmlFor="confirmpassword" className="col-sm-2 col-form-label">Confirm Password</CFormLabel>
-                        <CCol md={6}>
-                          <CFormInput type="text" id="confirmpassword" name="confirmpassword" readOnly/>
-                        </CCol>
-                      </CRow>
-                      <CRow className="mb-3">
-                          <CFormLabel htmlFor="toggle" className="col-sm-2 col-form-label">Active Status</CFormLabel>
-                          <CCol md={6}>
-                          <CFormSwitch
-                              id="toggle"
-                              checked={userActive}
-                              onChange={handleToggleChange}
-                          />
-                          </CCol>
-                        </CRow>
-                      <CRow className="justify-content-center">
-                        <CCol md="auto">
-                          <CButton color="primary" onClick={handleUpdateUser}>Update</CButton>
-                        </CCol>
-                      </CRow>
-                      </CForm>
-                    </CModalBody>
+                </CModalHeader>
+                <CModalBody>
+                    {selectedUser && (
+                        <CForm>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">User Name</CFormLabel>
+                                <CCol md={4}>
+                                    <CFormInput type="text" id="name" name="name" defaultValue={selectedUser.usermod.username} />
+                                </CCol>
+                                <CFormLabel htmlFor="email" className="col-sm-2 col-form-label">Email Address</CFormLabel>
+                                <CCol md={4}>
+                                    <CFormInput type="text" id="email" name="email" defaultValue={selectedUser.usermod.email} readOnly />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="designation" className="col-sm-2 col-form-label">Designation</CFormLabel>
+                                <CCol md={4}>
+                                    <CFormInput type="text" id="designation" name="designation" defaultValue={selectedUser.designation} />
+                                </CCol>
+                                <CFormLabel htmlFor="mobileno" className="col-sm-2 col-form-label">Mobile N0</CFormLabel>
+                                <CCol md={4}>
+                                    <CFormInput type="text" id="mobileno" name="mobileno" defaultValue={selectedUser.mobile_no} />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="password" className="col-sm-2 col-form-label">Password</CFormLabel>
+                                <CCol md={4}>
+                                    <CFormInput type="text" id="password" name="password" readOnly />
+                                </CCol>
+                                <CFormLabel htmlFor="confirmpassword" className="col-sm-2 col-form-label">Confirm Password</CFormLabel>
+                                <CCol md={4}>
+                                    <CFormInput type="text" id="confirmpassword" name="confirmpassword" readOnly />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="toggle" className="col-sm-2 col-form-label">Active Status</CFormLabel>
+                                <CCol md={6}>
+                                    <CFormSwitch
+                                        id="toggle"
+                                        checked={userActive}
+                                        onChange={handleToggleChange}
+                                    />
+                                </CCol>
+                            </CRow>
+                            <CRow className="justify-content-center">
+                                <CCol md="auto">
+                                    <CButton color="primary" onClick={handleUpdateUser}>Update</CButton>
+                                </CCol>
+                            </CRow>
+                        </CForm>
+                    )}
+                </CModalBody>
                 <CModalFooter>
-                <CButton color="secondary" onClick={() => setModalVisible(false)}>
-                    Close
-                </CButton>
+                    <CButton color="secondary" onClick={() => setModalVisible(false)}>
+                        Close
+                    </CButton>
                 </CModalFooter>
-      </CModal>
+            </CModal>
         </>
     );
 };

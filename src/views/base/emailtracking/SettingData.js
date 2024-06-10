@@ -12,6 +12,7 @@ import {
     CFormInput,
     CFormLabel,
     CRow,
+    CFormSelect
 } from '@coreui/react';
 import BaseURL from 'src/assets/contants/BaseURL';
 
@@ -27,7 +28,9 @@ class SettingData extends React.Component {
             checkinterval: '',
             checkstatus: false,
             errors: {},
-            successMessage: ''
+            successMessage: '',
+            userList: [],
+            inputValue: ''
         };
     }
 
@@ -66,7 +69,7 @@ class SettingData extends React.Component {
             [name]: value
         });
     };
-
+    
     handleRadioChange = (e) => {
         const { name, value } = e.target;
         const newValue = value === 'true';
@@ -138,10 +141,20 @@ class SettingData extends React.Component {
         }
     
         return errors;
-    };    
+    }; 
+    
+    handleAdd = () => {
+        const { inputValue, userList } = this.state;
+        if (inputValue.trim() !== '') {
+            this.setState({
+                userList: [...userList, inputValue],
+                inputValue: ''
+            });
+        }
+    };
 
     render() {
-        const { host, port, username, password, checkinterval, checkstatus, errors, successMessage } = this.state;
+        const { host, port, username, password, checkinterval, checkstatus, errors, successMessage, inputValue, userList  } = this.state;
 
         return (
             <>
@@ -157,7 +170,7 @@ class SettingData extends React.Component {
                                 <strong>SMTP Settings</strong>
                             </CCardHeader>
                             <CCardBody>
-                                <CForm onSubmit={this.handleSubmit}>
+                                <CForm>
                                     <CRow className="mb-3">
                                         <CFormLabel htmlFor="host" className="col-sm-2 col-form-label">Host</CFormLabel>
                                         <CCol sm={10}>
@@ -191,7 +204,7 @@ class SettingData extends React.Component {
                                         <CCol sm={10}>
                                         <CFormCheck
                                             type="radio"
-                                            name="checkStatus"
+                                            name="checkstatus"
                                             id="gridRadios1"
                                             value="true"
                                             label="Enable"
@@ -200,7 +213,7 @@ class SettingData extends React.Component {
                                         />
                                         <CFormCheck
                                             type="radio"
-                                            name="checkStatus"
+                                            name="checkstatus"
                                             id="gridRadios2"
                                             value="false"
                                             label="Disable"
@@ -212,13 +225,31 @@ class SettingData extends React.Component {
                                     <CRow className="mb-3">
                                         <CFormLabel htmlFor="checkInterval" className="col-sm-2 col-form-label">Check Interval</CFormLabel>
                                         <CCol sm={10}>
-                                            <CFormInput type="text" id="checkInterval" name="checkInterval" value={checkinterval} onChange={this.handleChange} />
+                                            <CFormInput type="text" id="checkInterval" name="checkinterval" value={checkinterval} onChange={this.handleChange} />
                                             {errors.checkinterval && (<div className="text-danger">{errors.checkinterval}</div>)}
                                         </CCol>
-                                    </CRow><br />
+                                    </CRow>
+                                    <CRow className="mb-3">
+                                        <CFormLabel htmlFor="userList" className="col-sm-2 col-form-label">From E-mail</CFormLabel>
+                                        <CCol md={6}>
+                                            <CFormSelect id="userList" name="userList" multiple value={userList} readOnly>
+
+                                                {userList.map((user, index) => (
+                                                    <option key={index} value={user}>{user}</option>
+                                                ))}
+                                            </CFormSelect>
+                                        </CCol>
+                                        <CCol sm={4}>
+                                            <CFormInput type="text" id="input" name="inputValue" value={inputValue} onChange={this.handleChange} />
+                                            <CCol sm={12} className="mt-3 d-flex justify-content-end">
+                                                <CButton color="primary" type="button" onClick={this.handleAdd}>Add</CButton>
+                                            </CCol>
+                                        </CCol>
+                                    </CRow>
+                                    <br />
                                     <CRow className="justify-content-center">
                                         <CCol md="auto">
-                                            <CButton color="primary" type="submit">Update</CButton>
+                                            <CButton color="primary" type="submit"  onClick={this.handleSubmit}>Update</CButton>
                                         </CCol>
                                     </CRow>
                                 </CForm>
