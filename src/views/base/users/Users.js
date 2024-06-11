@@ -213,7 +213,7 @@ const Users = () => {
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">User Name</CFormLabel>
                                 <CCol md={4}>
-                                    <CFormInput type="text" id="name" name="name" defaultValue={selectedUser.usermod.username} />
+                                    <CFormInput type="text" id="name" name="name" defaultValue={selectedUser.usermod.username} readOnly  />
                                 </CCol>
                                 <CFormLabel htmlFor="email" className="col-sm-2 col-form-label">Email Address</CFormLabel>
                                 <CCol md={4}>
