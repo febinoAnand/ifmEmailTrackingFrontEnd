@@ -166,7 +166,7 @@ const Users = () => {
                                         <CTableHeaderCell scope="col">Designation</CTableHeaderCell>
                                         <CTableHeaderCell scope="col">Mobile No</CTableHeaderCell>
                                         <CTableHeaderCell scope="col">Device ID</CTableHeaderCell>
-                                        <CTableHeaderCell scope="col">Auth State</CTableHeaderCell>
+                                        <CTableHeaderCell scope="col">Active Status</CTableHeaderCell>
                                         <CTableHeaderCell scope="col">Expiry Time</CTableHeaderCell>
                                         <CTableHeaderCell scope="col">Action</CTableHeaderCell>
                                     </CTableRow>
@@ -179,7 +179,11 @@ const Users = () => {
                                             <CTableDataCell>{user.designation}</CTableDataCell>
                                             <CTableDataCell>{user.mobile_no}</CTableDataCell>
                                             <CTableDataCell>{user.device_id}</CTableDataCell>
-                                            <CTableDataCell>{user.auth_state}</CTableDataCell>
+                                            <CTableDataCell>
+                                            <span style={{ fontWeight: user.userActive ? 'bold' : 'bold', color: user.userActive ? 'green' : 'red' }}>
+                                                {user.userActive ? 'Active' : 'Inactive'}
+                                            </span>
+                                            </CTableDataCell>
                                             <CTableDataCell>{user.expiry_time}</CTableDataCell>
                                             <CTableDataCell>
                                                 <div className="d-flex gap-2">
