@@ -29,14 +29,69 @@ class SettingData extends React.Component {
             checkstatus: false,
             errors: {},
             successMessage: '',
-            userList: [],
+            emailList: [],
             inputValue: ''
         };
     }
 
     componentDidMount() {
         this.fetchSettings();
+        this.fetchEmailData();
     }
+
+    fetchEmailData() {
+        axios.get(BaseURL + 'emailtracking/email_ids/')
+            .then(response => {
+                const emailList = response.data;
+                this.setState({ emailList });
+            })
+            .catch(error => {
+                console.error('Error fetching email data:', error);
+                toast.error('Failed to fetch email data');
+            });
+    }
+
+    handleAdd = () => {
+        const { inputValue } = this.state;
+        if (inputValue.trim() !== '') {
+            const emailData = {
+                email: inputValue,
+                active: true
+            };
+            axios.post(BaseURL + "emailtracking/email_ids/", emailData)
+                .then(response => {
+                    console.log('Email added successfully:', response.data);
+                    toast.success('Email added successfully');
+                    this.fetchEmailData();
+                    this.setState({ inputValue: '' });
+                })
+                .catch(error => {
+                    console.error('Error adding email:', error);
+                    toast.error('Failed to add email');
+                });
+        } else {
+            console.warn('Input value is empty. No email added.');
+            toast.warning('Input value is empty. No email added.');
+        }
+    };
+
+    handleToggleEmail = (email) => {
+        const updatedEmail = {
+            ...email,
+            active: !email.active
+        };
+
+        axios.put(`${BaseURL}emailtracking/email_ids/${email.id}/`, updatedEmail)
+            .then(response => {
+                console.log('Email updated successfully:', response.data);
+                toast.success('Email updated successfully');
+                this.fetchEmailData();
+            })
+            .catch(error => {
+                console.error('Error updating email:', error);
+                toast.error('Failed to update email');
+            });
+    };
 
     fetchSettings() {
         axios.get(BaseURL + 'emailtracking/setting/')
@@ -62,28 +117,28 @@ class SettingData extends React.Component {
                 toast.error('Failed to fetch settings');
             });
     }
-    
+
     handleChange = (e) => {
         const { name, value } = e.target;
         this.setState({
             [name]: value
         });
     };
-    
+
     handleRadioChange = (e) => {
         const { name, value } = e.target;
         const newValue = value === 'true';
         this.setState({
             [name]: newValue
         });
-    };    
-      
+    };
+
     handleSubmit = (e) => {
         e.preventDefault();
         const errors = this.validate();
         if (Object.keys(errors).length === 0) {
             console.log('Submitted data:', this.state);
-    
+
             const { id, host, port, username, password, checkinterval, checkstatus } = this.state;
             const data = {
                 id,
@@ -94,7 +149,7 @@ class SettingData extends React.Component {
                 checkinterval: checkinterval !== '' ? parseInt(checkinterval) : null,
                 checkstatus,
             };
-    
+
             axios.put(`${BaseURL}emailtracking/setting/${id}/`, data)
             .then(() => {
                 this.setState({ successMessage: 'Settings updated successfully', errors: {} });
@@ -139,22 +194,14 @@ class SettingData extends React.Component {
         if (checkinterval !== '' && (isNaN(checkinterval) || checkinterval < 0 || checkinterval > 3600)) {
             errors.checkinterval = 'Check Interval must be a number between 0 to 3600';
         }
-    
+
         return errors;
-    }; 
-    
-    handleAdd = () => {
-        const { inputValue, userList } = this.state;
-        if (inputValue.trim() !== '') {
-            this.setState({
-                userList: [...userList, inputValue],
-                inputValue: ''
-            });
-        }
     };
 
     render() {
-        const { host, port, username, password, checkinterval, checkstatus, errors, successMessage, inputValue, userList  } = this.state;
+        const { host, port, username, password, checkinterval, checkstatus, errors, successMessage, inputValue, emailList } = this.state;
+
+        const selectedEmails = emailList.filter(emailObj => emailObj.active).map(emailObj => emailObj.email);
 
         return (
             <>
@@ -232,10 +279,11 @@ class SettingData extends React.Component {
                                     <CRow className="mb-3">
                                         <CFormLabel htmlFor="userList" className="col-sm-2 col-form-label">From E-mail</CFormLabel>
                                         <CCol md={6}>
-                                            <CFormSelect id="userList" name="userList" multiple value={userList} readOnly>
-
-                                                {userList.map((user, index) => (
-                                                    <option key={index} value={user}>{user}</option>
+                                            <CFormSelect id="userList" name="userList" value={selectedEmails} multiple>
+                                                {emailList.map((emailObj, index) => (
+                                                    <option key={index} value={emailObj.email} onClick={() => this.handleToggleEmail(emailObj)}>
+                                                        {emailObj.email}
+                                                    </option>
                                                 ))}
                                             </CFormSelect>
                                         </CCol>
@@ -249,7 +297,7 @@ class SettingData extends React.Component {
                                     <br />
                                     <CRow className="justify-content-center">
                                         <CCol md="auto">
-                                            <CButton color="primary" type="submit"  onClick={this.handleSubmit}>Update</CButton>
+                                            <CButton color="primary" type="submit" onClick={this.handleSubmit}>Update</CButton>
                                         </CCol>
                                     </CRow>
                                 </CForm>
