@@ -527,6 +527,16 @@ handleNewUpdateDelete = async (id) => {
     }
   };
 
+  handleDeleteTrigger = async (triggerId) => {
+    try {
+      await axios.delete(`${BaseURL}emailtracking/trigger/${triggerId}/`);
+      this.setState({ visibleUpdate: false });
+      this.fetchData();
+    } catch (error) {
+      console.error('Error deleting trigger:', error);
+    }
+  };
+
   render() {
     const { triggers,visibleAdd, visibleUpdate, selectedTrigger, parameterFields, newTrigger, selectedUsers } = this.state;
     const uniqueUsers = new Set();
@@ -591,7 +601,7 @@ handleNewUpdateDelete = async (id) => {
                               </CButton>
                             </CTooltip>
                             <CTooltip content="Delete">
-                              <CButton style={{ fontSize: '10px', padding: '6px 10px' }}>
+                              <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.handleDeleteTrigger(trigger.id)}>
                                 <CIcon icon={cilTrash} />
                               </CButton>
                             </CTooltip>
@@ -1199,7 +1209,7 @@ handleNewUpdateDelete = async (id) => {
                     </div>
                 </CCol>
             </CRow>
-            <CRow className="justify-content-center">
+            {/* <CRow className="justify-content-center">
                 <CCol xs={1}>
                     <div className='d-grid gap-2'>
                         <CButton className="mt-2" color="primary" onClick={this.testhandleNewUpdateSave}>
@@ -1207,7 +1217,7 @@ handleNewUpdateDelete = async (id) => {
                         </CButton>
                     </div>
                 </CCol>
-            </CRow>
+            </CRow> */}
         </CForm>
           </CModalBody>
           <CRow>
