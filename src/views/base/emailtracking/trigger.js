@@ -57,6 +57,7 @@ class Trigger extends React.Component {
     filters: [],
     newfilter: [],
     newlyAddedFilters: [],
+    parameterFilterDetails: [],
     newTrigger:'',
     selectedUsers: [],
     newTrigger: {
@@ -260,14 +261,42 @@ handleNewUpdateDelete = async (id) => {
   toggleUpdateModal = async (trigger = null) => {
     if (trigger) {
       await this.fetchFilters(trigger.id);
-      this.setState({ visibleUpdate: true });
+      const triggerFieldDetails = this.state.allfiledlist.find(field => field.field === trigger.trigger_field);
+  
+      if (triggerFieldDetails) {
+        const allUsers = [];
+        triggerFieldDetails.group_details.forEach(group => {
+          group.user_list.forEach(user => {
+            if (!allUsers.some(u => u.id === user.id)) {
+              allUsers.push(user);
+            }
+          });
+        });
+  
+        const parameterFilterDetails = trigger.parameter_filter_list_details.map(detail => ({
+          id: detail.id || null,
+          operator: detail.operator,
+          value: detail.value,
+          logical_operator: detail.logical_operator
+        }));
+  
+        this.setState({
+          listingFieldUsers: allUsers,
+          selectedTrigger: trigger,
+          visibleUpdate: true,
+          parameterFilterDetails,
+          newlyAddedFilters: [],
+        });
+      }
     } else {
       this.setState((prevState) => ({
         visibleUpdate: !prevState.visibleUpdate,
         selectedTrigger: null,
+        parameterFilterDetails: [],
+        newlyAddedFilters: []
       }));
     }
-  };
+  };  
 
   toggleAddModal = () => {
     this.setState({
@@ -351,68 +380,56 @@ handleNewUpdateDelete = async (id) => {
     }
 };
 
-  handleUpdateSave = async () => {
-    const { selectedTrigger } = this.state;
-  
-    if (!selectedTrigger) return;
-  
-    try {
-      const updatedFilters = [];
-      const newlyAddedFilters = [];
-  
-      for (const item of selectedTrigger.parameter_filter_list_details) {
-        if (typeof item === 'object') {
-          const { operator, value, logical_operator } = item;
-          const newFilter = {
-            operator,
-            value,
-            logical_operator
-          };
-          const response = await fetch(BaseURL + 'emailtracking/filter/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newFilter),
-          });
-  
-          if (!response.ok) {
-            throw new Error('Failed to add new filter');
-          }
-  
-          const responseData = await response.json();
-          const generatedId = responseData.id;
-  
-          updatedFilters.push(generatedId);
-  
-          newlyAddedFilters.push({
-            id: generatedId,
-            operator,
-            value,
-            logical_operator
-          });
-        } else {
-          newlyAddedFilters.push(item);
-        }
-      }
-  
-      const updatedTrigger = {
-        ...selectedTrigger,
-        parameter_filter_list: updatedFilters
-      };
-  
-      this.setState({ 
-        selectedTrigger: updatedTrigger,
-        newlyAddedFilters: newlyAddedFilters.concat(this.state.newlyAddedFilters) 
-      });
-  
-      console.log("Filters updated successfully.");
-    } catch (error) {
-      console.error("Error adding new filters to different server API:", error);
-    }
-  };
+handleUpdateSave = async () => {
+  const { selectedTrigger } = this.state;
 
-  tes
+  if (!selectedTrigger) return;
+
+  try {
+    const updatedFilters = [];
+
+    for (const item of selectedTrigger.parameter_filter_list_details) {
+      if (typeof item === 'object') {
+        const { operator, value, logical_operator } = item;
+        const newFilter = {
+          operator,
+          value,
+          logical_operator
+        };
+
+        const response = await fetch(BaseURL + 'emailtracking/filter/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newFilter),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to add new filter');
+        }
+
+        const responseData = await response.json();
+        const generatedId = responseData.id;
+
+        updatedFilters.push(generatedId);
+        break;
+      }
+    }
+    const updatedTrigger = {
+      ...selectedTrigger,
+      parameter_filter_list: [...selectedTrigger.parameter_filter_list, ...updatedFilters]
+    };
+    this.setState({
+      selectedTrigger: updatedTrigger
+    });
+
+    console.log("Filters updated successfully.");
+  } catch (error) {
+    console.error("Error adding new filter:", error);
+  }
+};
+
 
   testhandleNewUpdateSave = async()=>{
     console.log("listing users=>",this.state.listingFieldUsers)
@@ -476,30 +493,32 @@ handleNewUpdateDelete = async (id) => {
     }
 }
 
-  handleUpdateDelete = async (id) => {
-    const { selectedTrigger } = this.state;
-    
-    try {
-        const response = await fetch(`${BaseURL}emailtracking/filter/${id}/`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Failed to delete the filter: ${errorText}`);
-        }
-        
-        console.log('Filter deleted from different server API:', response);
-        const updatedFilters = this.state.newlyAddedFilters.filter(filter => filter.id !== id);
-        this.setState({ newlyAddedFilters: updatedFilters });
-        
-        console.log('Filters updated successfully.');
-    } catch (error) {
-        console.error('Error deleting filter from different server API:', error);
-    }
+handleUpdateDelete = async (id) => {
+  try {
+      const response = await fetch(`${BaseURL}emailtracking/filter/${id}/`, {
+          method: 'DELETE',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+      });
+      
+      if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to delete the filter: ${errorText}`);
+      }
+      
+      console.log('Filter deleted from server:', id);
+      const updatedParameterFilters = this.state.parameterFilterDetails.filter(filter => filter.id !== id);
+      const updatedNewlyAddedFilters = this.state.newlyAddedFilters.filter(filter => filter.id !== id);
+      this.setState({ 
+          parameterFilterDetails: updatedParameterFilters,
+          newlyAddedFilters: updatedNewlyAddedFilters 
+      }, () => {
+          console.log('Filters updated successfully.');
+      });
+  } catch (error) {
+      console.error('Error deleting filter:', error);
+  }
 };
 
   handleSave = async () => {
@@ -538,7 +557,7 @@ handleNewUpdateDelete = async (id) => {
   };
 
   render() {
-    const { triggers,visibleAdd, visibleUpdate, selectedTrigger, parameterFields, newTrigger, selectedUsers } = this.state;
+    const { triggers,visibleAdd, visibleUpdate, selectedTrigger, parameterFields, newTrigger, selectedUsers, parameterFilterDetails, newlyAddedFilters } = this.state;
     const uniqueUsers = new Set();
 
     return (
@@ -870,9 +889,26 @@ handleNewUpdateDelete = async (id) => {
               ))} */}
 
 
-              {this.state.newlyAddedFilters.map((filter, index) => (
-                <CTableRow key={index+1}>
+              {parameterFilterDetails.map((filter, index) => (
+                <CTableRow key={index + 1}>
                   <CTableHeaderCell>{index + 1}</CTableHeaderCell>
+                  <CTableDataCell>{filter.logical_operator}</CTableDataCell>
+                  <CTableDataCell>{filter.operator}</CTableDataCell>
+                  <CTableDataCell>{filter.value}</CTableDataCell>
+                  <CTableDataCell>
+                    <div className="d-flex gap-2">
+                      <CTooltip content="Delete">
+                        <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.handleUpdateDelete(filter.id)}>
+                          <CIcon icon={cilTrash} />
+                        </CButton>
+                      </CTooltip>
+                    </div>
+                  </CTableDataCell>
+                </CTableRow>
+              ))}
+              {newlyAddedFilters.map((filter, index) => (
+                <CTableRow key={index + parameterFilterDetails.length + 1}>
+                  <CTableHeaderCell>{index + parameterFilterDetails.length + 1}</CTableHeaderCell>
                   <CTableDataCell>{filter.logical_operator}</CTableDataCell>
                   <CTableDataCell>{filter.operator}</CTableDataCell>
                   <CTableDataCell>{filter.value}</CTableDataCell>
