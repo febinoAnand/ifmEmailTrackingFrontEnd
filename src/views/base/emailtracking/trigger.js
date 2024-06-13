@@ -412,16 +412,23 @@ handleUpdateSave = async () => {
         const responseData = await response.json();
         const generatedId = responseData.id;
 
-        updatedFilters.push(generatedId);
+        updatedFilters.push({
+          id: generatedId,
+          operator,
+          value,
+          logical_operator
+        });
+
         break;
       }
     }
     const updatedTrigger = {
       ...selectedTrigger,
-      parameter_filter_list: [...selectedTrigger.parameter_filter_list, ...updatedFilters]
+      parameter_filter_list: [...selectedTrigger.parameter_filter_list, ...updatedFilters.map(filter => filter.id)]
     };
     this.setState({
-      selectedTrigger: updatedTrigger
+      selectedTrigger: updatedTrigger,
+      newlyAddedFilters: [...this.state.newlyAddedFilters, ...updatedFilters]
     });
 
     console.log("Filters updated successfully.");
@@ -429,7 +436,6 @@ handleUpdateSave = async () => {
     console.error("Error adding new filter:", error);
   }
 };
-
 
   testhandleNewUpdateSave = async()=>{
     console.log("listing users=>",this.state.listingFieldUsers)
