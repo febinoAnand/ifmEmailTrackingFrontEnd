@@ -40,8 +40,8 @@ const Settings = React.lazy(() => import('./views/base/smsgateway/settings'))
 // const ProblemData = React.lazy(() => import('./views/base/data/ProblemData'))
 
 //config
-const UART = React.lazy(() => import('./views/base/configuration/UART'))
-const MQTT = React.lazy(() => import('./views/base/configuration/MQTT'))
+// const UART = React.lazy(() => import('./views/base/configuration/UART'))
+// const MQTT = React.lazy(() => import('./views/base/configuration/MQTT'))
 
 //details
 const HMIDetails = React.lazy(() => import('./views/base/details/HMIDetails'))
@@ -150,8 +150,8 @@ const routes = [
   { path: '/users/usersubpage', name: 'UserSubpage', element: UserSubpage}, //users
 
 
-  { path: '/config/uart', name: 'UART', element: UART}, //config
-  { path: '/config/mqtt', name: 'MQTT', element: MQTT}, //config
+  // { path: '/config/uart', name: 'UART', element: UART}, //config
+  // { path: '/config/mqtt', name: 'MQTT', element: MQTT}, //config
 
   { path: '/setting/settings', name: 'SETTING / Settings', element: Settingss}, //Main Setting
 

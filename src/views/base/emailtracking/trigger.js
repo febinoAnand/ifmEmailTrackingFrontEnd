@@ -594,7 +594,7 @@ handleUpdateDelete = async (id) => {
                   </CTableHead>
                   <CTableBody>
                     {triggers.map((trigger, index) => (
-                      <CTableRow key={trigger.id} onClick={() => this.toggleUpdateModal(trigger)}>
+                      <CTableRow key={trigger.id}>
                         <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                         <CTableDataCell>{trigger.trigger_name}</CTableDataCell>
                         <CTableDataCell>
@@ -626,7 +626,7 @@ handleUpdateDelete = async (id) => {
                               </CButton>
                             </CTooltip>
                             <CTooltip content="Delete">
-                              <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.handleDeleteTrigger(trigger.id)}>
+                              <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={(e) => { e.stopPropagation(); this.handleDeleteTrigger(trigger.id); }}>
                                 <CIcon icon={cilTrash} />
                               </CButton>
                             </CTooltip>

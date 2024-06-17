@@ -32,7 +32,7 @@ class TicketReport extends React.Component {
     axios.get(BaseURL+"emailtracking/report/")
       .then(response => {
         this.setState({
-          tickets: response.data,
+          tickets: response.data.reverse(),
           loading: false,
         });
       })

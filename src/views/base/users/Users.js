@@ -88,8 +88,8 @@ const Users = () => {
         setUserActive(checked);
     };
 
-    const handleDeleteUser = (userdetailId) => {
-        axios.delete(`${BaseURL}Userauth/userdetail/${userdetailId}/`)
+    const handleDeleteUser = (userId) => {
+        axios.delete(`${BaseURL}Userauth/delete-user/${userId}/`)
             .then(response => {
                 fetchUsers();
             })
@@ -173,7 +173,7 @@ const Users = () => {
                                 </CTableHead>
                                 <CTableBody>
                                     {filteredUsers.map((user, index) => (
-                                        <CTableRow key={index} onClick={() => handleTableRowClick(user)}>
+                                        <CTableRow key={index}>
                                             <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                                             <CTableDataCell>{user.usermod.username}</CTableDataCell>
                                             <CTableDataCell>{user.designation}</CTableDataCell>
@@ -187,10 +187,10 @@ const Users = () => {
                                             <CTableDataCell>{user.expiry_time}</CTableDataCell>
                                             <CTableDataCell>
                                                 <div className="d-flex gap-2">
-                                                    <CButton>
+                                                    <CButton  onClick={() => handleTableRowClick(user)}>
                                                         <CIcon icon={cilPen} />
                                                     </CButton>
-                                                    <CButton onClick={(e) => { e.stopPropagation(); handleDeleteUser(user.userdetail_id); }}>
+                                                    <CButton onClick={(e) => { e.stopPropagation(); handleDeleteUser(user.user_id); }}>
                                                         <CIcon icon={cilTrash} />
                                                     </CButton>
                                                 </div>

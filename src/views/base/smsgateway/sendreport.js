@@ -27,7 +27,7 @@ class SendReport extends React.Component {
     componentDidMount() {
         axios.get(BaseURL+'smsgateway/sendreport/')
             .then(response => {
-                this.setState({ reports: response.data });
+                this.setState({ reports: response.data.reverse() });
             })
             .catch(error => {
                 console.error('Error fetching reports:', error);
@@ -48,7 +48,7 @@ class SendReport extends React.Component {
                             <CCardBody>
                                 <CTable striped hover>
                                     <CTableHead>
-                                        <CTableRow>
+                                        <CTableRow color="dark">
                                             <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
                                             <CTableHeaderCell scope="col">Date</CTableHeaderCell>
                                             <CTableHeaderCell scope="col">Time</CTableHeaderCell>
@@ -68,7 +68,9 @@ class SendReport extends React.Component {
                                                 <CTableDataCell>{report.from_number}</CTableDataCell>
                                                 <CTableDataCell>{report.message}</CTableDataCell>
                                                 <CTableDataCell>
-                                                    <CFormCheck checked={report.delivery_status} readOnly/>
+                                                    <span style={{ fontWeight: report.delivery_status ? 'bold' : 'bold', color: report.delivery_status ? 'green' : 'red' }}>
+                                                        {report.delivery_status ? 'True' : 'False'}
+                                                    </span>
                                                 </CTableDataCell>
                                             </CTableRow>
                                         ))}

@@ -219,7 +219,7 @@ const Groups = () => {
                                                     <CButton onClick={() => handleGroupSelect(group)}>
                                                         <CIcon icon={cilPen} />
                                                     </CButton>
-                                                    <CButton onClick={() => handleDeleteGroup(group.id)}>
+                                                    <CButton onClick={(e) => { e.stopPropagation(); handleDeleteGroup(group.id); }}>
                                                         <CIcon icon={cilTrash} />
                                                     </CButton>
                                                 </div>

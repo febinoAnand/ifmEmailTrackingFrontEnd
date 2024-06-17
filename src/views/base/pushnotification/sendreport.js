@@ -55,7 +55,7 @@ class SendReport extends React.Component{
   fetchData = () => {
     axios.get(BaseURL + "pushnotification/sendreport/")
       .then(response => {
-        this.setState({ rowData: response.data });
+        this.setState({ rowData: response.data.reverse() });
       })
       .catch(error => {
         console.error('Error fetching data:', error);
@@ -90,7 +90,7 @@ class SendReport extends React.Component{
             
               <CTable striped hover>
                 <CTableHead>
-                  <CTableRow>
+                  <CTableRow color="dark">
                     <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Date</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Time</CTableHeaderCell>

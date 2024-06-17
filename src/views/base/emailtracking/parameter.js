@@ -68,7 +68,8 @@ class Parameter extends React.Component {
   fetchParameters = () => {
     axios.get(BaseURL + "emailtracking/parameter/")
       .then(response => {
-        this.setState({ parameters: response.data.reverse(), filteredParameters: response.data.reverse() });
+        const reversedData = response.data.reverse();
+        this.setState({ parameters: reversedData, filteredParameters: reversedData });
       })
       .catch(error => {
         console.error('Error fetching parameters:', error);
@@ -238,7 +239,7 @@ class Parameter extends React.Component {
                   </CTableHead>
                   <CTableBody>
                     {filteredParameters.map((parameter, index) => (
-                      <CTableRow key={parameter.id} onClick={() => this.getRowData(parameter)}>
+                      <CTableRow key={parameter.id}>
                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                         <CTableDataCell>{parameter.alias}</CTableDataCell>
                         <CTableDataCell>
@@ -260,8 +261,8 @@ class Parameter extends React.Component {
                         <CTableDataCell>
                           <div className="d-flex gap-2">
                             <CTooltip content="Edit">
-                              <CButton  style={{ fontSize: '10px', padding: '6px 10px' }}>
-                                <CIcon onClick={this.toggleUpdateModal} icon={cilPen} />
+                              <CButton  style={{ fontSize: '10px', padding: '6px 10px' }}  onClick={() => this.getRowData(parameter)}>
+                                <CIcon icon={cilPen} />
                               </CButton>
                             </CTooltip>
                             <CTooltip content="Delete">

@@ -28,7 +28,7 @@ class UserIdentifier extends React.Component{
   componentDidMount() {
     axios.get(BaseURL +"pushnotification/notificationauth/")
       .then(response => {
-        this.setState({ users: response.data });
+        this.setState({ users: response.data.reverse() });
       })
       .catch(error => {
         console.error('Error fetching data:', error);
