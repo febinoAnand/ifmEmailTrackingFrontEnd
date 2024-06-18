@@ -91,9 +91,12 @@ class Parameter extends React.Component {
     axios.post(BaseURL + "emailtracking/parameter/", formData)
       .then(response => {
         console.log('Parameter added successfully:', response.data);
-        this.setState({ formData: { id: '', alias: '', field: '', datatype: '' } });
-        this.fetchParameters();
-        this.toggleAddModal();
+        this.setState({
+          formData: { id: '', alias: '', field: '', datatype: '' },
+          visibleAdd: false
+        }, () => {
+          window.location.reload();
+        });
       })
       .catch(error => {
         console.error('Error adding parameter:', error);
@@ -180,6 +183,15 @@ class Parameter extends React.Component {
   toggleAddModal = () => {
     this.setState(prevState => ({
       visibleAdd: !prevState.visibleAdd,
+      formData: !prevState.visibleAdd ? {
+        id: '',
+        alias: '',
+        field: '',
+        color: '',
+        datatype: '',
+        groups: [],
+        group_details: [],
+      } : prevState.formData
     }));
   };
 
@@ -238,40 +250,48 @@ class Parameter extends React.Component {
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
-                    {filteredParameters.map((parameter, index) => (
-                      <CTableRow key={parameter.id}>
-                        <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                        <CTableDataCell>{parameter.alias}</CTableDataCell>
-                        <CTableDataCell>
-                          <span style={{
-                            display: 'inline-block',
-                            padding: '5px 10px',
-                            borderRadius: '12px',
-                            backgroundColor: parameter.color,
-                            color: 'white',
-                            fontWeight: 'bold'
-                          }}>
-                            {parameter.field}
-                          </span>
-                        </CTableDataCell>
-                        <CTableDataCell>{parameter.datatype}</CTableDataCell>
-                        <CTableDataCell>
-                        {parameter.group_details && parameter.group_details.length > 0 && parameter.group_details[0].user_list.map(user => user.username).join(', ')}
-                      </CTableDataCell>
-                        <CTableDataCell>
-                          <div className="d-flex gap-2">
-                            <CTooltip content="Edit">
-                              <CButton  style={{ fontSize: '10px', padding: '6px 10px' }}  onClick={() => this.getRowData(parameter)}>
-                                <CIcon icon={cilPen} />
-                              </CButton>
-                            </CTooltip>
-                            <CTooltip content="Delete">
-                              <CButton  style={{ fontSize: '10px', padding: '6px 10px' }} onClick={(e) => { e.stopPropagation(); this.handleDelete(parameter.id) }}><CIcon icon={cilTrash} /></CButton>
-                            </CTooltip>
-                          </div>
-                        </CTableDataCell>
+                    {filteredParameters.length === 0 ? (
+                      <CTableRow>
+                        <CTableDataCell colSpan="6" className="text-center">No data available</CTableDataCell>
                       </CTableRow>
-                    ))}
+                    ) : (
+                      filteredParameters.map((parameter, index) => (
+                        <CTableRow key={parameter.id}>
+                          <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                          <CTableDataCell>{parameter.alias}</CTableDataCell>
+                          <CTableDataCell>
+                            <span style={{
+                              display: 'inline-block',
+                              padding: '5px 10px',
+                              borderRadius: '12px',
+                              backgroundColor: parameter.color,
+                              color: 'white',
+                              fontWeight: 'bold'
+                            }}>
+                              {parameter.field}
+                            </span>
+                          </CTableDataCell>
+                          <CTableDataCell>{parameter.datatype}</CTableDataCell>
+                          <CTableDataCell>
+                            {parameter.group_details && parameter.group_details.length > 0 && parameter.group_details[0].user_list.map(user => user.username).join(', ')}
+                          </CTableDataCell>
+                          <CTableDataCell>
+                            <div className="d-flex gap-2">
+                              <CTooltip content="Edit">
+                                <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.getRowData(parameter)}>
+                                  <CIcon icon={cilPen} />
+                                </CButton>
+                              </CTooltip>
+                              <CTooltip content="Delete">
+                                <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={(e) => { e.stopPropagation(); this.handleDelete(parameter.id) }}>
+                                  <CIcon icon={cilTrash} />
+                                </CButton>
+                              </CTooltip>
+                            </div>
+                          </CTableDataCell>
+                        </CTableRow>
+                      ))
+                    )}
                   </CTableBody>
                 </CTable>
               </CCardBody>
@@ -361,13 +381,11 @@ class Parameter extends React.Component {
                 </CForm>
               </div>
               <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'black' }}>
-                <div style={{ width: '200px', height: '200px',fontSize:12, backgroundColor: 'lightgray', borderRadius: '10px', textAlign: 'center' }}>
-                  <p> 
-                    <br /> * Alias is selected for giving an unique name.
-                    <br /> * In the Fields the needed parameter is given.
-                    <br /> * In the types in which formate the data can be readed is given.
-                    <br /> * the user required  groups where the data can be send is selected in groups.
-                  </p>
+                <div style={{ width: '300px', height: '330px',fontSize:16, backgroundColor: 'lightgray', borderRadius: '10px', textAlign: 'center' }}>
+                     <br /><p>  1. Alias are like giving an unique name to the parameters.</p>
+                     <p>  2. In the Fields the needed parameter is given.</p>
+                     <p>  3. the data types are the formate of the data.</p>
+                     <p>  4. the user required  groups is where the specific groups are selected.</p>
                 </div>
               </div>
             </div>
@@ -456,13 +474,11 @@ class Parameter extends React.Component {
             </CForm>
             </div>
               <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'black' }}>
-                <div style={{ width: '200px', height: '200px',fontSize:12, backgroundColor: 'lightgray', borderRadius: '10px', textAlign: 'center' }}>
-                  <p> 
-                    <br /> * Alias is selected for giving an unique name.
-                    <br /> * In the Fields the needed parameter is given.
-                    <br /> * In the types in which formate the data can be readed is given.
-                    <br /> * the user required  groups where the data can be send is selected in groups.
-                  </p>
+                <div style={{ width: '300px', height: '330px',fontSize:16, backgroundColor: 'lightgray', borderRadius: '10px', textAlign: 'center' }}>
+                     <br /><p>  1. Alias are like giving an unique name to the parameters.</p>
+                     <p>  2. In the Fields the needed parameter is given.</p>
+                     <p>  3. the data types are the formate of the data.</p>
+                     <p>  4. the user required  groups is where the specific groups are selected.</p>
                 </div>
               </div>
             </div>

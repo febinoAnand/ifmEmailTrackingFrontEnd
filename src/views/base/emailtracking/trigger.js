@@ -289,19 +289,19 @@ handleNewUpdateDelete = async (id) => {
         });
       }
     } else {
-      this.setState((prevState) => ({
-        visibleUpdate: !prevState.visibleUpdate,
+      this.setState({
+        visibleUpdate: false,
         selectedTrigger: null,
         parameterFilterDetails: [],
         newlyAddedFilters: []
-      }));
+      });
     }
   };  
 
   toggleAddModal = () => {
-    this.setState({
-      newTriggerData:{
-        // group_to_send: null,
+    this.setState(prevState => ({
+      visibleAdd: !prevState.visibleAdd,
+      newTriggerData: {
         trigger_field: null,
         trigger_name: "",
         notification_message: "",
@@ -310,11 +310,7 @@ handleNewUpdateDelete = async (id) => {
         send_notification: false,
         parameter_filter_list: [],
         users_to_send: []
-      },    //my state
-      visibleAdd: true
-    })
-    this.setState((prevState) => ({
-      // visibleAdd: !prevState.visibleAdd,
+      },
       newTrigger: {
         trigger_name: '',
         user_to_send: [],
@@ -369,9 +365,9 @@ handleNewUpdateDelete = async (id) => {
 
         if (response.ok) {
             console.log('Trigger data saved successfully', this.state.newTriggerData);
-            // this.toggleAddModal();
             this.setState({visibleAdd:false})
             this.fetchData();
+            window.location.reload();
         } else {
             console.error('Failed to save trigger data', triggerData);
         }
@@ -527,30 +523,37 @@ handleUpdateDelete = async (id) => {
   }
 };
 
-  handleSave = async () => {
-    const { selectedTrigger } = this.state;
-  
-    if (!selectedTrigger) {
-      console.error('No trigger selected.');
-      return;
+handleSave = async () => {
+  const { selectedTrigger } = this.state;
+
+  if (!selectedTrigger) {
+    console.error('No trigger selected.');
+    return;
+  }
+
+  try {
+    console.log('Updating trigger:', selectedTrigger);
+
+    const response = await axios.put(`${BaseURL}emailtracking/trigger/${selectedTrigger.id}/`, selectedTrigger);
+
+    if (response.status === 200) {
+      console.log('Trigger updated successfully:', response.data);
+      this.fetchData();
+    } else {
+      console.error('Failed to update trigger:', response.statusText);
     }
-  
-    try {
-      console.log('Updating trigger:', selectedTrigger);
-  
-      const response = await axios.put(`${BaseURL}emailtracking/trigger/${selectedTrigger.id}/`, selectedTrigger);
-  
-      if (response.status === 200) {
-        console.log('Trigger updated successfully:', response.data);
-        this.setState({ visibleUpdate: false });
-        this.fetchData();
-      } else {
-        console.error('Failed to update trigger:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error updating trigger:', error);
-    }
-  };
+  } catch (error) {
+    console.error('Error updating trigger:', error);
+  } finally {
+    this.setState({
+      visibleUpdate: false,
+      selectedTrigger: null,
+      parameterFilterDetails: [],
+      newlyAddedFilters: [],
+    });
+  }
+};
+
 
   handleDeleteTrigger = async (triggerId) => {
     try {
@@ -717,7 +720,7 @@ handleUpdateDelete = async (id) => {
               <CCol sm={2}>
                 <CFormLabel htmlFor="trigger_field" className="col-form-label"><strong>Field</strong></CFormLabel>
               </CCol>
-              <CCol md={10}>
+              <CCol md={4}>
               {selectedTrigger && selectedTrigger.trigger_field && (
                 <CFormSelect
                   id="trigger_field"
@@ -741,6 +744,18 @@ handleUpdateDelete = async (id) => {
                   ))}
                 </CFormSelect>
               )}
+              </CCol>
+              <CCol sm={2}>
+                  <CFormLabel htmlFor="Group_name" className="col-form-label"><strong>Group Name</strong></CFormLabel>
+                </CCol>
+                <CCol md={4}>
+                <CFormInput
+                  type="text"
+                  id="Group_name"
+                  name="Group_name"
+                  value={selectedTrigger ? selectedTrigger.trigger_field_details.group_details[0].name : ''}
+                  onChange={this.handleInputChange}
+                />
               </CCol>
               </CRow>
               <CRow className="mb-3">
@@ -951,7 +966,7 @@ handleUpdateDelete = async (id) => {
           visible={visibleAdd}
           backdrop="static"
           keyboard={false}
-          // onClose={() => this.toggleAddModal()}
+          onClose={() => this.toggleAddModal()}
           aria-labelledby="AddModalLabel"
         >
           <CModalHeader>

@@ -16,6 +16,8 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import BaseURL from 'src/assets/contants/BaseURL';
 
 class TicketReport extends React.Component {
@@ -23,27 +25,77 @@ class TicketReport extends React.Component {
     super(props);
     this.state = {
       tickets: [],
-      loading: false,
+      filteredTickets: [],
+      searchTerm: '',
     };
   }
 
   componentDidMount() {
-    this.setState({ loading: true });
-    axios.get(BaseURL+"emailtracking/report/")
+    this.fetchTickets();
+  }
+
+  fetchTickets = () => {
+    axios.get(BaseURL + "emailtracking/report/")
       .then(response => {
+        const reversedData = response.data.reverse();
         this.setState({
-          tickets: response.data.reverse(),
-          loading: false,
+          tickets: reversedData,
+          filteredTickets: reversedData,
         });
       })
       .catch(error => {
         console.error('Error fetching tickets:', error);
-        this.setState({ loading: false });
       });
   }
 
+  handleSearchChange = (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const { tickets } = this.state;
+
+    const filteredTickets = tickets.filter(ticket =>
+      ticket.date.toLowerCase().includes(searchTerm) ||
+      ticket.time.toLowerCase().includes(searchTerm) ||
+      ticket.ticket.ticketname.toLowerCase().includes(searchTerm) ||
+      ticket.active_trigger.trigger_name.toLowerCase().includes(searchTerm) ||
+      ticket.actual_value.toLowerCase().includes(searchTerm) ||
+      ticket.active_trigger.users_to_send.some(user =>
+        user.username.toLowerCase().includes(searchTerm)
+      )
+    );
+
+    this.setState({ filteredTickets, searchTerm });
+  }
+
+  handleDownloadPDF = () => {
+    const { filteredTickets } = this.state;
+    const doc = new jsPDF();
+
+    const tableColumn = ["Sl.No", "Date", "Time", "Ticket", "Rule Engine", "Actual Value", "Send to User"];
+    const tableRows = [];
+
+    filteredTickets.forEach((ticket, index) => {
+      const ticketData = [
+        index + 1,
+        ticket.date,
+        ticket.time,
+        ticket.ticket.ticketname,
+        ticket.active_trigger.trigger_name,
+        ticket.actual_value,
+        ticket.active_trigger.users_to_send.map(user => user.username).join(', ')
+      ];
+      tableRows.push(ticketData);
+    });
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+    });
+
+    doc.save("tickets_report.pdf");
+  }
+
   render() {
-    const { tickets, loading } = this.state;
+    const { filteredTickets, searchTerm } = this.state;
 
     return (
       <>
@@ -57,16 +109,18 @@ class TicketReport extends React.Component {
                 <CCol md={4}>
                   <CInputGroup className="flex-nowrap mt-3 mb-4">
                     <CFormInput
-                      placeholder="Search by Ticket Name"
+                      placeholder="Search by Date, Time, Ticket, Rule Engine, Actual Value, Send to User"
                       aria-label="Search"
                       aria-describedby="addon-wrapping"
+                      value={searchTerm}
+                      onChange={this.handleSearchChange}
                     />
                     <CButton type="button" color="secondary" id="button-addon2">
                       Search
                     </CButton>
                   </CInputGroup>
                 </CCol>
-                <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
+                <div id="pdf-content" style={{ maxHeight: '600px', overflowY: 'auto' }}>
                   <CTable striped hover>
                     <CTableHead color='dark'>
                       <CTableRow>
@@ -80,12 +134,12 @@ class TicketReport extends React.Component {
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                      {loading ? (
-                        <tr>
-                          <td colSpan="6" className="text-center">Loading...</td>
-                        </tr>
+                      {filteredTickets.length === 0 ? (
+                        <CTableRow>
+                          <CTableDataCell colSpan="7" className="text-center">No matching tickets found.</CTableDataCell>
+                        </CTableRow>
                       ) : (
-                        tickets.map((ticket, index) => (
+                        filteredTickets.map((ticket, index) => (
                           <CTableRow key={index}>
                             <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                             <CTableDataCell>{ticket.date}</CTableDataCell>
@@ -93,7 +147,9 @@ class TicketReport extends React.Component {
                             <CTableDataCell>{ticket.ticket.ticketname}</CTableDataCell>
                             <CTableDataCell>{ticket.active_trigger.trigger_name}</CTableDataCell>
                             <CTableDataCell>{ticket.actual_value}</CTableDataCell>
-                            <CTableDataCell>{ticket.active_trigger.users_to_send.username}</CTableDataCell>
+                            <CTableDataCell>
+                              {ticket.active_trigger.users_to_send.map(user => user.username).join(', ')}
+                            </CTableDataCell>
                           </CTableRow>
                         ))
                       )}
@@ -103,7 +159,9 @@ class TicketReport extends React.Component {
                 <CRow className="justify-content-center mt-4">
                   <CCol xs={1}>
                     <div className='d-grid gap-2'>
-                      <CButton color="primary" type="submit">Download</CButton>
+                      <CButton color="primary" type="button" onClick={this.handleDownloadPDF}>
+                        Download
+                      </CButton>
                     </div>
                   </CCol>
                 </CRow>

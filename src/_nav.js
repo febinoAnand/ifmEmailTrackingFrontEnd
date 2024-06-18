@@ -153,7 +153,7 @@ const _nav = [
     },
     {
       component: CNavItem,
-      name: 'Rules Engine',
+      name: 'Rule Engine',
       to: '/emailtracking/trigger',
       icon: <CIcon icon={cilSignLanguage} customClassName="nav-icon" />,
     },
