@@ -35,7 +35,7 @@ class TicketReport extends React.Component {
   }
 
   fetchTickets = () => {
-    axios.get(BaseURL + "emailtracking/report/")
+    axios.get(BaseURL + "emailtracking/reports/")
       .then(response => {
         const reversedData = response.data.reverse();
         this.setState({
@@ -57,7 +57,7 @@ class TicketReport extends React.Component {
       ticket.time.toLowerCase().includes(searchTerm) ||
       ticket.ticket.ticketname.toLowerCase().includes(searchTerm) ||
       ticket.active_trigger.trigger_name.toLowerCase().includes(searchTerm) ||
-      ticket.actual_value.toLowerCase().includes(searchTerm) ||
+      // ticket.actual_value.toLowerCase().includes(searchTerm) ||
       ticket.active_trigger.users_to_send.some(user =>
         user.username.toLowerCase().includes(searchTerm)
       )
@@ -70,7 +70,7 @@ class TicketReport extends React.Component {
     const { filteredTickets } = this.state;
     const doc = new jsPDF();
 
-    const tableColumn = ["Sl.No", "Date", "Time", "Ticket", "Rule Engine", "Actual Value", "Send to User"];
+    const tableColumn = ["Sl.No", "Date", "Time", "Ticket", "Department", "Send to User"];
     const tableRows = [];
 
     filteredTickets.forEach((ticket, index) => {
@@ -80,7 +80,7 @@ class TicketReport extends React.Component {
         ticket.time,
         ticket.ticket.ticketname,
         ticket.active_trigger.trigger_name,
-        ticket.actual_value,
+        // ticket.actual_value,
         ticket.active_trigger.users_to_send.map(user => user.username).join(', ')
       ];
       tableRows.push(ticketData);
@@ -109,7 +109,7 @@ class TicketReport extends React.Component {
                 <CCol md={4}>
                   <CInputGroup className="flex-nowrap mt-3 mb-4">
                     <CFormInput
-                      placeholder="Search by Date, Time, Ticket, Rule Engine, Actual Value, Send to User"
+                      placeholder="Search by Date, Time, Ticket, Department, Send to User"
                       aria-label="Search"
                       aria-describedby="addon-wrapping"
                       value={searchTerm}
@@ -127,9 +127,9 @@ class TicketReport extends React.Component {
                         <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Date</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Time</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Ticket</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Rule Engine</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Actual Value</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Message</CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Department</CTableHeaderCell>
+                        {/* <CTableHeaderCell scope="col">Actual Value</CTableHeaderCell> */}
                         <CTableHeaderCell scope="col">Send to User</CTableHeaderCell>
                       </CTableRow>
                     </CTableHead>
@@ -144,11 +144,11 @@ class TicketReport extends React.Component {
                             <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                             <CTableDataCell>{ticket.date}</CTableDataCell>
                             <CTableDataCell>{ticket.time}</CTableDataCell>
-                            <CTableDataCell>{ticket.ticket.ticketname}</CTableDataCell>
-                            <CTableDataCell>{ticket.active_trigger.trigger_name}</CTableDataCell>
-                            <CTableDataCell>{ticket.actual_value}</CTableDataCell>
+                            <CTableDataCell>{ticket.message}</CTableDataCell>
+                            <CTableDataCell>{ticket.Department}</CTableDataCell>
+                            {/* <CTableDataCell>{ticket.actual_value}</CTableDataCell> */}
                             <CTableDataCell>
-                              {ticket.active_trigger.users_to_send.map(user => user.username).join(', ')}
+                              {ticket.send_to_user.map(user => user.username).join(', ')}
                             </CTableDataCell>
                           </CTableRow>
                         ))

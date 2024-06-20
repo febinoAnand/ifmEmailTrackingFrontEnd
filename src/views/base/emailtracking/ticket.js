@@ -31,9 +31,6 @@ class Ticket extends Component {
   }
 
   async componentDidMount() {
-    const responseFields = await axios.get(BaseURL + "emailtracking/parameter/");
-    this.setState({ fields: responseFields.data });
-
     const responseTickets = await axios.get(BaseURL + "emailtracking/ticket/");
     this.setState({ ticketData: responseTickets.data.reverse() });
   }
@@ -52,64 +49,66 @@ class Ticket extends Component {
   };
 
   handleDownloadPDF = () => {
-    const { fields } = this.state;
+    const { ticketData, searchQuery } = this.state;
     const filteredData = this.getFilteredData();
     const doc = new jsPDF();
-
-    const tableColumn = ["Sl.No", "Date-Time", "Ticket Name", ...fields.map(field => field.field)];
+  
+    const tableColumn = ["Sl.No", "Date-Time", "Ticket Name", ...Object.keys(ticketData[0]?.actual_json || {})];
     const tableRows = [];
-
+  
     filteredData.forEach((ticket, index) => {
       const ticketData = [
         index + 1,
         `${ticket.date} ${ticket.time}`,
         ticket.ticketname,
-        ...fields.map(field => ticket.required_json[field.field] || '')
+        ...tableColumn.slice(3).map(field => ticket.actual_json[field] || '')
       ];
       tableRows.push(ticketData);
     });
-
+  
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
     });
-
-    doc.save("tickets.pdf");
+  
+    doc.save(`tickets${searchQuery ? `_${searchQuery}` : ''}.pdf`);
   };
-
+  
   handleDownloadCSV = () => {
-    const { fields } = this.state;
+    const { ticketData, searchQuery } = this.state;
     const filteredData = this.getFilteredData();
-    const headers = ["Sl.No", "Date-Time", "Ticket Name", ...fields.map(field => field.field)];
-
+    const headers = ["Sl.No", "Date-Time", "Ticket Name", ...Object.keys(ticketData[0]?.actual_json || {})];
+    
     const csvRows = [];
     csvRows.push(headers.join(','));
-
+  
     filteredData.forEach((ticket, index) => {
       const ticketData = [
         index + 1,
         `${ticket.date} ${ticket.time}`,
         ticket.ticketname,
-        ...fields.map(field => ticket.required_json[field.field] || '')
+        ...headers.slice(3).map(field => ticket.actual_json[field] || '')
       ];
       csvRows.push(ticketData.join(','));
     });
-
+  
     const csvString = csvRows.join('\n');
     const blob = new Blob([csvString], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'tickets.csv');
+    link.setAttribute('download', `tickets${searchQuery ? `_${searchQuery}` : ''}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  };
+  };  
 
   render() {
-    const { fields, searchQuery } = this.state;
+    const { ticketData, searchQuery } = this.state;
     const filteredData = this.getFilteredData();
-
+  
+    const tableColumn = ["Sl.No", "Date-Time", "Ticket Name", ...Object.keys(ticketData[0]?.actual_json || {})];
+  
     return (
       <>
         <CRow>
@@ -137,12 +136,9 @@ class Ticket extends Component {
                   <CTable striped hover>
                     <CTableHead color='dark'>
                       <CTableRow>
-                        <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Date-Time</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Ticket Name</CTableHeaderCell>
-                        {fields.map(field => (
-                          <CTableHeaderCell scope="col" key={field.field}>
-                            {field.field}
+                        {tableColumn.map((header, index) => (
+                          <CTableHeaderCell key={index} scope="col">
+                            {header}
                           </CTableHeaderCell>
                         ))}
                       </CTableRow>
@@ -150,7 +146,7 @@ class Ticket extends Component {
                     <CTableBody>
                       {filteredData.length === 0 ? (
                         <CTableRow>
-                          <CTableHeaderCell colSpan={fields.length + 3} className="text-center">
+                          <CTableHeaderCell colSpan={tableColumn.length} className="text-center">
                             No data available
                           </CTableHeaderCell>
                         </CTableRow>
@@ -158,10 +154,10 @@ class Ticket extends Component {
                         filteredData.map((ticket, index) => (
                           <CTableRow key={index}>
                             <CTableHeaderCell>{index + 1}</CTableHeaderCell>
-                            <CTableDataCell>{ticket.date}  {ticket.time}</CTableDataCell>
+                            <CTableDataCell>{`${ticket.date} ${ticket.time}`}</CTableDataCell>
                             <CTableDataCell>{ticket.ticketname}</CTableDataCell>
-                            {fields.map((field, i) => (
-                              <CTableDataCell key={i}>{ticket.required_json[field.field]}</CTableDataCell>
+                            {tableColumn.slice(3).map((field, i) => (
+                              <CTableDataCell key={i}>{ticket.actual_json[field]}</CTableDataCell>
                             ))}
                           </CTableRow>
                         ))

@@ -2,10 +2,10 @@ import React from 'react'
 import CIcon from '@coreui/icons-react'
 import {
   cilCursor,
-  cilMonitor,
+  // cilMonitor,
   cilNotes,
   cilPuzzle,
-  cilSpeedometer,
+  // cilSpeedometer,
   // cilLightbulb,
   // cilUsb,
   // cilEqualizer,
@@ -14,7 +14,7 @@ import {
   // cilBug,
   // cilCenterFocus,
   cilUserX,
-  cilGroup,
+  // cilGroup,
   cilLaptop,
   // cilListRich,
   // cilObjectGroup,
@@ -33,7 +33,7 @@ import {
   cilBoltCircle,
   cilBellExclamation,
   cilRunning,
-  cilSignLanguage,
+  // cilSignLanguage,
   cilShortText,
   cilColumns,
   cilInputHdmi,
@@ -43,19 +43,25 @@ import {
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
 const _nav = [
-  {
-    component: CNavItem,
-    name: 'Live Dashboard',
-    to: '/live',
-    icon: <CIcon icon={cilMonitor} customClassName="nav-icon" />
+  // {
+  //   component: CNavItem,
+  //   name: 'Live Dashboard',
+  //   to: '/live',
+  //   icon: <CIcon icon={cilMonitor} customClassName="nav-icon" />
    
-  },
+  // },
+  // {
+  //   component: CNavItem,
+  //   name: 'Data Dashboard',
+  //   to: '/dashboard',
+  //   icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+    
+  // },
   {
     component: CNavItem,
-    name: 'Data Dashboard',
-    to: '/dashboard',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    
+    name: 'Dashboard',
+    to: '/emailtracking/dashboard',
+    icon: <CIcon icon={cilLaptop} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,
@@ -133,12 +139,12 @@ const _nav = [
     
     icon: <CIcon icon={cilEnvelopeLetter} customClassName="nav-icon" />,
     items:[
-      {
-        component: CNavItem,
-        name: 'Dashboard',
-        to: '/emailtracking/dashboard',
-        icon: <CIcon icon={cilLaptop} customClassName="nav-icon" />,
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Dashboard',
+      //   to: '/emailtracking/dashboard',
+      //   icon: <CIcon icon={cilLaptop} customClassName="nav-icon" />,
+      // },
     {
       component: CNavItem,
       name: 'Inbox',
@@ -147,16 +153,16 @@ const _nav = [
     },
     {
       component: CNavItem,
-      name: 'Create Fields',
+      name: 'Create Department',
       to: '/emailtracking/parameter',
       icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
     },
-    {
-      component: CNavItem,
-      name: 'Rule Engine',
-      to: '/emailtracking/trigger',
-      icon: <CIcon icon={cilSignLanguage} customClassName="nav-icon" />,
-    },
+    // {
+    //   component: CNavItem,
+    //   name: 'Rule Engine',
+    //   to: '/emailtracking/trigger',
+    //   icon: <CIcon icon={cilSignLanguage} customClassName="nav-icon" />,
+    // },
     {
       component: CNavItem,
       name: 'Ticket',
@@ -286,12 +292,12 @@ const _nav = [
     to: '/users/users',
     icon: <CIcon icon={cilUserX} customClassName="nav-icon" />,
   },
-  {
-    component: CNavItem,
-    name: 'Groups',
-    to: '/users/groups',
-    icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
-  },
+  // {
+  //   component: CNavItem,
+  //   name: 'Groups',
+  //   to: '/users/groups',
+  //   icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
+  // },
   // {
   //   component: CNavTitle,
   //   name: 'Configurations',

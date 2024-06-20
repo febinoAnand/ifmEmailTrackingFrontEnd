@@ -31,48 +31,48 @@ class Parameter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      parameters: [],
-      filteredParameters: [],
-      group_details: [],
+      departments: [],
+      filteredDepartments: [],
+      users: [],
       formData: {
         id: '',
         alias: '',
-        field: '',
-        color:'',
-        datatype: '',
-        groups: [],
-        group_details: [],
+        department: '',
+        users_to_send: [],
       },
       searchQuery: '',
       visibleUpdate: false,
       visibleAdd: false,
-      groups: [],
     };
   }
 
   componentDidMount() {
-    this.fetchParameters();
-    this.fetchGroups();
+    this.fetchDepartments();
+    this.fetchUsers();
   }
 
-  fetchGroups = () => {
-    axios.get(BaseURL + "app/groups/")
+  fetchUsers = () => {
+    axios.get(BaseURL + "Userauth/userdetail/")
       .then(response => {
-        this.setState({ groups: response.data });
+        const users = response.data.map(user => ({
+          id: user.user_id,
+          username: user.usermod.username,
+        }));
+        this.setState({ users });
       })
       .catch(error => {
-        console.error('Error fetching groups:', error);
+        console.error('Error fetching users:', error);
       });
   };
 
-  fetchParameters = () => {
-    axios.get(BaseURL + "emailtracking/parameter/")
+  fetchDepartments = () => {
+    axios.get(BaseURL + "emailtracking/departments/")
       .then(response => {
         const reversedData = response.data.reverse();
-        this.setState({ parameters: reversedData, filteredParameters: reversedData });
+        this.setState({ departments: reversedData, filteredDepartments: reversedData });
       })
       .catch(error => {
-        console.error('Error fetching parameters:', error);
+        console.error('Error fetching departments:', error);
       });
   };
 
@@ -88,83 +88,115 @@ class Parameter extends React.Component {
 
   handleAdd = () => {
     const { formData } = this.state;
-    axios.post(BaseURL + "emailtracking/parameter/", formData)
+    const newData = {
+      dep_alias: formData.alias,
+      department: formData.department,
+      users_to_send: formData.users_to_send,
+    };
+  
+    axios.post(`${BaseURL}emailtracking/departments/`, newData)
       .then(response => {
-        console.log('Parameter added successfully:', response.data);
-        this.setState({
-          formData: { id: '', alias: '', field: '', datatype: '' },
-          visibleAdd: false
-        }, () => {
-          window.location.reload();
-        });
-      })
-      .catch(error => {
-        console.error('Error adding parameter:', error);
-      });
-  };
-
-  handleUpdate = () => {
-    const { formData } = this.state;
-    const { id } = formData;
-
-    axios.put(`${BaseURL}emailtracking/parameter/${id}/`, formData)
-      .then(response => {
-        console.log('Parameter updated successfully:', response.data);
+        console.log('Department added successfully:', response.data);
         this.setState({
           formData: {
             id: '',
             alias: '',
-            field: '',
-            datatype: ''
-          }
+            department: '',
+            users_to_send: [],
+          },
+          visibleAdd: false,
+        }, () => {
+          this.fetchDepartments();
+          window.location.reload();
         });
-        this.fetchParameters();
-        this.toggleUpdateModal();
       })
       .catch(error => {
-        console.error('Error updating parameter:', error);
+        console.error('Error adding department:', error);
+        if (error.response) {
+          console.error('Server responded with status code:', error.response.status);
+          console.error('Response data:', error.response.data);
+        } else if (error.request) {
+          console.error('No response received:', error.request);
+        } else {
+          console.error('Error setting up the request:', error.message);
+        }
       });
+  };  
+
+  handleUpdate = () => {
+    const { formData } = this.state;
+    const { id, alias, department, users_to_send } = formData;
+  
+    const updatedData = {
+      id: id,
+      dep_alias: alias,
+      department: department,
+      users_to_send: users_to_send,
+    };
+  
+    axios.put(`${BaseURL}emailtracking/departments/${id}/`, updatedData)
+      .then(response => {
+        console.log('Department updated successfully:', response.data);
+        this.setState({
+          formData: {
+            id: '',
+            alias: '',
+            department: '',
+            users_to_send: [],
+          }
+        });
+        this.fetchDepartments();
+        this.toggleUpdateModal();
+        window.location.reload();
+      })
+      .catch(error => {
+        console.error('Error updating department:', error);
+        if (error.response) {
+          console.error('Server responded with status code:', error.response.status);
+          console.error('Response data:', error.response.data);
+        } else if (error.request) {
+          console.error('No response received:', error.request);
+        } else {
+          console.error('Error setting up the request:', error.message);
+        }
+      });
+  };  
+
+  getRowData = (department) => {
+    const { id, dep_alias, department: dep, users_to_send } = department;
+    
+    this.setState({
+      formData: {
+        id: id,
+        alias: dep_alias,
+        department: dep,
+        users_to_send: users_to_send,
+      },
+      visibleUpdate: true,
+    });
   };
 
-  getRowData = (parameter) => {
-    const { id, alias, field, datatype , groups } = parameter;
-
-    this.setState({
-        formData: {
-            id: id,
-            alias: alias,
-            field: field,
-            datatype: datatype,
-            groups: groups,
-        },
-        visibleUpdate: true,
-    });
-
-    console.log(groups);
-};
-
   handleDelete = (id) => {
-    axios.delete(`${BaseURL}emailtracking/parameter/${id}/`)
+    axios.delete(`${BaseURL}emailtracking/departments/${id}/`)
       .then(response => {
-        console.log('Parameter deleted successfully');
+        console.log('Department deleted successfully');
         this.setState(prevState => ({
-          parameters: prevState.parameters.filter(parameter => parameter.id !== id),
-          filteredParameters: prevState.filteredParameters.filter(parameter => parameter.id !== id),
+          departments: prevState.departments.filter(department => department.id !== id),
+          filteredDepartments: prevState.filteredDepartments.filter(department => department.id !== id),
         }));
       })
       .catch(error => {
-        console.error('Error deleting parameter:', error);
+        console.error('Error deleting department:', error);
       });
   };
 
   handleSearch = () => {
-    const { parameters, searchQuery } = this.state;
-    const filteredParameters = parameters.filter(parameter =>
-      parameter.alias.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      parameter.field.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      parameter.datatype.toLowerCase().includes(searchQuery.toLowerCase())
+    const { departments, searchQuery } = this.state;
+    const filteredDepartments = departments.filter(department =>
+      department.dep_alias.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      department.department.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    this.setState({ filteredParameters });
+    this.setState({ filteredDepartments });
   };
 
   handleSearchInputChange = (e) => {
@@ -186,11 +218,8 @@ class Parameter extends React.Component {
       formData: !prevState.visibleAdd ? {
         id: '',
         alias: '',
-        field: '',
-        color: '',
-        datatype: '',
-        groups: [],
-        group_details: [],
+        department: '',
+        users_to_send: [],
       } : prevState.formData
     }));
   };
@@ -198,15 +227,15 @@ class Parameter extends React.Component {
   handleMultiSelect = (event) => {
     const selectedOptions = Array.from(event.target.selectedOptions).map(option => option.value);
     this.setState({
-        formData: {
-            ...this.state.formData,
-            groups: selectedOptions
-        }
+      formData: {
+        ...this.state.formData,
+        users_to_send: selectedOptions
+      }
     });
-};
+  };
 
   render() {
-    const { filteredParameters, formData, searchQuery, visibleUpdate, visibleAdd, groups } = this.state;
+    const { filteredDepartments, formData, searchQuery, visibleUpdate, visibleAdd, users } = this.state;
 
     return (
       <>
@@ -214,13 +243,13 @@ class Parameter extends React.Component {
           <CCol xs={12}>
             <CCard className="mb-4">
               <CCardHeader>
-                <strong>Fields</strong>
+                <strong>Departments</strong>
               </CCardHeader>
               <CCardBody>
                 <CCol md={4}>
                   <CInputGroup className="flex-nowrap mt-3 mb-4">
                     <CFormInput
-                      placeholder="Search by Alias, Field, or Data Type"
+                      placeholder="Search by Alias or Department"
                       aria-label="Search"
                       aria-describedby="addon-wrapping"
                       value={searchQuery}
@@ -232,58 +261,48 @@ class Parameter extends React.Component {
                   </CInputGroup>
                 </CCol>
                 <CInputGroup className="flex-nowrap mt-3 mb-4">
-                <CTooltip content="Create new parameter">
-                  <CButton type="button" color="primary" onClick={this.toggleAddModal}>
-                    Create
-                  </CButton>
-                </CTooltip>
+                  <CTooltip content="Create new department">
+                    <CButton type="button" color="primary" onClick={this.toggleAddModal}>
+                      Create
+                    </CButton>
+                  </CTooltip>
                 </CInputGroup>
                 <CTable striped hover>
                   <CTableHead>
                     <CTableRow color="dark">
                       <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Alias</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Field</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Data Type</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Groups</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Department Alias</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Department</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Users</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Action</CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
-                    {filteredParameters.length === 0 ? (
+                    {filteredDepartments.length === 0 ? (
                       <CTableRow>
-                        <CTableDataCell colSpan="6" className="text-center">No data available</CTableDataCell>
+                        <CTableDataCell colSpan="5" className="text-center">No data available</CTableDataCell>
                       </CTableRow>
                     ) : (
-                      filteredParameters.map((parameter, index) => (
-                        <CTableRow key={parameter.id}>
+                      filteredDepartments.map((department, index) => (
+                        <CTableRow key={department.id}>
                           <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                          <CTableDataCell>{parameter.alias}</CTableDataCell>
+                          <CTableDataCell>{department.dep_alias}</CTableDataCell>
+                          <CTableDataCell>{department.department}</CTableDataCell>
                           <CTableDataCell>
-                            <span style={{
-                              display: 'inline-block',
-                              padding: '5px 10px',
-                              borderRadius: '12px',
-                              backgroundColor: parameter.color,
-                              color: 'white',
-                              fontWeight: 'bold'
-                            }}>
-                              {parameter.field}
-                            </span>
-                          </CTableDataCell>
-                          <CTableDataCell>{parameter.datatype}</CTableDataCell>
-                          <CTableDataCell>
-                            {parameter.group_details && parameter.group_details.length > 0 && parameter.group_details[0].user_list.map(user => user.username).join(', ')}
+                            {department.users_to_send && department.users_to_send.length > 0 && department.users_to_send.map(userId => {
+                              const user = users.find(u => u.id === userId);
+                              return user ? user.username : '';
+                            }).join(', ')}
                           </CTableDataCell>
                           <CTableDataCell>
                             <div className="d-flex gap-2">
                               <CTooltip content="Edit">
-                                <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.getRowData(parameter)}>
+                                <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.getRowData(department)}>
                                   <CIcon icon={cilPen} />
                                 </CButton>
                               </CTooltip>
                               <CTooltip content="Delete">
-                                <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={(e) => { e.stopPropagation(); this.handleDelete(parameter.id) }}>
+                                <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.handleDelete(department.id)}>
                                   <CIcon icon={cilTrash} />
                                 </CButton>
                               </CTooltip>
@@ -302,22 +321,20 @@ class Parameter extends React.Component {
         <CModal
           size="lg"
           visible={visibleAdd}
-          backdrop="static" 
+          backdrop="static"
           keyboard={false}
           onClose={this.toggleAddModal}
           aria-labelledby="AddModalLabel"
         >
           <CModalHeader>
-            <strong>Add Parameter</strong>
+            <strong>Add Department</strong>
           </CModalHeader>
           <CModalBody>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-              <div style={{ flex: 1, marginLeft: '20px', justifyContent: 'center' }}>
-                <CForm>
-                  <CRow className="mb-3">
-                    <CFormLabel htmlFor="alias" className="col-sm-2 col-form-label"><strong>Alias:</strong></CFormLabel>
-                    <CCol md={10}>
-                      <CFormInput
+            <CForm>
+              <CRow className="mb-3">
+                <CFormLabel htmlFor="alias" className="col-sm-2 col-form-label"><strong>Department Alias:</strong></CFormLabel>
+                <CCol md={4}>
+                  <CFormInput
                         type="text"
                         id="alias"
                         name="alias"
@@ -325,50 +342,33 @@ class Parameter extends React.Component {
                         onChange={this.handleInputChange}
                       />
                     </CCol>
-                  </CRow>
-                  <CRow className="mb-3">
-                    <CFormLabel htmlFor="field" className="col-sm-2 col-form-label"><strong>Field:</strong></CFormLabel>
-                    <CCol md={10}>
+                    <CFormLabel htmlFor="department" className="col-sm-2 col-form-label"><strong>Department:</strong></CFormLabel>
+                    <CCol md={4}>
                       <CFormInput
                         type="text"
-                        id="field"
-                        name="field"
-                        value={formData.field}
+                        id="department"
+                        name="department"
+                        value={formData.department}
                         onChange={this.handleInputChange}
                       />
                     </CCol>
                   </CRow>
                   <CRow className="mb-3">
-                    <CFormLabel htmlFor="datatype" className="col-sm-2 col-form-label"><strong>Data Type:</strong></CFormLabel>
+                    <CFormLabel htmlFor="users_to_send" className="col-sm-2 col-form-label"><strong>Users:</strong></CFormLabel>
                     <CCol md={10}>
                       <CFormSelect
-                        id="datatype"
-                        name="datatype"
-                        value={formData.datatype}
-                        onChange={this.handleInputChange}
-                      >
-                        <option value="">Select Type</option>
-                        <option value="character">Character</option>
-                        <option value="number">Number</option>
-                      </CFormSelect>
-                    </CCol>
-                  </CRow>
-                  <CRow className="mb-3">
-                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label"><strong>Groups:</strong></CFormLabel>
-                    <CCol md={10}>
-                    <CFormSelect
-                        id="groups"
-                        name="groups"
+                        id="users_to_send"
+                        name="users_to_send"
                         multiple
-                        value={formData.groups}
+                        value={formData.users_to_send}
                         onChange={this.handleMultiSelect}
-                    >
-                        {groups.map(group => (
-                        <option key={group.id} value={group.id}>
-                            {group.name}
-                        </option>
-                    ))}
-                    </CFormSelect>
+                      >
+                        {users.map(user => (
+                          <option key={user.id} value={user.id}>
+                            {user.username}
+                          </option>
+                        ))}
+                      </CFormSelect>
                     </CCol>
                   </CRow>
                   <CRow className="justify-content-center">
@@ -379,114 +379,75 @@ class Parameter extends React.Component {
                     </CCol>
                   </CRow>
                 </CForm>
-              </div>
-              <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'black' }}>
-                <div style={{ width: '300px', height: '330px',fontSize:16, backgroundColor: 'lightgray', borderRadius: '10px', textAlign: 'center' }}>
-                     <br /><p>  1. Alias are like giving an unique name to the parameters.</p>
-                     <p>  2. In the Fields the needed parameter is given.</p>
-                     <p>  3. the data types are the formate of the data.</p>
-                     <p>  4. the user required  groups is where the specific groups are selected.</p>
-                </div>
-              </div>
-            </div>
-          </CModalBody>
-        </CModal>
-
-        <CModal
-          size="lg"
-          visible={visibleUpdate}
-          backdrop="static" 
-          keyboard={false}
-          onClose={this.toggleUpdateModal}
-          aria-labelledby="UpdateModalLabel"
-        >
-          <CModalHeader>
-            <strong>Update Parameter</strong>
-          </CModalHeader>
-          <CModalBody>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
-              <div style={{ flex: 1, marginLeft: '20px', justifyContent: 'center' }}>
-            <CForm>
-              <CRow className="mb-3">
-                <CFormLabel htmlFor="alias" className="col-sm-2 col-form-label"><strong>Alias:</strong></CFormLabel>
-                <CCol md={10}>
-                  <CFormInput
-                    type="text"
-                    id="alias"
-                    name="alias"
-                    value={formData.alias}
-                    onChange={this.handleInputChange}
-                  />
-                </CCol>
-              </CRow>
-              <CRow className="mb-3">
-                <CFormLabel htmlFor="field" className="col-sm-2 col-form-label"><strong>Field:</strong></CFormLabel>
-                <CCol md={10}>
-                  <CFormInput
-                    type="text"
-                    id="field"
-                    name="field"
-                    value={formData.field}
-                    onChange={this.handleInputChange}
-                  />
-                </CCol>
-              </CRow>
-              <CRow className="mb-3">
-                <CFormLabel htmlFor="datatype" className="col-sm-2 col-form-label"><strong>Data Type:</strong></CFormLabel>
-                <CCol md={10}>
-                  <CFormSelect
-                    id="datatype"
-                    name="datatype"
-                    value={formData.datatype}
-                    onChange={this.handleInputChange}
-                  >
-                    <option value="">Select Data Type</option>
-                    <option value="character">Character</option>
-                    <option value="number">Number</option>
-                  </CFormSelect>
-                </CCol>
-              </CRow>
-              <CRow className="mb-3">
-                <CFormLabel htmlFor="groups" className="col-sm-2 col-form-label"><strong>Groups:</strong></CFormLabel>
-                <CCol md={10}>
-                <CFormSelect
-                    id="groups"
-                    name="groups"
-                    multiple
-                    value={formData.groups}
-                    onChange={this.handleMultiSelect}
-                >
-                    {groups.map(group => (
-                        <option key={group.id} value={group.id}>
-                            {group.name}
-                        </option>
-                    ))}
-                </CFormSelect>
-                </CCol>
-              </CRow>
-              <CRow className="justify-content-center">
-                <CCol xs={1}>
-                  <div className='d-grid gap-2'>
-                    <CButton color="primary" type="submit" onClick={this.handleUpdate}>Save</CButton>
-                  </div>
-                </CCol>
-              </CRow>
-            </CForm>
-            </div>
-              <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'black' }}>
-                <div style={{ width: '300px', height: '330px',fontSize:16, backgroundColor: 'lightgray', borderRadius: '10px', textAlign: 'center' }}>
-                     <br /><p>  1. Alias are like giving an unique name to the parameters.</p>
-                     <p>  2. In the Fields the needed parameter is given.</p>
-                     <p>  3. the data types are the formate of the data.</p>
-                     <p>  4. the user required  groups is where the specific groups are selected.</p>
-                </div>
-              </div>
-            </div>
-          </CModalBody>
-        </CModal>
-      </>
-    );
-  }
-}
-
-export default Parameter;
+              </CModalBody>
+            </CModal>
+    
+            <CModal
+              size="lg"
+              visible={visibleUpdate}
+              backdrop="static"
+              keyboard={false}
+              onClose={this.toggleUpdateModal}
+              aria-labelledby="UpdateModalLabel"
+            >
+              <CModalHeader>
+                <strong>Update Department</strong>
+              </CModalHeader>
+              <CModalBody>
+                <CForm>
+                  <CRow className="mb-3">
+                    <CFormLabel htmlFor="alias" className="col-sm-2 col-form-label"><strong>Department Alias:</strong></CFormLabel>
+                    <CCol md={4}>
+                      <CFormInput
+                        type="text"
+                        id="alias"
+                        name="alias"
+                        value={formData.alias}
+                        onChange={this.handleInputChange}
+                      />
+                    </CCol>
+                    <CFormLabel htmlFor="department" className="col-sm-2 col-form-label"><strong>Department:</strong></CFormLabel>
+                    <CCol md={4}>
+                      <CFormInput
+                        type="text"
+                        id="department"
+                        name="department"
+                        value={formData.department}
+                        onChange={this.handleInputChange}
+                      />
+                    </CCol>
+                  </CRow>
+                  <CRow className="mb-3">
+                    <CFormLabel htmlFor="users_to_send" className="col-sm-2 col-form-label"><strong>Users:</strong></CFormLabel>
+                    <CCol md={10}>
+                      <CFormSelect
+                        id="users_to_send"
+                        name="users_to_send"
+                        multiple
+                        value={formData.users_to_send}
+                        onChange={this.handleMultiSelect}
+                      >
+                        {users.map(user => (
+                          <option key={user.id} value={user.id}>
+                            {user.username}
+                          </option>
+                        ))}
+                      </CFormSelect>
+                    </CCol>
+                  </CRow>
+                  <CRow className="justify-content-center">
+                    <CCol xs={1}>
+                      <div className='d-grid gap-2'>
+                        <CButton color="primary" type="button" onClick={this.handleUpdate}>Save</CButton>
+                      </div>
+                    </CCol>
+                  </CRow>
+                </CForm>
+              </CModalBody>
+            </CModal>
+          </>
+        );
+      }
+    }
+    
+    export default Parameter;

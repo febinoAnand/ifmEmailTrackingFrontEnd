@@ -1,21 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { cilInbox, cilTags } from '@coreui/icons';
-
 import {
-  // CButton,
   CCard,
   CCardBody,
   CCardHeader,
-  // CCardTitle,
-  // CCardSubtitle,
-  // CCardText,
-  // CCardLink,
   CCol,
-  // CFormInput,
-  // CInputGroup,
-  // CNavLink,
-  // CInputGroupText,
   CRow,
   CTable,
   CTableBody,
@@ -23,14 +12,12 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
-  CTooltip,
-  CWidgetStatsD,
+  CWidgetStatsA,
 } from '@coreui/react';
-// import { NavLink } from 'react-router-dom';
 import CIcon from '@coreui/icons-react';
-import BaseURL from 'src/assets/contants/BaseURL';
 import Chart from 'chart.js/auto';
-import { Line as CChartLine } from 'react-chartjs-2';
+import { cilPeople, cilUser, cilUserFollow, cilUserUnfollow, cilCommentSquare, cilTags } from '@coreui/icons';
+import BaseURL from 'src/assets/contants/BaseURL';
 
 class Dashboard extends Component {
   constructor(props) {
@@ -38,249 +25,335 @@ class Dashboard extends Component {
     this.state = {
       inboxCount: 0,
       ticketCount: 0,
-      fields: [],
+      departments: [],
       ticketData: [],
       barChartLabels: [],
       barChartData: [],
+      userData: [],
     };
     this.chartRef = React.createRef();
   }
 
   async componentDidMount() {
-    try {
-      const responseInbox = await axios.get(BaseURL + "emailtracking/inbox/");
-      const responseTickets = await axios.get(BaseURL + "emailtracking/ticket/");
-      const responseFields = await axios.get(BaseURL + "emailtracking/parameter/");
-      const responseParameters = await axios.get(BaseURL + "emailtracking/parameter/");
-
-      const barChartLabels = this.extractLabels(responseTickets.data, responseFields.data);
-      const barChartData = this.extractDataCounts(responseTickets.data, responseParameters.data);
-
-      this.setState({
-        inboxCount: responseInbox.data.length,
-        ticketCount: responseTickets.data.length,
-        fields: responseFields.data,
-        ticketData: responseTickets.data.reverse(),
-        barChartLabels: barChartLabels,
-        barChartData: barChartData,
-      });
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
+    await this.fetchData();
+    this.updateChart();
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.barChartData !== prevState.barChartData) {
+    if (this.state.barChartData !== prevState.barChartData || this.state.barChartLabels !== prevState.barChartLabels) {
       this.updateChart();
     }
   }
 
-  extractLabels(ticketData, fields) {
-    const labels = fields.map(field => field.field);
-    return labels;
+  fetchData = async () => {
+    try {
+      const responseInbox = await axios.get(BaseURL + "emailtracking/inbox/");
+      const responseTickets = await axios.get(BaseURL + "emailtracking/ticket/");
+      const responseDepartments = await axios.get(BaseURL + "emailtracking/departments/");
+      const responseUsers = await axios.get(BaseURL + "Userauth/userdetail/");
+
+      const barChartLabels = this.generateHourlyLabels();
+      const barChartData = this.extractHourlyDepartmentData(responseTickets.data, responseDepartments.data);
+
+      const totalUsers = responseUsers.data.length;
+      const activeUsers = responseUsers.data.filter(user => user.userActive).length;
+
+      this.setState({
+        inboxCount: responseInbox.data.length,
+        ticketCount: responseTickets.data.length,
+        departments: responseDepartments.data,
+        ticketData: responseTickets.data.reverse(),
+        barChartLabels: barChartLabels,
+        barChartData: barChartData,
+        userData: responseUsers.data,
+      });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  generateHourlyLabels() {
+    const now = new Date();
+    const currentHour = now.getHours();
+    return Array.from({ length: 6 }, (_, i) => `${currentHour}:${i * 10}`); // Generate labels for each 10-minute interval
   }
 
-  extractDataCounts(ticketData, parameterData) {
+  getDepartmentFromTopology(topology) {
+    if (!topology) return null;
+    const parts = topology.split(' / ');
+    return parts.length > 0 ? parts[parts.length - 1] : null;
+  }
+
+  extractHourlyDepartmentData(ticketData, departmentData) {
     const counts = {};
   
-    parameterData.forEach(param => {
-      counts[param.field] = 0;
+    // Initialize counts for each department
+    departmentData.forEach(department => {
+      counts[department.department] = Array.from({ length: 6 }, () => 0); // Initialize counts for each department
     });
   
+    // Process each ticket to count occurrences
     ticketData.forEach(ticket => {
-      parameterData.forEach(param => {
-        if (ticket.required_json[param.field]) {
-          counts[param.field]++;
-        }
-      });
+      const actualJson = ticket.actual_json;
+      if (actualJson && actualJson.Topology) {
+        const topology = actualJson.Topology.toLowerCase(); // Convert to lowercase for case-insensitive comparison
+        console.log(`Processing ticket with topology: ${topology}`);
+  
+        // Iterate over department data to find matches in topology
+        departmentData.forEach(department => {
+          const departmentName = department.department.toLowerCase(); // Convert to lowercase for case-insensitive comparison
+          console.log(`Checking department: ${departmentName}`);
+          
+          if (topology.includes(departmentName)) {
+            const occurred = actualJson["Occurred (UTC+0:00)"];
+            if (occurred) {
+              const hour = new Date(occurred).getHours();
+              const interval = Math.floor(new Date(occurred).getMinutes() / 10);
+              if (hour === new Date().getHours()) {
+                console.log(`Match found for department: ${department.department}`);
+                counts[department.department][interval]++;
+              }
+            }
+          }
+        });
+      }
     });
+  
+    console.log('Counts:', counts); // Log the final counts object
   
     return Object.values(counts);
-  }
+  }  
   
   updateChart() {
-    const { barChartLabels, barChartData } = this.state;
+    const { barChartLabels, barChartData, departments } = this.state;
     const ctx = this.chartRef.current.getContext('2d');
-  
+
     if (this.chartInstance) {
       this.chartInstance.destroy();
     }
+
     const barColors = [
       'rgba(255, 99, 132, 0.5)',
-    'rgba(54, 162, 235, 0.5)',
-    'rgba(255, 206, 86, 0.5)',
-    'rgba(75, 192, 192, 0.5)',
-    'rgba(153, 102, 255, 0.5)',
-    'rgba(255, 159, 64, 0.5)',
-    'rgba(199, 199, 199, 0.5)',
-    'rgba(255, 99, 71, 0.5)',
-    'rgba(144, 238, 144, 0.5)',
-    'rgba(173, 216, 230, 0.5)',
-    'rgba(240, 128, 128, 0.5)',
-    'rgba(32, 178, 170, 0.5)',
-    'rgba(240, 230, 140, 0.5)',
-    'rgba(123, 104, 238, 0.5)',
-    'rgba(255, 105, 180, 0.5)',
-    'rgba(205, 92, 92, 0.5)',
-    'rgba(50, 205, 50, 0.5)',
-    'rgba(100, 149, 237, 0.5)',
-    'rgba(255, 228, 181, 0.5)',
-    'rgba(147, 112, 219, 0.5)'
+      'rgba(54, 162, 235, 0.5)',
+      'rgba(255, 206, 86, 0.5)',
+      'rgba(75, 192, 192, 0.5)',
+      'rgba(153, 102, 255, 0.5)',
+      'rgba(255, 159, 64, 0.5)',
+      'rgba(199, 199, 199, 0.5)',
+      'rgba(255, 99, 71, 0.5)',
+      'rgba(144, 238, 144, 0.5)',
+      'rgba(173, 216, 230, 0.5)',
+      'rgba(240, 128, 128, 0.5)',
+      'rgba(32, 178, 170, 0.5)',
+      'rgba(240, 230, 140, 0.5)',
+      'rgba(123, 104, 238, 0.5)',
+      'rgba(255, 105, 180, 0.5)',
+      'rgba(205, 92, 92, 0.5)',
+      'rgba(50, 205, 50, 0.5)',
+      'rgba(100, 149, 237, 0.5)',
+      'rgba(255, 228, 181, 0.5)',
+      'rgba(147, 112, 219, 0.5)',
     ];
-  
+
+    const datasets = departments.map((department, index) => ({
+      label: department.department,
+      data: barChartData[index],
+      backgroundColor: barColors[index % barColors.length],
+      borderColor: barColors[index % barColors.length].replace('0.5', '1'),
+      borderWidth: 1,
+    }));
+
+    console.log('Bar Chart Data:', datasets);
+
     this.chartInstance = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: barChartLabels,
-        datasets: [{
-          label: 'Ticket Data',
-          data: barChartData,
-          backgroundColor: barColors.slice(0, barChartData.length),
-          borderColor: barColors.map(color => color.replace('0.5', '1')),
-          borderWidth: 1
-        }]
+        datasets: datasets,
       },
       options: {
         scales: {
-          x: {
-            beginAtZero: true
-          }
-        }
-      }
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
     });
-  }  
+  }
 
   render() {
-    const { inboxCount, ticketCount, fields, ticketData } = this.state;
+    const { inboxCount, ticketCount, userData } = this.state;
 
     return (
       <>
-      <CRow>
-          <CCol xs={6}>
-          <CTooltip
-            content="This widget shows the total amount of Inbox received."
-            placement="top"
-          >
-            <CWidgetStatsD
-              className="mb-3"
-              icon={<CIcon className="my-4 text-white" icon={cilInbox} height={52} />}
-              chart={
-                <CChartLine
-                  className="position-absolute w-100 h-100"
-                  data={{
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                    datasets: [
-                      {
-                        backgroundColor: 'rgba(255,255,255,.1)',
-                        borderColor: 'rgba(255,255,255,.55)',
-                        pointHoverBackgroundColor: '#fff',
-                        borderWidth: 2,
-
-                        fill: true,
-                      },
-                    ],
-                  }}
-                  options={{
-                    elements: {
-                      line: {
-                        tension: 0.4,
-                      },
-                      point: {
-                        radius: 0,
-                        hitRadius: 10,
-                        hoverRadius: 4,
-                        hoverBorderWidth: 3,
-                      },
-                    },
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        display: false,
-                      },
-                    },
-                    scales: {
-                      x: {
-                        display: false,
-                      },
-                      y: {
-                        display: false,
-                      },
-                    },
-                  }}
-                />
+        <CRow>
+          <CCol sm={6} lg={3}>
+            <CWidgetStatsA
+              className="mb-4"
+              color="primary"
+              value={
+                <>
+                  {userData.length}{' '}
+                </>
               }
-              style={{ '--cui-card-cap-bg': '#3b5998' }}
-              values={[
-                { value: inboxCount },
-                { title: 'Inbox Total' },
-              ]}
+              title="Total No. Of Users"
+              chart={
+                <div className="c-chart-wrapper mt-3 mx-3">
+                  <CIcon icon={cilPeople} size="xl" className="text-primary" />
+                </div>
+              }
             />
-            </CTooltip>
           </CCol>
-          <CCol xs={6}>
-          <CTooltip content="This widget shows the total amount of Tickets received." placement="top">
-            <CWidgetStatsD
-              className="mb-3"
-              icon={<CIcon className="my-4 text-white" icon={cilTags} height={52} />}
-              chart={
-                <CChartLine
-                  className="position-absolute w-100 h-100"
-                  data={{
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                    datasets: [
-                      {
-                        backgroundColor: 'rgba(255,255,255,.1)',
-                        borderColor: 'rgba(255,255,255,.55)',
-                        pointHoverBackgroundColor: '#fff',
-                        borderWidth: 2,
-                        fill: true,
-                      },
-                    ],
-                  }}
-                  options={{
-                    elements: {
-                      line: {
-                        tension: 0.4,
-                      },
-                      point: {
-                        radius: 0,
-                        hitRadius: 10,
-                        hoverRadius: 4,
-                        hoverBorderWidth: 3,
-                      },
-                    },
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        display: false,
-                      },
-                    },
-                    scales: {
-                      x: {
-                        display: false,
-                      },
-                      y: {
-                        display: false,
-                      },
-                    },
-                  }}
-                />
+          <CCol sm={6} lg={3}>
+            <CWidgetStatsA
+              className="mb-4"
+              color="success"
+              value={
+                <>
+                  {userData.filter(user => user.userActive).length}{' '}
+                </>
               }
-              style={{ '--cui-card-cap-bg': '#00aced' }}
-              values={[
-                { value: ticketCount },
-                { title: 'Ticket Total' },
-              ]}
+              title="Total No. Of Active Users"
+              chart={
+                <div className="c-chart-wrapper mt-3 mx-3">
+                  <CIcon icon={cilUserFollow} size="xl" className="text-success" />
+                </div>
+              }
             />
-            </CTooltip>
+          </CCol>
+          <CCol sm={6} lg={3}>
+            <CWidgetStatsA
+              className="mb-4"
+              color="danger"
+              value={
+                <>
+                  {userData.length - userData.filter(user => user.userActive).length}{' '}
+                </>
+              }
+              title="Total No. Of Inactive Users"
+              chart={
+                <div className="c-chart-wrapper mt-3 mx-3">
+                  <CIcon icon={cilUserUnfollow} size="xl" className="text-danger" />
+                </div>
+              }
+            />
+          </CCol>
+          <CCol sm={6} lg={3}>
+            <CWidgetStatsA
+              className="mb-4"
+              color="warning"
+              value={
+                <>
+                  {this.state.departments.length}{' '}
+                </>
+              }
+              title="Total No. Of Departments"
+              chart={
+                <div className="c-chart-wrapper mt-3 mx-3">
+                  <CIcon size="xl" className="text-primary" />
+                </div>
+              }
+            />
+          </CCol>
+        </CRow>
+        <CRow className="mb-4">
+          <CCol xs="12" sm="6" lg="6">
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              backgroundColor: '#f0f0f0', 
+              padding: '20px',
+              borderRadius: '10px',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+            }}>
+              <div style={{ 
+                backgroundColor: '#ff6e6e', 
+                width: '30%', 
+                padding: '20px', 
+                borderRadius: '10px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                <CIcon icon={cilCommentSquare} size="lg" className="text-white" />
+              </div>
+              <div style={{ 
+                backgroundColor: '#ffffff', 
+                width: '30%', 
+                padding: '20px', 
+                borderRadius: '10px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333' }}>{inboxCount}</div>
+              </div>
+              <div style={{ 
+                backgroundColor: '#E768E1', 
+                width: '30%', 
+                padding: '10px', 
+                borderRadius: '10px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#333' }} className="text-center text-muted mt-2">Total Inbox</div>
+              </div>
+            </div>
+          </CCol>
+          <CCol xs="12" sm="6" lg="6">
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              backgroundColor: '#f0f0f0', 
+              padding: '20px',
+              borderRadius: '10px',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+            }}>
+              <div style={{ 
+                backgroundColor: '#52DFAD', 
+                width: '30%', 
+                padding: '20px', 
+                borderRadius: '10px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                <CIcon icon={cilTags} size="lg" className="text-white" />
+              </div>
+              <div style={{ 
+                backgroundColor: '#ffffff', 
+                width: '30%', 
+                padding: '20px', 
+                borderRadius: '10px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333' }}>{ticketCount}</div>
+              </div>
+              <div style={{ 
+                backgroundColor: '#AA76FA', 
+                width: '30%', 
+                padding: '10px', 
+                borderRadius: '10px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#333' }} className="text-center text-muted mt-2">Total Ticket</div>
+              </div>
+            </div>
           </CCol>
         </CRow>
         <CRow>
           <CCol xs={12}>
             <CCard className="mb-4">
               <CCardHeader>
-                <strong>Bar Chart</strong>
-              </CCardHeader>
+                <strong>Department Chart</strong>
+                </CCardHeader>
               <CCardBody className="d-flex justify-content-center">
                 <canvas id="barChart" width="200" height="100" ref={this.chartRef}></canvas>
               </CCardBody>
@@ -291,32 +364,49 @@ class Dashboard extends Component {
           <CCol xs={12}>
             <CCard className="mb-4">
               <CCardHeader>
-                <strong>TICKETS</strong>
+                <strong>All Users</strong>
               </CCardHeader>
               <CCardBody>
                 <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                  <CTable striped hover>
-                    <CTableHead color='dark'>
+                  <CTable align="middle" className="mb-0 border" hover responsive>
+                    <CTableHead color="light">
                       <CTableRow>
-                        <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Date-Time</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Ticket Name</CTableHeaderCell>
-                        {fields.map(field => (
-                          <CTableHeaderCell scope="col" key={field.field}>
-                            {field.field}
-                          </CTableHeaderCell>
-                        ))}
+                        <CTableHeaderCell className="text-center">
+                          <CIcon icon={cilPeople} />
+                        </CTableHeaderCell>
+                        <CTableHeaderCell>Name</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center">Email</CTableHeaderCell>
+                        <CTableHeaderCell>Designation</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center">Mobile No</CTableHeaderCell>
+                        <CTableHeaderCell>Active State</CTableHeaderCell>
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                      {ticketData.map((ticket, index) => (
+                      {userData.map((user, index) => (
                         <CTableRow key={index}>
-                          <CTableHeaderCell>{index + 1}</CTableHeaderCell>
-                          <CTableDataCell>{ticket.date}  {ticket.time}</CTableDataCell>
-                          <CTableDataCell>{ticket.ticketname}</CTableDataCell>
-                          {fields.map((field, i) => (
-                            <CTableDataCell key={i}>{ticket.required_json[field.field]}</CTableDataCell>
-                          ))}
+                          <CTableDataCell className="text-center">
+                            <CIcon size="xl" icon={cilUser} />
+                          </CTableDataCell>
+                          <CTableDataCell>
+                            <div>{user.usermod.email}</div>
+                            <div className="small text-medium-emphasis">
+                              Registered: {user.usermod.first_name}
+                            </div>
+                          </CTableDataCell>
+                          <CTableDataCell className="text-center">
+                            <span>{user.usermod.email}</span>
+                          </CTableDataCell>
+                          <CTableDataCell>
+                            <span>{user.designation}</span>
+                          </CTableDataCell>
+                          <CTableDataCell className="text-center">
+                            <span>{user.mobile_no}</span>
+                          </CTableDataCell>
+                          <CTableDataCell>
+                            <span style={{ fontWeight: user.userActive ? 'bold' : 'normal', color: user.userActive ? 'green' : 'red' }}>
+                                {user.userActive ? 'Active' : 'Inactive'}
+                            </span>
+                          </CTableDataCell>
                         </CTableRow>
                       ))}
                     </CTableBody>
