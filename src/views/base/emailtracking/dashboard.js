@@ -403,7 +403,7 @@ class Dashboard extends Component {
                             <span>{user.mobile_no}</span>
                           </CTableDataCell>
                           <CTableDataCell>
-                            <span style={{ fontWeight: user.userActive ? 'bold' : 'normal', color: user.userActive ? 'green' : 'red' }}>
+                            <span style={{ fontWeight: user.userActive ? 'bold' : 'bold', color: user.userActive ? 'green' : 'red' }}>
                                 {user.userActive ? 'Active' : 'Inactive'}
                             </span>
                           </CTableDataCell>

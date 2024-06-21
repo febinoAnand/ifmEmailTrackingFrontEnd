@@ -76,8 +76,9 @@ class Setting extends React.Component {
                             <CCardBody>
                                 <CRow className="mb-3">
                                     <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">Application ID</CFormLabel>
-                                    <CCol md={6}>
+                                    <CCol md={10}>
                                         <CFormInput type="text" id="name" name="name" value={application_id} onChange={this.handleInputChange} />
+                                        <div className="form-text" style={{ fontSize: 12 }}>* Note : Application ID is required</div>
                                     </CCol>
                                 </CRow>
                                 <CRow className="justify-content-center">

@@ -27,6 +27,8 @@ class Ticket extends Component {
       fields: [],
       ticketData: [],
       searchQuery: '',
+      selectedRows: [],
+      selectAllChecked: false,
     };
   }
 
@@ -52,10 +54,10 @@ class Ticket extends Component {
     const { ticketData, searchQuery } = this.state;
     const filteredData = this.getFilteredData();
     const doc = new jsPDF();
-  
+
     const tableColumn = ["Sl.No", "Date-Time", "Ticket Name", ...Object.keys(ticketData[0]?.actual_json || {})];
     const tableRows = [];
-  
+
     filteredData.forEach((ticket, index) => {
       const ticketData = [
         index + 1,
@@ -65,23 +67,23 @@ class Ticket extends Component {
       ];
       tableRows.push(ticketData);
     });
-  
+
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
     });
-  
+
     doc.save(`tickets${searchQuery ? `_${searchQuery}` : ''}.pdf`);
   };
-  
+
   handleDownloadCSV = () => {
     const { ticketData, searchQuery } = this.state;
     const filteredData = this.getFilteredData();
     const headers = ["Sl.No", "Date-Time", "Ticket Name", ...Object.keys(ticketData[0]?.actual_json || {})];
-    
+
     const csvRows = [];
     csvRows.push(headers.join(','));
-  
+
     filteredData.forEach((ticket, index) => {
       const ticketData = [
         index + 1,
@@ -91,7 +93,7 @@ class Ticket extends Component {
       ];
       csvRows.push(ticketData.join(','));
     });
-  
+
     const csvString = csvRows.join('\n');
     const blob = new Blob([csvString], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -101,21 +103,74 @@ class Ticket extends Component {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  handleCheckboxChange = (event, id) => {
+    const { checked } = event.target;
+    let { selectedRows } = this.state;
+
+    if (checked && !selectedRows.includes(id)) {
+      selectedRows.push(id);
+    } else {
+      selectedRows = selectedRows.filter(rowId => rowId !== id);
+    }
+
+    this.setState({ selectedRows });
+  };
+
+  handleSelectAllCheckboxChange = () => {
+    const { ticketData, selectAllChecked } = this.state;
+    const allRowIds = ticketData.map(ticket => ticket.id);
+
+    if (selectAllChecked) {
+      this.setState({ selectedRows: [], selectAllChecked: false });
+    } else {
+      this.setState({ selectedRows: allRowIds, selectAllChecked: true });
+    }
+  };
+
+  handleDeleteSelectedRows = async () => {
+    const { selectedRows, ticketData } = this.state;
+    if (selectedRows.length === 0) {
+      alert("Please select at least one row to delete.");
+      return;
+    }
+  
+    try {
+      const deleteRequests = selectedRows.map(id =>
+        axios.delete(`${BaseURL}emailtracking/ticket/${id}/`)
+      );
+      await Promise.all(deleteRequests);
+      const updatedTicketData = ticketData.filter(ticket => !selectedRows.includes(ticket.id));
+      this.setState({
+        ticketData: updatedTicketData,
+        selectedRows: [],
+        selectAllChecked: false
+      });
+      console.log("Deleted rows:", selectedRows);
+    } catch (error) {
+      console.error("Error deleting rows:", error);
+    }
   };  
 
   render() {
-    const { ticketData, searchQuery } = this.state;
+    const { ticketData, searchQuery, selectedRows, selectAllChecked } = this.state;
     const filteredData = this.getFilteredData();
-  
+
     const tableColumn = ["Sl.No", "Date-Time", "Ticket Name", ...Object.keys(ticketData[0]?.actual_json || {})];
-  
+
     return (
       <>
         <CRow>
           <CCol xs={12}>
             <CCard className="mb-4">
               <CCardHeader>
-                <strong>TICKETS</strong>
+                <div className="d-flex align-items-center justify-content-between">
+                  <strong>TICKETS</strong>
+                    <CButton color="primary" size='sm' onClick={this.handleDeleteSelectedRows}>
+                      Delete Selected
+                    </CButton>
+                </div>
               </CCardHeader>
               <CCardBody>
                 <CCol md={4}>
@@ -136,6 +191,13 @@ class Ticket extends Component {
                   <CTable striped hover>
                     <CTableHead color='dark'>
                       <CTableRow>
+                        <CTableHeaderCell>
+                          <input
+                            type="checkbox"
+                            checked={selectAllChecked}
+                            onChange={this.handleSelectAllCheckboxChange}
+                          />
+                        </CTableHeaderCell>
                         {tableColumn.map((header, index) => (
                           <CTableHeaderCell key={index} scope="col">
                             {header}
@@ -146,14 +208,21 @@ class Ticket extends Component {
                     <CTableBody>
                       {filteredData.length === 0 ? (
                         <CTableRow>
-                          <CTableHeaderCell colSpan={tableColumn.length} className="text-center">
+                          <CTableHeaderCell colSpan={tableColumn.length + 1} className="text-center">
                             No data available
                           </CTableHeaderCell>
                         </CTableRow>
                       ) : (
                         filteredData.map((ticket, index) => (
                           <CTableRow key={index}>
-                            <CTableHeaderCell>{index + 1}</CTableHeaderCell>
+                            <CTableHeaderCell>
+                              <input
+                                type="checkbox"
+                                checked={selectedRows.includes(ticket.id)}
+                                onChange={(e) => this.handleCheckboxChange(e, ticket.id)}
+                              />
+                            </CTableHeaderCell>
+                            <CTableDataCell>{index + 1}</CTableDataCell>
                             <CTableDataCell>{`${ticket.date} ${ticket.time}`}</CTableDataCell>
                             <CTableDataCell>{ticket.ticketname}</CTableDataCell>
                             {tableColumn.slice(3).map((field, i) => (

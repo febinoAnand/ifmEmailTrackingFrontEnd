@@ -15,6 +15,8 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
+  CNav,
+  CNavItem
 } from '@coreui/react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -27,6 +29,8 @@ class TicketReport extends React.Component {
       tickets: [],
       filteredTickets: [],
       searchTerm: '',
+      selectedTickets: [],
+      selectAll: false,
     };
   }
 
@@ -55,16 +59,69 @@ class TicketReport extends React.Component {
     const filteredTickets = tickets.filter(ticket =>
       ticket.date.toLowerCase().includes(searchTerm) ||
       ticket.time.toLowerCase().includes(searchTerm) ||
-      ticket.ticket.ticketname.toLowerCase().includes(searchTerm) ||
-      ticket.active_trigger.trigger_name.toLowerCase().includes(searchTerm) ||
-      // ticket.actual_value.toLowerCase().includes(searchTerm) ||
-      ticket.active_trigger.users_to_send.some(user =>
+      ticket.message.toLowerCase().includes(searchTerm) ||
+      ticket.Department.toLowerCase().includes(searchTerm) ||
+      ticket.send_to_user.some(user =>
         user.username.toLowerCase().includes(searchTerm)
       )
     );
 
     this.setState({ filteredTickets, searchTerm });
   }
+
+  handleCheckboxChange = (ticketId) => {
+    const { selectedTickets } = this.state;
+    const index = selectedTickets.indexOf(ticketId);
+    let updatedSelectedTickets;
+  
+    if (index === -1) {
+      updatedSelectedTickets = [...selectedTickets, ticketId];
+    } else {
+      updatedSelectedTickets = selectedTickets.filter(id => id !== ticketId);
+    }
+  
+    this.setState({
+      selectedTickets: updatedSelectedTickets,
+    });
+  }  
+
+  handleSelectAll = () => {
+    const { filteredTickets, selectAll } = this.state;
+    if (selectAll) {
+      this.setState({
+        selectedTickets: [],
+        selectAll: false,
+      });
+    } else {
+      const allTicketIds = filteredTickets.map(ticket => ticket.id);
+      this.setState({
+        selectedTickets: allTicketIds,
+        selectAll: true,
+      });
+    }
+  }
+
+  handleDeleteSelected = () => {
+    const { selectedTickets } = this.state;
+    if (selectedTickets.length === 0) {
+      return;
+    }
+    selectedTickets.forEach(ticketId => {
+      axios.delete(`${BaseURL}/emailtracking/reports/${ticketId}/`)
+        .then(response => {
+          console.log(`Ticket with ID ${ticketId} deleted successfully`);
+          this.fetchTickets();
+        })
+        .catch(error => {
+          console.error(`Error deleting ticket with ID ${ticketId}:`, error);
+          alert(`Error deleting ticket with ID ${ticketId}: ${error.message}`);
+        });
+    });
+    this.setState({
+      selectedTickets: [],
+      selectAll: false,
+    });
+  }  
 
   handleDownloadPDF = () => {
     const { filteredTickets } = this.state;
@@ -78,10 +135,9 @@ class TicketReport extends React.Component {
         index + 1,
         ticket.date,
         ticket.time,
-        ticket.ticket.ticketname,
-        ticket.active_trigger.trigger_name,
-        // ticket.actual_value,
-        ticket.active_trigger.users_to_send.map(user => user.username).join(', ')
+        ticket.message,
+        ticket.department,
+        ticket.send_to_user.map(user => user.username).join(', ')
       ];
       tableRows.push(ticketData);
     });
@@ -95,21 +151,28 @@ class TicketReport extends React.Component {
   }
 
   render() {
-    const { filteredTickets, searchTerm } = this.state;
+    const { filteredTickets, searchTerm, selectedTickets, selectAll } = this.state;
 
     return (
       <>
         <CRow>
           <CCol xs={12}>
             <CCard className="mb-4">
-              <CCardHeader>
+              <CCardHeader  className="d-flex justify-content-between align-items-center">
                 <strong> REPORT</strong>
+                <CNav>
+                <CNavItem className="mx-2 position-relative">
+                    <CButton type="button" color="primary" size='sm' onClick={this.handleDeleteSelected}>
+                      Delete Selected
+                    </CButton>
+                </CNavItem>
+              </CNav>
               </CCardHeader>
               <CCardBody>
                 <CCol md={4}>
                   <CInputGroup className="flex-nowrap mt-3 mb-4">
                     <CFormInput
-                      placeholder="Search by Date, Time, Ticket, Department, Send to User"
+                      placeholder="Search by Date, Time, Message, Department, Send to User"
                       aria-label="Search"
                       aria-describedby="addon-wrapping"
                       value={searchTerm}
@@ -124,12 +187,18 @@ class TicketReport extends React.Component {
                   <CTable striped hover>
                     <CTableHead color='dark'>
                       <CTableRow>
+                        <CTableHeaderCell>
+                          <input
+                            type="checkbox"
+                            checked={selectAll}
+                            onChange={this.handleSelectAll}
+                          />
+                        </CTableHeaderCell>
                         <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Date</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Time</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Message</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Department</CTableHeaderCell>
-                        {/* <CTableHeaderCell scope="col">Actual Value</CTableHeaderCell> */}
                         <CTableHeaderCell scope="col">Send to User</CTableHeaderCell>
                       </CTableRow>
                     </CTableHead>
@@ -141,12 +210,18 @@ class TicketReport extends React.Component {
                       ) : (
                         filteredTickets.map((ticket, index) => (
                           <CTableRow key={index}>
+                            <CTableHeaderCell>
+                              <input
+                                type="checkbox"
+                                checked={selectedTickets.includes(ticket.id)}
+                                onChange={() => this.handleCheckboxChange(ticket.id)}
+                              />
+                            </CTableHeaderCell>
                             <CTableHeaderCell>{index + 1}</CTableHeaderCell>
                             <CTableDataCell>{ticket.date}</CTableDataCell>
                             <CTableDataCell>{ticket.time}</CTableDataCell>
                             <CTableDataCell>{ticket.message}</CTableDataCell>
                             <CTableDataCell>{ticket.Department}</CTableDataCell>
-                            {/* <CTableDataCell>{ticket.actual_value}</CTableDataCell> */}
                             <CTableDataCell>
                               {ticket.send_to_user.map(user => user.username).join(', ')}
                             </CTableDataCell>

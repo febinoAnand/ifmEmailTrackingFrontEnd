@@ -23,6 +23,9 @@ import {
   CModalHeader,
   CModalBody,
   CTooltip,
+  CNav,
+  CNavItem,
+  CFormCheck
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
@@ -43,6 +46,7 @@ class Parameter extends React.Component {
       searchQuery: '',
       visibleUpdate: false,
       visibleAdd: false,
+      selectedDepartments: [],
     };
   }
 
@@ -93,7 +97,7 @@ class Parameter extends React.Component {
       department: formData.department,
       users_to_send: formData.users_to_send,
     };
-  
+
     axios.post(`${BaseURL}emailtracking/departments/`, newData)
       .then(response => {
         console.log('Department added successfully:', response.data);
@@ -121,19 +125,19 @@ class Parameter extends React.Component {
           console.error('Error setting up the request:', error.message);
         }
       });
-  };  
+  };
 
   handleUpdate = () => {
     const { formData } = this.state;
     const { id, alias, department, users_to_send } = formData;
-  
+
     const updatedData = {
       id: id,
       dep_alias: alias,
       department: department,
       users_to_send: users_to_send,
     };
-  
+
     axios.put(`${BaseURL}emailtracking/departments/${id}/`, updatedData)
       .then(response => {
         console.log('Department updated successfully:', response.data);
@@ -160,11 +164,11 @@ class Parameter extends React.Component {
           console.error('Error setting up the request:', error.message);
         }
       });
-  };  
+  };
 
   getRowData = (department) => {
     const { id, dep_alias, department: dep, users_to_send } = department;
-    
+
     this.setState({
       formData: {
         id: id,
@@ -187,6 +191,24 @@ class Parameter extends React.Component {
       })
       .catch(error => {
         console.error('Error deleting department:', error);
+      });
+  };
+
+  handleDeleteSelected = () => {
+    const { selectedDepartments } = this.state;
+    const deleteRequests = selectedDepartments.map(id => axios.delete(`${BaseURL}emailtracking/departments/${id}/`));
+
+    Promise.all(deleteRequests)
+      .then(() => {
+        console.log('Selected departments deleted successfully');
+        this.setState(prevState => ({
+          departments: prevState.departments.filter(department => !selectedDepartments.includes(department.id)),
+          filteredDepartments: prevState.filteredDepartments.filter(department => !selectedDepartments.includes(department.id)),
+          selectedDepartments: [],
+        }));
+      })
+      .catch(error => {
+        console.error('Error deleting selected departments:', error);
       });
   };
 
@@ -234,16 +256,49 @@ class Parameter extends React.Component {
     });
   };
 
+  handleSelectAll = (event) => {
+    if (event.target.checked) {
+      this.setState({ selectedDepartments: this.state.filteredDepartments.map(dep => dep.id) });
+    } else {
+      this.setState({ selectedDepartments: [] });
+    }
+  };
+
+  handleSelectDepartment = (departmentId) => {
+    this.setState(prevState => {
+      const selectedDepartments = prevState.selectedDepartments.includes(departmentId)
+        ? prevState.selectedDepartments.filter(id => id !== departmentId)
+        : [...prevState.selectedDepartments, departmentId];
+      return { selectedDepartments };
+    });
+  };
+
   render() {
-    const { filteredDepartments, formData, searchQuery, visibleUpdate, visibleAdd, users } = this.state;
+    const { filteredDepartments, formData, searchQuery, visibleUpdate, visibleAdd, users, selectedDepartments } = this.state;
 
     return (
       <>
         <CRow>
           <CCol xs={12}>
             <CCard className="mb-4">
-              <CCardHeader>
+              <CCardHeader className="d-flex justify-content-between align-items-center">
                 <strong>Departments</strong>
+                <CNav>
+                  <CNavItem className="mx-2 position-relative">
+                    <CTooltip content="Create new department">
+                      <CButton type="button" color="primary" size='sm' onClick={this.toggleAddModal}>
+                        Create
+                      </CButton>
+                    </CTooltip>
+                  </CNavItem>
+                  <CNavItem className="mx-2 position-relative">
+                    <CTooltip content="Delete selected departments">
+                      <CButton type="button" color="primary" size='sm' onClick={this.handleDeleteSelected}>
+                        Delete Selected
+                      </CButton>
+                    </CTooltip>
+                  </CNavItem>
+                </CNav>
               </CCardHeader>
               <CCardBody>
                 <CCol md={4}>
@@ -260,16 +315,16 @@ class Parameter extends React.Component {
                     </CButton>
                   </CInputGroup>
                 </CCol>
-                <CInputGroup className="flex-nowrap mt-3 mb-4">
-                  <CTooltip content="Create new department">
-                    <CButton type="button" color="primary" onClick={this.toggleAddModal}>
-                      Create
-                    </CButton>
-                  </CTooltip>
-                </CInputGroup>
                 <CTable striped hover>
                   <CTableHead>
                     <CTableRow color="dark">
+                      <CTableHeaderCell scope="col">
+                        <CFormCheck
+                          id="selectAll"
+                          checked={selectedDepartments.length === filteredDepartments.length && filteredDepartments.length > 0}
+                          onChange={this.handleSelectAll}
+                        />
+                      </CTableHeaderCell>
                       <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Department Alias</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Department</CTableHeaderCell>
@@ -280,11 +335,17 @@ class Parameter extends React.Component {
                   <CTableBody>
                     {filteredDepartments.length === 0 ? (
                       <CTableRow>
-                        <CTableDataCell colSpan="5" className="text-center">No data available</CTableDataCell>
+                        <CTableDataCell colSpan="6" className="text-center">No data available</CTableDataCell>
                       </CTableRow>
                     ) : (
                       filteredDepartments.map((department, index) => (
                         <CTableRow key={department.id}>
+                          <CTableDataCell>
+                            <CFormCheck
+                              checked={selectedDepartments.includes(department.id)}
+                              onChange={() => this.handleSelectDepartment(department.id)}
+                            />
+                          </CTableDataCell>
                           <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                           <CTableDataCell>{department.dep_alias}</CTableDataCell>
                           <CTableDataCell>{department.department}</CTableDataCell>

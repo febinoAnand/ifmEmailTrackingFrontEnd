@@ -10,8 +10,6 @@ import {
     CFormInput,
     CInputGroup,
     CRow,
-    CForm,
-    CFormLabel,
     CTable,
     CTableBody,
     CTableDataCell,
@@ -24,6 +22,8 @@ import {
     CModalFooter,
     CModalHeader,
     CModalTitle,
+    CFormLabel,
+    CForm
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
@@ -32,6 +32,8 @@ const Users = () => {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [userActive, setUserActive] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
@@ -88,14 +90,47 @@ const Users = () => {
         setUserActive(checked);
     };
 
-    const handleDeleteUser = (userId) => {
-        axios.delete(`${BaseURL}Userauth/delete-user/${userId}/`)
-            .then(response => {
-                fetchUsers();
-            })
-            .catch(error => {
-                console.error('Error deleting user:', error);
-            });
+    const handleSelectAll = () => {
+        if (selectAll) {
+            setSelectedUsers([]);
+        } else {
+            setSelectedUsers(filteredUsers.map(user => user.user_id));
+        }
+        setSelectAll(!selectAll);
+    };
+
+    const handleSelectUser = (userId) => {
+        const selectedIndex = selectedUsers.indexOf(userId);
+        let newSelected = [];
+
+        if (selectedIndex === -1) {
+            newSelected = [...selectedUsers, userId];
+        } else if (selectedIndex === 0) {
+            newSelected = [...selectedUsers.slice(1)];
+        } else if (selectedIndex === selectedUsers.length - 1) {
+            newSelected = [...selectedUsers.slice(0, -1)];
+        } else if (selectedIndex > 0) {
+            newSelected = [
+                ...selectedUsers.slice(0, selectedIndex),
+                ...selectedUsers.slice(selectedIndex + 1),
+            ];
+        }
+
+        setSelectedUsers(newSelected);
+        setSelectAll(newSelected.length === filteredUsers.length);
+    };
+
+    const handleDeleteSelectedUsers = () => {
+        selectedUsers.forEach(userId => {
+            axios.delete(`${BaseURL}Userauth/delete-user/${userId}/`)
+                .then(response => {
+                    fetchUsers();
+                })
+                .catch(error => {
+                    console.error('Error deleting user:', error);
+                });
+        });
+        setSelectedUsers([]);
     };
 
     const handleUpdateUser = () => {
@@ -133,7 +168,17 @@ const Users = () => {
             .catch(error => {
                 console.error('Error updating user:', error);
             });
-    };      
+    };
+
+    const handleDeleteUser = (userId) => {
+        axios.delete(`${BaseURL}Userauth/delete-user/${userId}/`)
+            .then(response => {
+                fetchUsers();
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
+            });
+    };
 
     return (
         <>
@@ -141,7 +186,12 @@ const Users = () => {
                 <CCol xs={12}>
                     <CCard className="mb-4">
                         <CCardHeader>
-                            <strong>USER LIST</strong>
+                            <div className="d-flex align-items-center justify-content-between">
+                                <strong>USER LIST</strong>
+                                <CButton type="button" color="primary" size='sm' onClick={handleDeleteSelectedUsers}>
+                                    Delete Selected
+                                </CButton>
+                            </div>
                         </CCardHeader>
                         <CCardBody>
                             <CCol md={4}>
@@ -161,6 +211,13 @@ const Users = () => {
                             <CTable striped hover>
                                 <CTableHead>
                                     <CTableRow color="dark">
+                                        <CTableHeaderCell scope="col">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectAll}
+                                                onChange={handleSelectAll}
+                                            />
+                                        </CTableHeaderCell>
                                         <CTableHeaderCell scope="col">Si.No</CTableHeaderCell>
                                         <CTableHeaderCell scope="col">Ext User</CTableHeaderCell>
                                         <CTableHeaderCell scope="col">Designation</CTableHeaderCell>
@@ -174,20 +231,27 @@ const Users = () => {
                                 <CTableBody>
                                     {filteredUsers.map((user, index) => (
                                         <CTableRow key={index}>
+                                            <CTableDataCell>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedUsers.includes(user.user_id)}
+                                                    onChange={() => handleSelectUser(user.user_id)}
+                                                />
+                                            </CTableDataCell>
                                             <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                                             <CTableDataCell>{user.usermod.username}</CTableDataCell>
                                             <CTableDataCell>{user.designation}</CTableDataCell>
                                             <CTableDataCell>{user.mobile_no}</CTableDataCell>
                                             <CTableDataCell>{user.device_id}</CTableDataCell>
                                             <CTableDataCell>
-                                            <span style={{ fontWeight: user.userActive ? 'bold' : 'bold', color: user.userActive ? 'green' : 'red' }}>
-                                                {user.userActive ? 'Active' : 'Inactive'}
-                                            </span>
+                                                <span style={{ fontWeight: user.userActive ? 'bold' : 'bold', color: user.userActive ? 'green' : 'red' }}>
+                                                    {user.userActive ? 'Active' : 'Inactive'}
+                                                </span>
                                             </CTableDataCell>
                                             <CTableDataCell>{user.expiry_time}</CTableDataCell>
                                             <CTableDataCell>
                                                 <div className="d-flex gap-2">
-                                                    <CButton  onClick={() => handleTableRowClick(user)}>
+                                                    <CButton onClick={() => handleTableRowClick(user)}>
                                                         <CIcon icon={cilPen} />
                                                     </CButton>
                                                     <CButton onClick={(e) => { e.stopPropagation(); handleDeleteUser(user.user_id); }}>

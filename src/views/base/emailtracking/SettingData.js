@@ -27,6 +27,8 @@ import {
     CModalTitle,
     CModalBody,
     CModalFooter,
+    CNav,
+    CNavItem
 } from '@coreui/react';
 import BaseURL from 'src/assets/contants/BaseURL';
 import CIcon from '@coreui/icons-react';
@@ -249,7 +251,7 @@ class SettingData extends React.Component {
                 <CRow>
                     <CCol xs={12}>
                         <CCard className="mb-4">
-                            <CCardHeader>
+                            <CCardHeader  className="d-flex justify-content-between align-items-center">
                                 <strong>SMTP Settings</strong>
                             </CCardHeader>
                             <CCardBody>
@@ -328,6 +330,11 @@ class SettingData extends React.Component {
                         <CCard className="mb-4">
                             <CCardHeader className="d-flex justify-content-between align-items-center">
                                 <strong>From E-Mail</strong>
+                                <CNav>
+                                    <CNavItem className="mx-2 position-relative">
+                                    <CButton color="primary" size='sm' onClick={() => this.setState({ modalVisible: true })}>Add Email</CButton>
+                                    </CNavItem>
+                                </CNav>
                             </CCardHeader>
                             <CCardBody>
                                 <CCol md={4}>
@@ -342,11 +349,6 @@ class SettingData extends React.Component {
                                         <CButton type="button" color="secondary" id="button-addon2">
                                             Search
                                         </CButton>
-                                    </CInputGroup>
-                                </CCol>
-                                <CCol>
-                                    <CInputGroup className="flex-nowrap mt-3 mb-4">
-                                    <CButton color="primary" onClick={() => this.setState({ modalVisible: true })}>Add Email</CButton>
                                     </CInputGroup>
                                 </CCol>
                                 <CTable striped hover>

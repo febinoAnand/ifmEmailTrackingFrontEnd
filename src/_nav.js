@@ -199,7 +199,7 @@ const _nav = [
         items:[
         {
           component: CNavItem,
-          name: 'Send Report',
+          name: 'Notify Report',
           to: '/pushnotification/sendreport',
           icon: <CIcon icon={cilSwapHorizontal} customClassName="nav-icon" />,
         },

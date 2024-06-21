@@ -26,7 +26,8 @@ import {
   CModalFooter,
   CModalHeader,
   CModalTitle,
-  CTooltip
+  CTooltip,
+  CFormCheck
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
@@ -36,6 +37,7 @@ const EmailTable = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEmail, setSelectedEmail] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedEmails, setSelectedEmails] = useState([]);
 
   useEffect(() => {
     fetchEmails();
@@ -63,8 +65,35 @@ const EmailTable = () => {
     try {
       await axios.delete(`${BaseURL}emailtracking/inbox/${emailId}/`);
       setEmails(emails.filter(email => email.id !== emailId));
+      setSelectedEmails(selectedEmails.filter(id => id !== emailId));
     } catch (error) {
       console.error('Error deleting email:', error);
+    }
+  };
+
+  const deleteSelectedEmails = async () => {
+    try {
+      await Promise.all(selectedEmails.map(emailId => axios.delete(`${BaseURL}emailtracking/inbox/${emailId}/`)));
+      setEmails(emails.filter(email => !selectedEmails.includes(email.id)));
+      setSelectedEmails([]);
+    } catch (error) {
+      console.error('Error deleting emails:', error);
+    }
+  };
+
+  const handleSelectAll = (event) => {
+    if (event.target.checked) {
+      setSelectedEmails(emails.map(email => email.id));
+    } else {
+      setSelectedEmails([]);
+    }
+  };
+
+  const handleSelectEmail = (emailId) => {
+    if (selectedEmails.includes(emailId)) {
+      setSelectedEmails(selectedEmails.filter(id => id !== emailId));
+    } else {
+      setSelectedEmails([...selectedEmails, emailId]);
     }
   };
 
@@ -107,6 +136,13 @@ const EmailTable = () => {
                     {/* 3 */}
                   </CBadge>
                 </CNavItem>
+                <CNavItem className="mx-2 position-relative">
+                      <CTooltip content="Delete Selected">
+                        <CButton type="button" color="primary" size="sm" onClick={(e) => { e.stopPropagation(); deleteSelectedEmails(); }}>
+                            Delete Selected
+                        </CButton>
+                      </CTooltip>
+                </CNavItem>
               </CNav>
             </CCardHeader>
             <CCardBody>
@@ -124,44 +160,61 @@ const EmailTable = () => {
                   </CButton>
                 </CInputGroup>
               </CCol>
-                  <CTable striped hover>
-                    <CTableHead color='dark'>
-                      <CTableRow>
-                        <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Date</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Time</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Subject</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Message</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
+              <CTable striped hover>
+                <CTableHead color='dark'>
+                  <CTableRow>
+                    <CTableHeaderCell scope="col">
+                      <CFormCheck
+                        id="selectAll"
+                        checked={selectedEmails.length === emails.length}
+                        onChange={handleSelectAll}
+                      />
+                    </CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Sl.No</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Date</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Time</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Subject</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Message</CTableHeaderCell>
+                    <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
+                <CTableBody>
+                  {filteredEmails.length === 0 ? (
+                    <CTableRow>
+                      <CTableDataCell colSpan="7" className="text-center">No data available</CTableDataCell>
+                    </CTableRow>
+                  ) : (
+                    filteredEmails.map((email, index) => (
+                      <CTableRow key={email.id}>
+                        <CTableDataCell>
+                          <CFormCheck
+                            id={`selectEmail${email.id}`}
+                            checked={selectedEmails.includes(email.id)}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              handleSelectEmail(email.id);
+                            }}
+                          />
+                        </CTableDataCell>
+                        <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                        <CTableDataCell style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email.date}</CTableDataCell>
+                        <CTableDataCell>{email.time}</CTableDataCell>
+                        <CTableDataCell>{email.subject}</CTableDataCell>
+                        <CTooltip placement="top" content="Click to view full Inbox.">
+                          <CTableDataCell onClick={() => handleRowClick(email)} style={{ cursor: 'pointer' }}>{email.message}</CTableDataCell>
+                        </CTooltip>
+                        <CTableDataCell className="text-end">
+                          <CTooltip content="Delete">
+                            <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={(e) => { e.stopPropagation(); deleteEmail(email.id); }}>
+                              <CIcon icon={cilTrash} />
+                            </CButton>
+                          </CTooltip>
+                        </CTableDataCell>
                       </CTableRow>
-                    </CTableHead>
-                    <CTableBody>
-                      {filteredEmails.length === 0 ? (
-                        <CTableRow>
-                          <CTableDataCell colSpan="6" className="text-center">No data available</CTableDataCell>
-                        </CTableRow>
-                      ) : (
-                        filteredEmails.map((email, index) => (
-                          <CTableRow key={index} onClick={() => handleRowClick(email)} style={{ cursor: 'pointer' }}>
-                            <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                            <CTableDataCell style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email.date}</CTableDataCell>
-                            <CTableDataCell>{email.time}</CTableDataCell>
-                            <CTableDataCell>{email.subject}</CTableDataCell>
-                            <CTooltip placement="top" content="Click to view full Inbox.">
-                              <CTableDataCell>{email.message}</CTableDataCell>
-                            </CTooltip>
-                            <CTableDataCell>
-                              <CTooltip content="Delete">
-                                <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={(e) => { e.stopPropagation(); deleteEmail(email.id); }}>
-                                  <CIcon icon={cilTrash} />
-                                </CButton>
-                              </CTooltip>
-                            </CTableDataCell>
-                          </CTableRow>
-                        ))
-                      )}
-                    </CTableBody>
-                  </CTable>
+                    ))
+                  )}
+                </CTableBody>
+              </CTable>
             </CCardBody>
           </CCard>
         </CCol>

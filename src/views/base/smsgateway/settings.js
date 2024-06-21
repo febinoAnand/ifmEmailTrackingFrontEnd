@@ -75,12 +75,14 @@ class Settings extends Component {
                                     <CFormLabel htmlFor="sid" className="col-sm-2 col-form-label">SID</CFormLabel>
                                     <CCol sm={10}>
                                         <CFormInput type="text" id="sid" name="sid" value={sid} onChange={(e) => this.setState({ sid: e.target.value })} />
+                                        <div className="form-text" style={{ fontSize: 12 }}>* Note : SID is required</div>
                                     </CCol>
                                 </CRow>
                                 <CRow className="mb-3">
                                     <CFormLabel htmlFor="authToken" className="col-sm-2 col-form-label">Auth-Token</CFormLabel>
                                     <CCol sm={10}>
                                         <CFormInput type="text" id="authToken" name="authToken" value={auth_token} onChange={(e) => this.setState({ authToken: e.target.value })} />
+                                        <div className="form-text" style={{ fontSize: 12 }}>* Note : Auth Token is required</div>
                                     </CCol>
                                 </CRow>
                                 <CRow className="justify-content-center">
