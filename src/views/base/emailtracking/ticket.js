@@ -15,6 +15,7 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
+  CTooltip
 } from '@coreui/react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -167,9 +168,11 @@ class Ticket extends Component {
               <CCardHeader>
                 <div className="d-flex align-items-center justify-content-between">
                   <strong>TICKETS</strong>
+                  <CTooltip content="Delete Selected Ticket">
                     <CButton color="primary" size='sm' onClick={this.handleDeleteSelectedRows}>
                       Delete Selected
                     </CButton>
+                  </CTooltip>
                 </div>
               </CCardHeader>
               <CCardBody>

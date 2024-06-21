@@ -16,7 +16,8 @@ import {
   CTableHeaderCell,
   CTableRow,
   CNav,
-  CNavItem
+  CNavItem,
+  CTooltip
 } from '@coreui/react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -136,7 +137,7 @@ class TicketReport extends React.Component {
         ticket.date,
         ticket.time,
         ticket.message,
-        ticket.department,
+        ticket.Department,
         ticket.send_to_user.map(user => user.username).join(', ')
       ];
       tableRows.push(ticketData);
@@ -162,9 +163,11 @@ class TicketReport extends React.Component {
                 <strong> REPORT</strong>
                 <CNav>
                 <CNavItem className="mx-2 position-relative">
+                  <CTooltip content="Delete Selected Report">
                     <CButton type="button" color="primary" size='sm' onClick={this.handleDeleteSelected}>
                       Delete Selected
                     </CButton>
+                  </CTooltip>
                 </CNavItem>
               </CNav>
               </CCardHeader>
