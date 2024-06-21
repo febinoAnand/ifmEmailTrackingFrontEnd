@@ -1,10 +1,10 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
 import {
-  cilCursor,
+  // cilCursor,
   // cilMonitor,
-  cilNotes,
-  cilPuzzle,
+  // cilNotes,
+  // cilPuzzle,
   // cilSpeedometer,
   // cilLightbulb,
   // cilUsb,
@@ -36,8 +36,8 @@ import {
   // cilSignLanguage,
   cilShortText,
   cilColumns,
-  cilInputHdmi,
-  cilInput,
+  // cilInputHdmi,
+  // cilInput,
   cibKeycdn,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
@@ -244,44 +244,44 @@ const _nav = [
     ]
     
   },
-  {
-    component: CNavTitle,
-    name: 'Device Management',
-  },
-  {
-    component: CNavItem,
-    name: 'Machine Details',
-    to: '/details/machinedetails',
-    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+  // {
+  //   component: CNavTitle,
+  //   name: 'Device Management',
+  // },
+  // {
+  //   component: CNavItem,
+  //   name: 'Machine Details',
+  //   to: '/details/machinedetails',
+  //   icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
     
-  },
-  {
-    component: CNavGroup,
-    name: 'Device',
+  // },
+  // {
+  //   component: CNavGroup,
+  //   name: 'Device',
     
-    icon: <CIcon icon={cilCursor} customClassName="nav-icon" />,
-    items:[
-      {
-        component: CNavItem,
-        name: 'Hard Device',
-        to: '/details/devdetails',
-        icon: <CIcon icon={cilInput} customClassName="nav-icon" />,
-      },
-      {
-        component: CNavItem,
-        name: 'Soft Device',
-        to: '/details/softdetails',
-        icon: <CIcon icon={cilInputHdmi} customClassName="nav-icon" />,
-      },
-    ]
+  //   icon: <CIcon icon={cilCursor} customClassName="nav-icon" />,
+  //   items:[
+  //     {
+  //       component: CNavItem,
+  //       name: 'Hard Device',
+  //       to: '/details/devdetails',
+  //       icon: <CIcon icon={cilInput} customClassName="nav-icon" />,
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       name: 'Soft Device',
+  //       to: '/details/softdetails',
+  //       icon: <CIcon icon={cilInputHdmi} customClassName="nav-icon" />,
+  //     },
+  //   ]
     
-  },
-  {
-    component: CNavItem,
-    name: 'Unregister Device',
-    to:'/details/unregister',
-    icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
-  },
+  // },
+  // {
+  //   component: CNavItem,
+  //   name: 'Unregister Device',
+  //   to:'/details/unregister',
+  //   icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+  // },
   {
     component: CNavTitle,
     name: 'User Management',

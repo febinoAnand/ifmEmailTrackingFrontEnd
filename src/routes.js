@@ -44,10 +44,10 @@ const Settings = React.lazy(() => import('./views/base/smsgateway/settings'))
 // const MQTT = React.lazy(() => import('./views/base/configuration/MQTT'))
 
 //details
-const HMIDetails = React.lazy(() => import('./views/base/details/HMIDetails'))
-const UnregisteredDevices = React.lazy(() => import('./views/base/details/UnregisteredDevices'))
-const MachineDetails = React.lazy(() => import('./views/base/details/MachineDetails'))
-const RFID = React.lazy(() => import('./views/base/details/RFID'))
+// const HMIDetails = React.lazy(() => import('./views/base/details/HMIDetails'))
+// const UnregisteredDevices = React.lazy(() => import('./views/base/details/UnregisteredDevices'))
+// const MachineDetails = React.lazy(() => import('./views/base/details/MachineDetails'))
+// const RFID = React.lazy(() => import('./views/base/details/RFID'))
 
 //users
 const Users = React.lazy(() => import('./views/base/users/Users'))
@@ -140,10 +140,10 @@ const routes = [
   // { path: '/data/problemdata', name: 'ProblemData', element: ProblemData}, //data
   // { path: '/data/devraw', name: 'HMIRaw', element: HMIRaw}, //data
 
-  { path: '/details/machinedetails', name: 'Machine Details', element: MachineDetails}, //details
-  { path: '/details/devdetails', name: 'HMI Device', element: HMIDetails}, //details
-  { path: '/details/unregister', name: 'Unregistered Device', element: UnregisteredDevices}, //details
-  { path: '/details/rfid', name: 'RFID', element: RFID}, //details
+  // { path: '/details/machinedetails', name: 'Machine Details', element: MachineDetails}, //details
+  // { path: '/details/devdetails', name: 'HMI Device', element: HMIDetails}, //details
+  // { path: '/details/unregister', name: 'Unregistered Device', element: UnregisteredDevices}, //details
+  // { path: '/details/rfid', name: 'RFID', element: RFID}, //details
 
   { path: '/users/users', name: 'User Management / Users', element: Users}, //users
   { path: '/users/groups', name: 'User Management / Groups', element: Groups}, //users

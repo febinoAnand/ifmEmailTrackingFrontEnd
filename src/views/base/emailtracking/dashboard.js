@@ -51,18 +51,23 @@ class Dashboard extends Component {
       const responseTickets = await axios.get(BaseURL + "emailtracking/ticket/");
       const responseDepartments = await axios.get(BaseURL + "emailtracking/departments/");
       const responseUsers = await axios.get(BaseURL + "Userauth/userdetail/");
+  
+      const now = new Date();
+      const startOfHour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), 0, 0, 0);
+      const endOfHour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1, 0, 0, 0);
 
-      const barChartLabels = this.generateHourlyLabels();
-      const barChartData = this.extractHourlyDepartmentData(responseTickets.data, responseDepartments.data);
-
-      const totalUsers = responseUsers.data.length;
-      const activeUsers = responseUsers.data.filter(user => user.userActive).length;
-
+      const filteredTickets = responseTickets.data.filter(ticket => {
+        const occurred = new Date(ticket.actual_json["Occurred (UTC+0:00)"]);
+        return occurred >= startOfHour && occurred < endOfHour;
+      });
+      const barChartLabels = this.generateIntervalLabels(startOfHour, 2);
+      const barChartData = this.extractIntervalDepartmentData(filteredTickets, responseDepartments.data, startOfHour, 2);
+  
       this.setState({
         inboxCount: responseInbox.data.length,
         ticketCount: responseTickets.data.length,
         departments: responseDepartments.data,
-        ticketData: responseTickets.data.reverse(),
+        ticketData: filteredTickets.reverse(),
         barChartLabels: barChartLabels,
         barChartData: barChartData,
         userData: responseUsers.data,
@@ -70,12 +75,18 @@ class Dashboard extends Component {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  };
+  };  
 
-  generateHourlyLabels() {
-    const now = new Date();
-    const currentHour = now.getHours();
-    return Array.from({ length: 6 }, (_, i) => `${currentHour}:${i * 10}`); // Generate labels for each 10-minute interval
+  generateIntervalLabels(startHour, intervalMinutes) {
+    const labels = [];
+    const currentHour = new Date().getHours();
+    const startMinutes = new Date().getMinutes();
+  
+    for (let i = startMinutes; i < 60; i += intervalMinutes) {
+      labels.push(`${currentHour}:${i < 10 ? '0' + i : i}`);
+    }
+  
+    return labels;
   }
 
   getDepartmentFromTopology(topology) {
@@ -84,34 +95,31 @@ class Dashboard extends Component {
     return parts.length > 0 ? parts[parts.length - 1] : null;
   }
 
-  extractHourlyDepartmentData(ticketData, departmentData) {
+  extractIntervalDepartmentData(ticketData, departmentData, startHour, intervalMinutes) {
     const counts = {};
   
-    // Initialize counts for each department
     departmentData.forEach(department => {
-      counts[department.department] = Array.from({ length: 6 }, () => 0); // Initialize counts for each department
+      counts[department.department] = Array.from({ length: 30 / intervalMinutes }, () => 0);
     });
   
-    // Process each ticket to count occurrences
     ticketData.forEach(ticket => {
       const actualJson = ticket.actual_json;
       if (actualJson && actualJson.Topology) {
-        const topology = actualJson.Topology.toLowerCase(); // Convert to lowercase for case-insensitive comparison
-        console.log(`Processing ticket with topology: ${topology}`);
+        const topology = actualJson.Topology.toLowerCase();
   
-        // Iterate over department data to find matches in topology
         departmentData.forEach(department => {
-          const departmentName = department.department.toLowerCase(); // Convert to lowercase for case-insensitive comparison
-          console.log(`Checking department: ${departmentName}`);
-          
+          const departmentName = department.department.toLowerCase();
+  
           if (topology.includes(departmentName)) {
             const occurred = actualJson["Occurred (UTC+0:00)"];
             if (occurred) {
               const hour = new Date(occurred).getHours();
-              const interval = Math.floor(new Date(occurred).getMinutes() / 10);
-              if (hour === new Date().getHours()) {
-                console.log(`Match found for department: ${department.department}`);
-                counts[department.department][interval]++;
+              const minute = new Date(occurred).getMinutes();
+  
+              const intervalIndex = Math.floor((minute - startHour.getMinutes()) / intervalMinutes);
+  
+              if (hour === startHour.getHours() && intervalIndex >= 0 && intervalIndex < counts[department.department].length) {
+                counts[department.department][intervalIndex]++;
               }
             }
           }
@@ -119,7 +127,7 @@ class Dashboard extends Component {
       }
     });
   
-    console.log('Counts:', counts); // Log the final counts object
+    console.log('Counts:', counts);
   
     return Object.values(counts);
   }  
@@ -127,7 +135,7 @@ class Dashboard extends Component {
   updateChart() {
     const { barChartLabels, barChartData, departments } = this.state;
     const ctx = this.chartRef.current.getContext('2d');
-
+  
     if (this.chartInstance) {
       this.chartInstance.destroy();
     }
@@ -162,9 +170,7 @@ class Dashboard extends Component {
       borderColor: barColors[index % barColors.length].replace('0.5', '1'),
       borderWidth: 1,
     }));
-
-    console.log('Bar Chart Data:', datasets);
-
+  
     this.chartInstance = new Chart(ctx, {
       type: 'bar',
       data: {
