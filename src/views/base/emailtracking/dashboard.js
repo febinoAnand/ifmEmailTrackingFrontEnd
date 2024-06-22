@@ -16,20 +16,21 @@ import {
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import Chart from 'chart.js/auto';
-import { cilPeople, cilUser, cilUserFollow, cilUserUnfollow, cilCommentSquare, cilTags } from '@coreui/icons';
+import { cilPeople, cilUser, cilUserFollow, cilUserUnfollow, cilShareBoxed, cilPin } from '@coreui/icons';
 import BaseURL from 'src/assets/contants/BaseURL';
 
 class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      inboxCount: 0,
-      ticketCount: 0,
-      departments: [],
-      ticketData: [],
-      barChartLabels: [],
-      barChartData: [],
-      userData: [],
+      totalUsers: 0,
+      activeUsers: 0,
+      inactiveUsers: 0,
+      totalDepartments: 0,
+      totalInbox: 0,
+      totalTickets: 0,
+      departmentTicketCount: [],
+      userDetails: [],
     };
     this.chartRef = React.createRef();
   }
@@ -40,102 +41,38 @@ class Dashboard extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.barChartData !== prevState.barChartData || this.state.barChartLabels !== prevState.barChartLabels) {
+    if (this.state.departmentTicketCount !== prevState.departmentTicketCount) {
       this.updateChart();
     }
   }
 
   fetchData = async () => {
     try {
-      const responseInbox = await axios.get(BaseURL + "emailtracking/inbox/");
-      const responseTickets = await axios.get(BaseURL + "emailtracking/ticket/");
-      const responseDepartments = await axios.get(BaseURL + "emailtracking/departments/");
-      const responseUsers = await axios.get(BaseURL + "Userauth/userdetail/");
-  
-      const now = new Date();
-      const startOfHour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), 0, 0, 0);
-      const endOfHour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1, 0, 0, 0);
+      const response = await axios.get(BaseURL + "emailtracking/dashboard/");
+      const data = response.data;
 
-      const filteredTickets = responseTickets.data.filter(ticket => {
-        const occurred = new Date(ticket.actual_json["Occurred (UTC+0:00)"]);
-        return occurred >= startOfHour && occurred < endOfHour;
-      });
-      const barChartLabels = this.generateIntervalLabels(startOfHour, 2);
-      const barChartData = this.extractIntervalDepartmentData(filteredTickets, responseDepartments.data, startOfHour, 2);
-  
       this.setState({
-        inboxCount: responseInbox.data.length,
-        ticketCount: responseTickets.data.length,
-        departments: responseDepartments.data,
-        ticketData: filteredTickets.reverse(),
-        barChartLabels: barChartLabels,
-        barChartData: barChartData,
-        userData: responseUsers.data,
+        totalUsers: data.total_users,
+        activeUsers: data.active_users,
+        inactiveUsers: data.inactive_users,
+        totalDepartments: data.total_departments,
+        totalInbox: data.total_inbox,
+        totalTickets: data.total_tickets,
+        departmentTicketCount: data.department_ticket_count,
+        userDetails: data.user_details,
       });
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  };  
+  };
 
-  generateIntervalLabels(startHour, intervalMinutes) {
-    const labels = [];
-    const currentHour = new Date().getHours();
-    const startMinutes = new Date().getMinutes();
-  
-    for (let i = startMinutes; i < 60; i += intervalMinutes) {
-      labels.push(`${currentHour}:${i < 10 ? '0' + i : i}`);
-    }
-  
-    return labels;
-  }
-
-  getDepartmentFromTopology(topology) {
-    if (!topology) return null;
-    const parts = topology.split(' / ');
-    return parts.length > 0 ? parts[parts.length - 1] : null;
-  }
-
-  extractIntervalDepartmentData(ticketData, departmentData, startHour, intervalMinutes) {
-    const counts = {};
-  
-    departmentData.forEach(department => {
-      counts[department.department] = Array.from({ length: 30 / intervalMinutes }, () => 0);
-    });
-  
-    ticketData.forEach(ticket => {
-      const actualJson = ticket.actual_json;
-      if (actualJson && actualJson.Topology) {
-        const topology = actualJson.Topology.toLowerCase();
-  
-        departmentData.forEach(department => {
-          const departmentName = department.department.toLowerCase();
-  
-          if (topology.includes(departmentName)) {
-            const occurred = actualJson["Occurred (UTC+0:00)"];
-            if (occurred) {
-              const hour = new Date(occurred).getHours();
-              const minute = new Date(occurred).getMinutes();
-  
-              const intervalIndex = Math.floor((minute - startHour.getMinutes()) / intervalMinutes);
-  
-              if (hour === startHour.getHours() && intervalIndex >= 0 && intervalIndex < counts[department.department].length) {
-                counts[department.department][intervalIndex]++;
-              }
-            }
-          }
-        });
-      }
-    });
-  
-    console.log('Counts:', counts);
-  
-    return Object.values(counts);
-  }  
-  
   updateChart() {
-    const { barChartLabels, barChartData, departments } = this.state;
+    const { departmentTicketCount } = this.state;
+    const labels = departmentTicketCount.map(item => item.department_name);
+    const data = departmentTicketCount.map(item => item.ticket_count);
+
     const ctx = this.chartRef.current.getContext('2d');
-  
+
     if (this.chartInstance) {
       this.chartInstance.destroy();
     }
@@ -163,19 +100,17 @@ class Dashboard extends Component {
       'rgba(147, 112, 219, 0.5)',
     ];
 
-    const datasets = departments.map((department, index) => ({
-      label: department.department,
-      data: barChartData[index],
-      backgroundColor: barColors[index % barColors.length],
-      borderColor: barColors[index % barColors.length].replace('0.5', '1'),
-      borderWidth: 1,
-    }));
-  
     this.chartInstance = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: barChartLabels,
-        datasets: datasets,
+        labels: labels,
+        datasets: [{
+          label: 'Tickets',
+          data: data,
+          backgroundColor: barColors.slice(0, data.length),
+          borderColor: barColors.slice(0, data.length).map(color => color.replace('0.5', '1')),
+          borderWidth: 1,
+        }],
       },
       options: {
         scales: {
@@ -188,7 +123,7 @@ class Dashboard extends Component {
   }
 
   render() {
-    const { inboxCount, ticketCount, userData } = this.state;
+    const { totalUsers, activeUsers, inactiveUsers, totalDepartments, totalInbox, totalTickets, userDetails } = this.state;
 
     return (
       <>
@@ -197,68 +132,36 @@ class Dashboard extends Component {
             <CWidgetStatsA
               className="mb-4"
               color="primary"
-              value={
-                <>
-                  {userData.length}{' '}
-                </>
-              }
+              value={<>{totalUsers}{' '}</>}
               title="Total No. Of Users"
-              chart={
-                <div className="c-chart-wrapper mt-3 mx-3">
-                  <CIcon icon={cilPeople} size="xl" className="text-primary" />
-                </div>
-              }
+              chart={<div className="c-chart-wrapper mt-3 mx-3"><CIcon icon={cilPeople} size="xl" className="text-primary" /></div>}
             />
           </CCol>
           <CCol sm={6} lg={3}>
             <CWidgetStatsA
               className="mb-4"
               color="success"
-              value={
-                <>
-                  {userData.filter(user => user.userActive).length}{' '}
-                </>
-              }
+              value={<>{activeUsers}{' '}</>}
               title="Total No. Of Active Users"
-              chart={
-                <div className="c-chart-wrapper mt-3 mx-3">
-                  <CIcon icon={cilUserFollow} size="xl" className="text-success" />
-                </div>
-              }
+              chart={<div className="c-chart-wrapper mt-3 mx-3"><CIcon icon={cilUserFollow} size="xl" className="text-success" /></div>}
             />
           </CCol>
           <CCol sm={6} lg={3}>
             <CWidgetStatsA
               className="mb-4"
               color="danger"
-              value={
-                <>
-                  {userData.length - userData.filter(user => user.userActive).length}{' '}
-                </>
-              }
+              value={<>{inactiveUsers}{' '}</>}
               title="Total No. Of Inactive Users"
-              chart={
-                <div className="c-chart-wrapper mt-3 mx-3">
-                  <CIcon icon={cilUserUnfollow} size="xl" className="text-danger" />
-                </div>
-              }
+              chart={<div className="c-chart-wrapper mt-3 mx-3"><CIcon icon={cilUserUnfollow} size="xl" className="text-danger" /></div>}
             />
           </CCol>
           <CCol sm={6} lg={3}>
             <CWidgetStatsA
               className="mb-4"
               color="warning"
-              value={
-                <>
-                  {this.state.departments.length}{' '}
-                </>
-              }
+              value={<>{totalDepartments}{' '}</>}
               title="Total No. Of Departments"
-              chart={
-                <div className="c-chart-wrapper mt-3 mx-3">
-                  <CIcon size="xl" className="text-primary" />
-                </div>
-              }
+              chart={<div className="c-chart-wrapper mt-3 mx-3"><CIcon size="xl" className="text-primary" /></div>}
             />
           </CCol>
         </CRow>
@@ -282,7 +185,7 @@ class Dashboard extends Component {
                 justifyContent: 'center',
                 alignItems: 'center'
               }}>
-                <CIcon icon={cilCommentSquare} size="lg" className="text-white" />
+                <CIcon icon={cilShareBoxed} size="lg" className="text-white" />
               </div>
               <div style={{ 
                 backgroundColor: '#ffffff', 
@@ -293,7 +196,7 @@ class Dashboard extends Component {
                 justifyContent: 'center',
                 alignItems: 'center'
               }}>
-                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333' }}>{inboxCount}</div>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333' }}>{totalInbox}</div>
               </div>
               <div style={{ 
                 backgroundColor: '#E768E1', 
@@ -319,7 +222,7 @@ class Dashboard extends Component {
               boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
             }}>
               <div style={{ 
-                backgroundColor: '#52DFAD', 
+                backgroundColor: '#2484F1', 
                 width: '30%', 
                 padding: '20px', 
                 borderRadius: '10px',
@@ -327,7 +230,7 @@ class Dashboard extends Component {
                 justifyContent: 'center',
                 alignItems: 'center'
               }}>
-                <CIcon icon={cilTags} size="lg" className="text-white" />
+                <CIcon icon={cilPin} size="lg" className="text-white" />
               </div>
               <div style={{ 
                 backgroundColor: '#ffffff', 
@@ -338,7 +241,7 @@ class Dashboard extends Component {
                 justifyContent: 'center',
                 alignItems: 'center'
               }}>
-                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333' }}>{ticketCount}</div>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333' }}>{totalTickets}</div>
               </div>
               <div style={{ 
                 backgroundColor: '#AA76FA', 
@@ -354,18 +257,12 @@ class Dashboard extends Component {
             </div>
           </CCol>
         </CRow>
-        <CRow>
-          <CCol xs={12}>
-            <CCard className="mb-4">
-              <CCardHeader>
-                <strong>Department Chart</strong>
-                </CCardHeader>
-              <CCardBody className="d-flex justify-content-center">
-                <canvas id="barChart" width="200" height="100" ref={this.chartRef}></canvas>
-              </CCardBody>
-            </CCard>
-          </CCol>
-        </CRow>
+        <CCard className="mb-4">
+          <CCardHeader>Ticket Analysis</CCardHeader>
+          <CCardBody>
+            <canvas ref={this.chartRef} />
+          </CCardBody>
+        </CCard>
         <CRow>
           <CCol xs={12}>
             <CCard className="mb-4">
@@ -388,29 +285,29 @@ class Dashboard extends Component {
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                      {userData.map((user, index) => (
+                      {userDetails.map((user, index) => (
                         <CTableRow key={index}>
                           <CTableDataCell className="text-center">
                             <CIcon size="xl" icon={cilUser} />
                           </CTableDataCell>
                           <CTableDataCell>
-                            <div>{user.usermod.email}</div>
+                            <div>{user.email}</div>
                             <div className="small text-medium-emphasis">
-                              Registered: {user.usermod.first_name}
+                              Registered: {user.username}
                             </div>
                           </CTableDataCell>
                           <CTableDataCell className="text-center">
-                            <span>{user.usermod.email}</span>
+                            <span>{user.email}</span>
                           </CTableDataCell>
                           <CTableDataCell>
-                            <span>{user.designation}</span>
+                            <span>{user.user_detail?.designation || 'N/A'}</span>
                           </CTableDataCell>
                           <CTableDataCell className="text-center">
-                            <span>{user.mobile_no}</span>
+                            <span>{user.user_detail?.mobile_no || 'N/A'}</span>
                           </CTableDataCell>
                           <CTableDataCell>
-                            <span style={{ fontWeight: user.userActive ? 'bold' : 'bold', color: user.userActive ? 'green' : 'red' }}>
-                                {user.userActive ? 'Active' : 'Inactive'}
+                            <span style={{ fontWeight: user.is_active ? 'bold' : 'bold', color: user.is_active ? 'green' : 'red' }}>
+                              {user.is_active ? 'Active' : 'Inactive'}
                             </span>
                           </CTableDataCell>
                         </CTableRow>

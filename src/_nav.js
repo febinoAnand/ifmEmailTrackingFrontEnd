@@ -63,10 +63,10 @@ const _nav = [
     to: '/emailtracking/dashboard',
     icon: <CIcon icon={cilLaptop} customClassName="nav-icon" />,
   },
-  {
-    component: CNavTitle,
-    name: 'Application',
-  },
+  // {
+  //   component: CNavTitle,
+  //   name: 'Application',
+  // },
 //   {
 //   component: CNavGroup,
 //   name: 'Andon System',
@@ -133,12 +133,10 @@ const _nav = [
 //     },
 //   ]
 // },
-  {
-    component: CNavGroup,
-    name: 'Email tracking',
-    
-    icon: <CIcon icon={cilEnvelopeLetter} customClassName="nav-icon" />,
-    items:[
+{
+  component: CNavTitle,
+  name: 'Email tracking',
+},
       // {
       //   component: CNavItem,
       //   name: 'Dashboard',
@@ -181,10 +179,6 @@ const _nav = [
       to: '/emailtracking/setting',
       icon: <CIcon icon={cibKeycdn} customClassName="nav-icon" />,
     },
-
-    ]
-
-  },
   {
     component: CNavGroup,
     name: 'Actions',
