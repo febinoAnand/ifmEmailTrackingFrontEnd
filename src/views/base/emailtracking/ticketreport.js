@@ -33,10 +33,18 @@ class TicketReport extends React.Component {
       selectedTickets: [],
       selectAll: false,
     };
+    this.tableRef = React.createRef();
   }
 
   componentDidMount() {
     this.fetchTickets();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { match } = this.props;
+    if (match && match.params && prevProps.match && match.params.ticketId !== prevProps.match.params.ticketId) {
+      this.scrollToTicket();
+    }
   }
 
   fetchTickets = () => {
@@ -51,6 +59,19 @@ class TicketReport extends React.Component {
       .catch(error => {
         console.error('Error fetching tickets:', error);
       });
+  }
+
+  scrollToTicket = () => {
+    const { match } = this.props;
+    const { tickets } = this.state;
+    const ticketId = parseInt(match.params.ticketId, 10);
+    const ticketIndex = tickets.findIndex(ticket => ticket.id === ticketId);
+    if (ticketIndex !== -1) {
+      const ticketElement = this.tableRef.current.querySelector(`#ticket-${ticketId}`);
+      if (ticketElement) {
+        ticketElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
   }
 
   handleSearchChange = (e) => {
@@ -128,7 +149,7 @@ class TicketReport extends React.Component {
     const { filteredTickets } = this.state;
     const doc = new jsPDF();
 
-    const tableColumn = ["Sl.No", "Date", "Time", "Ticket", "Department", "Send to User"];
+    const tableColumn = ["Sl.No", "Date", "Time", "Message", "Department", "Send to User"];
     const tableRows = [];
 
     filteredTickets.forEach((ticket, index) => {
@@ -159,17 +180,17 @@ class TicketReport extends React.Component {
         <CRow>
           <CCol xs={12}>
             <CCard className="mb-4">
-              <CCardHeader  className="d-flex justify-content-between align-items-center">
-                <strong> REPORT</strong>
+              <CCardHeader className="d-flex justify-content-between align-items-center">
+                <strong>Report</strong>
                 <CNav>
-                <CNavItem className="mx-2 position-relative">
-                  <CTooltip content="Delete Selected Report">
-                    <CButton type="button" color="primary" size='sm' onClick={this.handleDeleteSelected}>
-                      Delete Selected
-                    </CButton>
-                  </CTooltip>
-                </CNavItem>
-              </CNav>
+                  <CNavItem className="mx-2 position-relative">
+                    <CTooltip content="Delete Selected Report">
+                      <CButton type="button" color="primary" size='sm' onClick={this.handleDeleteSelected}>
+                        Delete Selected
+                      </CButton>
+                    </CTooltip>
+                  </CNavItem>
+                </CNav>
               </CCardHeader>
               <CCardBody>
                 <CCol md={4}>
@@ -205,14 +226,14 @@ class TicketReport extends React.Component {
                         <CTableHeaderCell scope="col">Send to User</CTableHeaderCell>
                       </CTableRow>
                     </CTableHead>
-                    <CTableBody>
+                    <CTableBody ref={this.tableRef}>
                       {filteredTickets.length === 0 ? (
                         <CTableRow>
                           <CTableDataCell colSpan="7" className="text-center">No matching tickets found.</CTableDataCell>
                         </CTableRow>
                       ) : (
                         filteredTickets.map((ticket, index) => (
-                          <CTableRow key={index}>
+                          <CTableRow key={index} id={`ticket-${ticket.id}`}>
                             <CTableHeaderCell>
                               <input
                                 type="checkbox"
