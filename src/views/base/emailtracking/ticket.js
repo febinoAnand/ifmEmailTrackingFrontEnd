@@ -165,16 +165,24 @@ class Ticket extends Component {
         <CRow>
           <CCol xs={12}>
             <CCard className="mb-4">
-              <CCardHeader>
-                <div className="d-flex align-items-center justify-content-between">
-                  <strong>TICKETS</strong>
+            <CCardHeader>
+              <div className="d-flex align-items-center justify-content-between">
+                <strong>TICKETS</strong>
+                <div className="d-flex align-items-center">
                   <CTooltip content="Delete Selected Ticket">
-                    <CButton color="primary" size='sm' onClick={this.handleDeleteSelectedRows}>
+                    <CButton color="primary" size="sm" onClick={this.handleDeleteSelectedRows}>
                       Delete Selected
                     </CButton>
                   </CTooltip>
+                  <CButton color="primary" type="button" size="sm" onClick={this.handleDownloadPDF} className="ms-2">
+                    Download as PDF
+                  </CButton>
+                  <CButton color="primary" type="button" size="sm" onClick={this.handleDownloadCSV} className="ms-2">
+                    Download as CSV
+                  </CButton>
                 </div>
-              </CCardHeader>
+              </div>
+            </CCardHeader>
               <CCardBody>
                 <CCol md={4}>
                   <CInputGroup className="flex-nowrap mt-3 mb-4">
@@ -237,18 +245,6 @@ class Ticket extends Component {
                     </CTableBody>
                   </CTable>
                 </div>
-                <CRow className="justify-content-center mt-4">
-                  <CCol xs={12}>
-                    <div className='d-flex justify-content-center gap-2'>
-                      <CButton color="primary" type="button" onClick={this.handleDownloadPDF}>
-                        Download as PDF
-                      </CButton>
-                      <CButton color="primary" type="button" onClick={this.handleDownloadCSV}>
-                        Download as CSV
-                      </CButton>
-                    </div>
-                  </CCol>
-                </CRow>
               </CCardBody>
             </CCard>
           </CCol>

@@ -180,18 +180,19 @@ class TicketReport extends React.Component {
         <CRow>
           <CCol xs={12}>
             <CCard className="mb-4">
-              <CCardHeader className="d-flex justify-content-between align-items-center">
-                <strong>Report</strong>
-                <CNav>
-                  <CNavItem className="mx-2 position-relative">
-                    <CTooltip content="Delete Selected Report">
-                      <CButton type="button" color="primary" size='sm' onClick={this.handleDeleteSelected}>
-                        Delete Selected
-                      </CButton>
-                    </CTooltip>
-                  </CNavItem>
-                </CNav>
-              </CCardHeader>
+            <CCardHeader className="d-flex justify-content-between align-items-center">
+              <strong>Report</strong>
+              <div className="d-flex align-items-center">
+                <CTooltip content="Delete Selected Report">
+                  <CButton type="button" color="primary" size="sm" onClick={this.handleDeleteSelected}>
+                    Delete Selected
+                  </CButton>
+                </CTooltip>
+                <CButton color="primary" type="button" size="sm" onClick={this.handleDownloadPDF} className="ms-2">
+                  Download
+                </CButton>
+              </div>
+            </CCardHeader>
               <CCardBody>
                 <CCol md={4}>
                   <CInputGroup className="flex-nowrap mt-3 mb-4">
@@ -255,15 +256,6 @@ class TicketReport extends React.Component {
                     </CTableBody>
                   </CTable>
                 </div>
-                <CRow className="justify-content-center mt-4">
-                  <CCol xs={1}>
-                    <div className='d-grid gap-2'>
-                      <CButton color="primary" type="button" onClick={this.handleDownloadPDF}>
-                        Download
-                      </CButton>
-                    </div>
-                  </CCol>
-                </CRow>
               </CCardBody>
             </CCard>
           </CCol>
