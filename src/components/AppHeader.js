@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   CContainer,
@@ -7,17 +7,16 @@ import {
   CHeaderDivider,
   CHeaderNav,
   CHeaderToggler,
-  CNavLink,
-  CNavItem,
+  CButton,
+  COffcanvas,
+  COffcanvasHeader,
+  COffcanvasBody,
   CBadge,
-  CDropdown,
-  CDropdownToggle,
-  CDropdownMenu,
-  CDropdownItem,
-  CDropdownHeader
+  CNavLink,
+  CTooltip
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { cilBell, cilMenu } from '@coreui/icons';
+import { cilBell, cilMenu, cilEnvelopeOpen } from '@coreui/icons';
 
 import { AppBreadcrumb } from './index';
 import { AppHeaderDropdown } from './header/index';
@@ -28,6 +27,10 @@ const AppHeader = () => {
   const sidebarShow = useSelector((state) => state.sidebarShow);
   const [notifications, setNotifications] = useState([]);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [offcanvasVisible, setOffcanvasVisible] = useState(false);
+  const [inboxVisible, setInboxVisible] = useState(false);
+  const [inbox, setInbox] = useState([]);
+  const [inboxCount, setInboxCount] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,17 +42,38 @@ const AppHeader = () => {
           throw new Error('Failed to fetch notifications');
         }
         const data = await response.json();
-        const okNotifications = data.filter(notification => (
+        // Sort notifications by timestamp and reverse them (most recent first)
+        const sortedNotifications = data.filter(notification => (
           notification.delivery_status === "200 - OK" &&
           notification.date === today
-        ));
-        setNotifications(okNotifications);
-        setNotificationCount(okNotifications.length);
+        )).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).reverse();
+        setNotifications(sortedNotifications);
+        setNotificationCount(sortedNotifications.length);
       } catch (error) {
         console.error('Error fetching notifications:', error);
       }
     };
+
+    const fetchInbox = async () => {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const response = await fetch(`${BaseURL}emailtracking/inbox/?date=${today}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch inbox messages');
+        }
+        const data = await response.json();
+        // Sort inbox messages by timestamp and reverse them (most recent first)
+        const sortedInbox = data.filter(message => message.date === today)
+          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).reverse();
+        setInbox(sortedInbox);
+        setInboxCount(sortedInbox.length);
+      } catch (error) {
+        console.error('Error fetching inbox messages:', error);
+      }
+    };
+
     fetchNotifications();
+    fetchInbox();
   }, []);
 
   const truncateMessage = (message, charLimit) => {
@@ -61,11 +85,17 @@ const AppHeader = () => {
 
   const handleNotificationClick = (ticketId) => {
     navigate(`/emailtracking/ticketreport`);
+    setOffcanvasVisible(false);
+  };
+
+  const handleInboxClick = () => {
+    navigate(`/emailtracking/emailtable`);
+    setInboxVisible(false);
   };
 
   return (
-    <CHeader position="sticky" className="mb-4">
-      <CContainer fluid>
+    <CHeader position="sticky" className="mb-3">
+      <CContainer>
         <CHeaderToggler
           className="ps-1"
           onClick={() => dispatch({ type: 'set', sidebarShow: !sidebarShow })}
@@ -73,40 +103,43 @@ const AppHeader = () => {
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
         <CHeaderNav className="d-none d-md-flex me-auto">
-          <CNavItem>
-            <CNavLink to="/dashboard" component={NavLink}>
-              Dashboard
-            </CNavLink>
-          </CNavItem>
+          <CNavLink>Dashboard</CNavLink>
         </CHeaderNav>
         <CHeaderNav>
-          <CDropdown variant="nav-item">
-            <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-                <div>
-                  <CIcon icon={cilBell} style={{ cursor: 'pointer' }} size="lg" />
-                  {notificationCount > 0 && (
-                    <CBadge color="danger" className="position-absolute top-0 start-100 translate-middle" size="sm">
-                      {notificationCount}
-                    </CBadge>
-                  )}
-                </div>
-            </CDropdownToggle>
-            <CDropdownMenu className="pt-0" placement="bottom-end">
-              <CDropdownHeader className="bg-light fw-semibold py-2">Notifications</CDropdownHeader>
-              {notifications.length > 0 ? (
-                notifications.map((notification, index) => (
-                  <CDropdownItem className="me-2" key={index} onClick={() => handleNotificationClick(notification.ticketId)}>
-                    <div>
-                      <strong>{notification.title}</strong>
-                      <div>{truncateMessage(notification.message, 20)}</div>
-                    </div>
-                  </CDropdownItem>
-                ))
-              ) : (
-                <CDropdownItem>No notifications</CDropdownItem>
-              )}
-            </CDropdownMenu>
-          </CDropdown>
+          <CTooltip content="Notifications">
+            <CButton color="link" onClick={() => setOffcanvasVisible(!offcanvasVisible)}>
+              <div style={{ position: 'relative' }}>
+                <CIcon icon={cilBell} size="lg" />
+                {notificationCount > 0 && (
+                  <CBadge 
+                    color="danger" 
+                    className="position-absolute top-0 start-100 translate-middle" 
+                    size="sm"
+                    style={{ transform: 'translate(-50%, -50%)', fontSize: '0.75rem' }}
+                  >
+                    {notificationCount}
+                  </CBadge>
+                )}
+              </div>
+            </CButton>
+          </CTooltip>
+          <CTooltip content="Inbox Received">
+            <CButton color="link" onClick={() => setInboxVisible(!inboxVisible)}>
+              <div style={{ position: 'relative' }}>
+                <CIcon icon={cilEnvelopeOpen} size="lg" />
+                {inboxCount > 0 && (
+                  <CBadge 
+                    color="danger" 
+                    className="position-absolute top-0 start-100 translate-middle" 
+                    size="sm"
+                    style={{ transform: 'translate(-50%, -50%)', fontSize: '0.75rem' }}
+                  >
+                    {inboxCount}
+                  </CBadge>
+                )}
+              </div>
+            </CButton>
+          </CTooltip>
         </CHeaderNav>
         <CHeaderNav className="ms-3">
           <AppHeaderDropdown />
@@ -116,6 +149,50 @@ const AppHeader = () => {
       <CContainer fluid>
         <AppBreadcrumb />
       </CContainer>
+
+      <COffcanvas placement="end" visible={offcanvasVisible} onHide={() => setOffcanvasVisible(false)}>
+        <COffcanvasHeader className="bg-primary text-light">
+          <h5><strong>Notifications</strong></h5>
+          <CButton className="text-reset" color='danger' onClick={() => setOffcanvasVisible(false)}>
+            <span aria-hidden="true">&times;</span>
+          </CButton>
+        </COffcanvasHeader>
+        <COffcanvasBody>
+          {notifications.length > 0 ? (
+            notifications.map((notification, index) => (
+              <div key={index} onClick={() => handleNotificationClick(notification.ticketId)} style={{ cursor: 'pointer', marginBottom: '1rem' }}>
+                <strong>{notification.title}</strong>
+                <div>{truncateMessage(notification.message, 40)}</div>
+                {index < notifications.length - 1 && <div style={{ borderTop: '1px solid #e0e0e0', margin: '10px 0' }}></div>}
+              </div>
+            ))
+          ) : (
+            <div>No notifications</div>
+          )}
+        </COffcanvasBody>
+      </COffcanvas>
+
+      <COffcanvas placement="end" visible={inboxVisible} onHide={() => setInboxVisible(false)}>
+        <COffcanvasHeader className="bg-primary text-light">
+          <h5><strong>Mails Received Today</strong></h5>
+          <CButton className="text-reset" color='danger' onClick={() => setInboxVisible(false)}>
+            <span aria-hidden="true">&times;</span>
+          </CButton>
+        </COffcanvasHeader>
+        <COffcanvasBody>
+          {inbox.length > 0 ? (
+            inbox.map((message, index) => (
+              <div key={index} onClick={handleInboxClick} style={{ cursor: 'pointer', marginBottom: '1rem' }}>
+                <strong>{message.subject}</strong>
+                <div>{truncateMessage(message.message, 40)}</div>
+                {index < inbox.length - 1 && <div style={{ borderTop: '1px solid #e0e0e0', margin: '10px 0' }}></div>}
+              </div>
+            ))
+          ) : (
+            <div>No inbox messages</div>
+          )}
+        </COffcanvasBody>
+      </COffcanvas>
     </CHeader>
   );
 };

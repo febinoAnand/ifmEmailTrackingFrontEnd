@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
+// const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
 
@@ -103,11 +103,11 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 //MAin Setting
-const Settingss = React.lazy(() => import('./views/base/setting/settings'))
+// const Settingss = React.lazy(() => import('./views/base/setting/settings'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
-  { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  // { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   
@@ -153,7 +153,7 @@ const routes = [
   // { path: '/config/uart', name: 'UART', element: UART}, //config
   // { path: '/config/mqtt', name: 'MQTT', element: MQTT}, //config
 
-  { path: '/setting/settings', name: 'SETTING / Settings', element: Settingss}, //Main Setting
+  // { path: '/setting/settings', name: 'SETTING / Settings', element: Settingss}, //Main Setting
 
   
   { path: '/theme/typography', name: 'Typography', element: Typography },

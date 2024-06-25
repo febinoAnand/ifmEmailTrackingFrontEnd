@@ -16,7 +16,7 @@ import {
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import Chart from 'chart.js/auto';
-import { cilPeople, cilUser, cilUserFollow, cilUserUnfollow, cilShareBoxed, cilPin } from '@coreui/icons';
+import { cilPeople, cilUser, cilShareBoxed, cilPin } from '@coreui/icons';
 import BaseURL from 'src/assets/contants/BaseURL';
 
 class Dashboard extends Component {
@@ -130,38 +130,34 @@ class Dashboard extends Component {
         <CRow>
           <CCol sm={6} lg={3}>
             <CWidgetStatsA
-              className="mb-4"
+              className="mb-3"
               color="primary"
-              value={<>{totalUsers}{' '}</>}
-              title="Total No. Of Users"
-              chart={<div className="c-chart-wrapper mt-3 mx-3"><CIcon icon={cilPeople} size="xl" className="text-primary" /></div>}
+              value={<div style={{ fontSize: '3rem', textAlign: 'center' }}>{totalUsers}</div>}
+              title={<div className="text-center" style={{ marginBottom: '1rem' }}>Total No. Of Users Available</div>}
             />
           </CCol>
           <CCol sm={6} lg={3}>
             <CWidgetStatsA
-              className="mb-4"
+              className="mb-3"
               color="success"
-              value={<>{activeUsers}{' '}</>}
-              title="Total No. Of Active Users"
-              chart={<div className="c-chart-wrapper mt-3 mx-3"><CIcon icon={cilUserFollow} size="xl" className="text-success" /></div>}
+              value={<div style={{ fontSize: '3rem', textAlign: 'center' }}>{activeUsers}</div>}
+              title={<div className="text-center" style={{ marginBottom: '1rem' }}>Total No. Of Active Users</div>}
             />
           </CCol>
           <CCol sm={6} lg={3}>
             <CWidgetStatsA
-              className="mb-4"
+              className="mb-3"
               color="danger"
-              value={<>{inactiveUsers}{' '}</>}
-              title="Total No. Of Inactive Users"
-              chart={<div className="c-chart-wrapper mt-3 mx-3"><CIcon icon={cilUserUnfollow} size="xl" className="text-danger" /></div>}
+              value={<div style={{ fontSize: '3rem', textAlign: 'center' }}>{inactiveUsers}</div>}
+              title={<div className="text-center" style={{ marginBottom: '1rem' }}>Total No. Of Inactive Users</div>}
             />
           </CCol>
           <CCol sm={6} lg={3}>
             <CWidgetStatsA
-              className="mb-4"
+              className="mb-3"
               color="warning"
-              value={<>{totalDepartments}{' '}</>}
-              title="Total No. Of Departments"
-              chart={<div className="c-chart-wrapper mt-3 mx-3"><CIcon size="xl" className="text-primary" /></div>}
+              value={<div style={{ fontSize: '3rem', textAlign: 'center' }}>{totalDepartments}</div>}
+              title={<div className="text-center" style={{ marginBottom: '1rem' }}>Total No. Of Departments</div>}
             />
           </CCol>
         </CRow>

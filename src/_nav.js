@@ -21,9 +21,9 @@ import {
   // cilBraille,
   // cilCheckCircle,
   // cilDiamond,
-  cilEnvelopeLetter,
+  // cilEnvelopeLetter,
   cilArrowCircleBottom,
-  cilSettings,
+  // cilSettings,
   cilSearch,
   cilSwapHorizontal,
   // cilVoiceOverRecord,
@@ -308,16 +308,16 @@ const _nav = [
   //   to: '/config/mqtt',
   //   icon: <CIcon icon={cilEqualizer} customClassName="nav-icon" />,
   // },
-  {
-    component: CNavTitle,
-    name: 'Setting',
-  },
-  {
-    component: CNavItem,
-    name: 'Settings',
-    to:'/setting/settings',
-    icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
-  }
+  // {
+  //   component: CNavTitle,
+  //   name: 'Setting',
+  // },
+  // {
+  //   component: CNavItem,
+  //   name: 'Settings',
+  //   to:'/setting/settings',
+  //   icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
+  // }
 ]
 
 export default _nav
