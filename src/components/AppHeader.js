@@ -94,8 +94,8 @@ const AppHeader = () => {
   };
 
   return (
-    <CHeader position="sticky" className="mb-3">
-      <CContainer>
+    <CHeader position="sticky" className="mb-4">
+      <CContainer fluid>
         <CHeaderToggler
           className="ps-1"
           onClick={() => dispatch({ type: 'set', sidebarShow: !sidebarShow })}
