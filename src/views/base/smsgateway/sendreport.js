@@ -22,22 +22,27 @@ class SendReport extends React.Component {
         super(props);
         this.state = {
             reports: [],
-            selectedRows: [], // Array to store selected row indices
-            selectAllChecked: false, // Whether select all checkbox is checked
+            selectedRows: [],
+            selectAllChecked: false,
+            successMessage: ''
         };
     }
 
     componentDidMount() {
-        axios.get(BaseURL + 'smsgateway/sendreport/')
-            .then(response => {
-                this.setState({ reports: response.data.reverse() });
-            })
-            .catch(error => {
-                console.error('Error fetching reports:', error);
-            });
-    }
+        const token = localStorage.getItem('token');
+        axios.get(BaseURL + 'smsgateway/sendreport/', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => {
+            this.setState({ reports: response.data.reverse() });
+        })
+        .catch(error => {
+            console.error('Error fetching reports:', error);
+        });
+    }    
 
-    // Toggle selection of a single row
     toggleRowSelection = index => {
         let { selectedRows } = this.state;
         if (selectedRows.includes(index)) {
@@ -60,15 +65,40 @@ class SendReport extends React.Component {
 
     deleteSelectedRows = () => {
         const { reports, selectedRows } = this.state;
-        const remainingReports = reports.filter((report, index) => !selectedRows.includes(index));
-        this.setState({ reports: remainingReports, selectedRows: [], selectAllChecked: false });
+        const deleteRequests = [];
+        selectedRows.forEach(index => {
+            const reportId = reports[index].id;
+            const token = localStorage.getItem('token');
+            deleteRequests.push(
+                axios.delete(`${BaseURL}smsgateway/sendreport/${reportId}/`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+            );
+        });
+        Promise.all(deleteRequests)
+            .then(responses => {
+                console.log('Deleted reports:', responses);
+                const remainingReports = reports.filter((report, index) => !selectedRows.includes(index));
+                this.setState({ reports: remainingReports, selectedRows: [], selectAllChecked: false, successMessage: 'Selected reports deleted successfully!' });
+            })
+            .catch(error => {
+                console.error('Error deleting reports:', error);
+            });
     };
+    
 
     render() {
-        const { reports, selectedRows, selectAllChecked } = this.state;
+        const { reports, selectedRows, selectAllChecked, successMessage } = this.state;
 
         return (
             <>
+            {successMessage && ( 
+                    <div className="alert alert-success" role="alert">
+                        {successMessage}
+                    </div>
+                )}
                 <CRow>
                     <CCol xs={12}>
                         <CCard className="mb-4">

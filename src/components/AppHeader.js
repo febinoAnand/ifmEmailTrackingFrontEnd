@@ -42,7 +42,6 @@ const AppHeader = () => {
           throw new Error('Failed to fetch notifications');
         }
         const data = await response.json();
-        // Sort notifications by timestamp and reverse them (most recent first)
         const sortedNotifications = data.filter(notification => (
           notification.delivery_status === "200 - OK" &&
           notification.date === today
@@ -62,7 +61,6 @@ const AppHeader = () => {
           throw new Error('Failed to fetch inbox messages');
         }
         const data = await response.json();
-        // Sort inbox messages by timestamp and reverse them (most recent first)
         const sortedInbox = data.filter(message => message.date === today)
           .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).reverse();
         setInbox(sortedInbox);
@@ -162,7 +160,7 @@ const AppHeader = () => {
             notifications.map((notification, index) => (
               <div key={index} onClick={() => handleNotificationClick(notification.ticketId)} style={{ cursor: 'pointer', marginBottom: '1rem' }}>
                 <strong>{notification.title}</strong>
-                <div>{truncateMessage(notification.message, 40)}</div>
+                <div>{truncateMessage(notification.message, 45)}</div>
                 {index < notifications.length - 1 && <div style={{ borderTop: '1px solid #e0e0e0', margin: '10px 0' }}></div>}
               </div>
             ))
@@ -184,7 +182,7 @@ const AppHeader = () => {
             inbox.map((message, index) => (
               <div key={index} onClick={handleInboxClick} style={{ cursor: 'pointer', marginBottom: '1rem' }}>
                 <strong>{message.subject}</strong>
-                <div>{truncateMessage(message.message, 40)}</div>
+                <div>{truncateMessage(message.message, 50)}</div>
                 {index < inbox.length - 1 && <div style={{ borderTop: '1px solid #e0e0e0', margin: '10px 0' }}></div>}
               </div>
             ))

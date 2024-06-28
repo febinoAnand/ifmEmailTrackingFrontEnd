@@ -30,6 +30,13 @@ import {
 import CIcon from '@coreui/icons-react';
 import BaseURL from 'src/assets/contants/BaseURL';
 
+const axiosInstance = axios.create({
+  baseURL: BaseURL,
+  headers: {
+    Authorization: `Token ${localStorage.getItem('token')}`
+  }
+});
+
 class Parameter extends React.Component {
   constructor(props) {
     super(props);
@@ -47,16 +54,21 @@ class Parameter extends React.Component {
       visibleUpdate: false,
       visibleAdd: false,
       selectedDepartments: [],
+      successMessage: localStorage.getItem('successMessage') || '',
     };
   }
 
   componentDidMount() {
     this.fetchDepartments();
     this.fetchUsers();
+
+    if (this.state.successMessage) {
+      localStorage.removeItem('successMessage');
+    }
   }
 
   fetchUsers = () => {
-    axios.get(BaseURL + "Userauth/userdetail/")
+    axiosInstance.get("Userauth/userdetail/")
       .then(response => {
         const users = response.data.map(user => ({
           id: user.user_id,
@@ -70,7 +82,7 @@ class Parameter extends React.Component {
   };
 
   fetchDepartments = () => {
-    axios.get(BaseURL + "emailtracking/departments/")
+    axiosInstance.get("emailtracking/departments/")
       .then(response => {
         const reversedData = response.data.reverse();
         this.setState({ departments: reversedData, filteredDepartments: reversedData });
@@ -98,7 +110,7 @@ class Parameter extends React.Component {
       users_to_send: formData.users_to_send,
     };
 
-    axios.post(`${BaseURL}emailtracking/departments/`, newData)
+    axiosInstance.post("emailtracking/departments/", newData)
       .then(response => {
         console.log('Department added successfully:', response.data);
         this.setState({
@@ -109,8 +121,11 @@ class Parameter extends React.Component {
             users_to_send: [],
           },
           visibleAdd: false,
+          successMessage: 'Department added successfully!',
         }, () => {
           this.fetchDepartments();
+          this.toggleAddModal();
+          localStorage.setItem('successMessage', 'Department added successfully!');
           window.location.reload();
         });
       })
@@ -138,7 +153,7 @@ class Parameter extends React.Component {
       users_to_send: users_to_send,
     };
 
-    axios.put(`${BaseURL}emailtracking/departments/${id}/`, updatedData)
+    axiosInstance.put(`emailtracking/departments/${id}/`, updatedData)
       .then(response => {
         console.log('Department updated successfully:', response.data);
         this.setState({
@@ -147,11 +162,15 @@ class Parameter extends React.Component {
             alias: '',
             department: '',
             users_to_send: [],
-          }
+          },
+          visibleUpdate: false,
+          successMessage: 'Department updated successfully!',
+        }, () => {
+          this.fetchDepartments();
+          this.toggleUpdateModal();
+          localStorage.setItem('successMessage', 'Department updated successfully!');
+          window.location.reload();
         });
-        this.fetchDepartments();
-        this.toggleUpdateModal();
-        window.location.reload();
       })
       .catch(error => {
         console.error('Error updating department:', error);
@@ -181,36 +200,46 @@ class Parameter extends React.Component {
   };
 
   handleDelete = (id) => {
-    axios.delete(`${BaseURL}emailtracking/departments/${id}/`)
+    axiosInstance.delete(`emailtracking/departments/${id}/`)
       .then(response => {
         console.log('Department deleted successfully');
-        this.setState(prevState => ({
-          departments: prevState.departments.filter(department => department.id !== id),
-          filteredDepartments: prevState.filteredDepartments.filter(department => department.id !== id),
-        }));
+        const { departments, filteredDepartments } = this.state;
+        const updatedDepartments = departments.filter(department => department.id !== id);
+        const updatedFilteredDepartments = filteredDepartments.filter(department => department.id !== id);
+  
+        this.setState({
+          departments: updatedDepartments,
+          filteredDepartments: updatedFilteredDepartments,
+          successMessage: 'Department deleted successfully!',
+        });
       })
       .catch(error => {
         console.error('Error deleting department:', error);
       });
   };
-
+  
   handleDeleteSelected = () => {
     const { selectedDepartments } = this.state;
-    const deleteRequests = selectedDepartments.map(id => axios.delete(`${BaseURL}emailtracking/departments/${id}/`));
-
+    const deleteRequests = selectedDepartments.map(id => axiosInstance.delete(`emailtracking/departments/${id}/`));
+  
     Promise.all(deleteRequests)
       .then(() => {
         console.log('Selected departments deleted successfully');
-        this.setState(prevState => ({
-          departments: prevState.departments.filter(department => !selectedDepartments.includes(department.id)),
-          filteredDepartments: prevState.filteredDepartments.filter(department => !selectedDepartments.includes(department.id)),
+        const { departments, filteredDepartments } = this.state;
+        const updatedDepartments = departments.filter(department => !selectedDepartments.includes(department.id));
+        const updatedFilteredDepartments = filteredDepartments.filter(department => !selectedDepartments.includes(department.id));
+  
+        this.setState({
+          departments: updatedDepartments,
+          filteredDepartments: updatedFilteredDepartments,
           selectedDepartments: [],
-        }));
+          successMessage: 'Selected departments deleted successfully!',
+        });
       })
       .catch(error => {
         console.error('Error deleting selected departments:', error);
       });
-  };
+  };  
 
   handleSearch = () => {
     const { departments, searchQuery } = this.state;
@@ -219,13 +248,6 @@ class Parameter extends React.Component {
       department.department.toLowerCase().includes(searchQuery.toLowerCase())
     );
     this.setState({ filteredDepartments });
-  };
-
-  handleSearchInputChange = (e) => {
-    const { value } = e.target;
-    this.setState({ searchQuery: value }, () => {
-      this.handleSearch();
-    });
   };
 
   toggleUpdateModal = () => {
@@ -273,11 +295,24 @@ class Parameter extends React.Component {
     });
   };
 
+  renderSuccessMessage = () => {
+    const { successMessage } = this.state;
+    if (successMessage) {
+      return (
+        <div className="alert alert-success" role="alert">
+          {successMessage}
+        </div>
+      );
+    }
+    return null;
+  };
+
   render() {
     const { filteredDepartments, formData, searchQuery, visibleUpdate, visibleAdd, users, selectedDepartments } = this.state;
 
     return (
       <>
+      {this.renderSuccessMessage()}
         <CRow>
           <CCol xs={12}>
             <CCard className="mb-4">
@@ -308,7 +343,7 @@ class Parameter extends React.Component {
                       aria-label="Search"
                       aria-describedby="addon-wrapping"
                       value={searchQuery}
-                      onChange={this.handleSearchInputChange}
+                      onChange={(e) => this.setState({ searchQuery: e.target.value })}
                     />
                     <CButton type="button" color="secondary" onClick={this.handleSearch}>
                       Search

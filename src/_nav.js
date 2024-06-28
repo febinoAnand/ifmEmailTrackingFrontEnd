@@ -152,7 +152,7 @@ const _nav = [
     {
       component: CNavItem,
       name: 'Create Department',
-      to: '/emailtracking/parameter',
+      to: '/emailtracking/department',
       icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
     },
     // {

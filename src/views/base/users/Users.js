@@ -31,12 +31,13 @@ import BaseURL from 'src/assets/contants/BaseURL';
 const Users = () => {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery] = useState('');
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [userActive, setUserActive] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
         fetchUsers();
@@ -47,7 +48,12 @@ const Users = () => {
     }, [searchQuery, users]);
 
     const fetchUsers = () => {
-        axios.get(BaseURL + 'Userauth/userdetail/')
+        const token = localStorage.getItem('token');
+        axios.get(BaseURL + 'Userauth/userdetail/', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => {
                 setUsers(response.data);
                 setFilteredUsers(response.data);
@@ -58,6 +64,7 @@ const Users = () => {
     };
 
     const handleSearch = () => {
+        const query = document.getElementById('searchInput').value.toLowerCase();
         const filtered = users.filter(user => {
             const searchFields = [
                 user.usermod.username,
@@ -67,16 +74,11 @@ const Users = () => {
                 user.auth_state,
                 user.expiry_time,
             ];
-            const query = searchQuery.toLowerCase();
             return searchFields.some(field =>
                 field ? field.toString().toLowerCase().includes(query) : false
             );
         });
         setFilteredUsers(filtered);
-    };
-
-    const handleInputChange = (event) => {
-        setSearchQuery(event.target.value);
     };
 
     const handleTableRowClick = (user) => {
@@ -121,10 +123,16 @@ const Users = () => {
     };
 
     const handleDeleteSelectedUsers = () => {
+        const token = localStorage.getItem('token');
         selectedUsers.forEach(userId => {
-            axios.delete(`${BaseURL}Userauth/delete-user/${userId}/`)
+            axios.delete(`${BaseURL}Userauth/delete-user/${userId}/`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
                 .then(response => {
                     fetchUsers();
+                    setSuccessMessage('User deleted successfully');
                 })
                 .catch(error => {
                     console.error('Error deleting user:', error);
@@ -159,11 +167,17 @@ const Users = () => {
             userActive: userActive
         };
 
-        axios.put(`${BaseURL}Userauth/userdetail/${selectedUser.userdetail_id}/`, updatedUser)
+        const token = localStorage.getItem('token');
+        axios.put(`${BaseURL}Userauth/userdetail/${selectedUser.userdetail_id}/`, updatedUser, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => {
                 console.log('User updated successfully:', response.data);
                 fetchUsers();
                 setModalVisible(false);
+                setSuccessMessage('User updated successfully');
             })
             .catch(error => {
                 console.error('Error updating user:', error);
@@ -171,9 +185,15 @@ const Users = () => {
     };
 
     const handleDeleteUser = (userId) => {
-        axios.delete(`${BaseURL}Userauth/delete-user/${userId}/`)
+        const token = localStorage.getItem('token');
+        axios.delete(`${BaseURL}Userauth/delete-user/${userId}/`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => {
                 fetchUsers();
+                setSuccessMessage('User deleted successfully');
             })
             .catch(error => {
                 console.error('Error deleting user:', error);
@@ -182,6 +202,11 @@ const Users = () => {
 
     return (
         <>
+         {successMessage && (
+            <div className="alert alert-success" role="alert">
+                {successMessage}
+            </div>
+        )}
             <CRow>
                 <CCol xs={12}>
                     <CCard className="mb-4">
@@ -197,11 +222,10 @@ const Users = () => {
                             <CCol md={4}>
                                 <CInputGroup className="flex-nowrap mt-3 mb-4">
                                     <CFormInput
-                                        placeholder="Search by Subject or Message"
+                                        placeholder="Search by Ext user, Designation, Mobile no or Device ID"
                                         aria-label="Search"
                                         aria-describedby="addon-wrapping"
-                                        value={searchQuery}
-                                        onChange={handleInputChange}
+                                        id="searchInput"
                                     />
                                     <CButton type="button" color="secondary" onClick={handleSearch} id="button-addon2">
                                         Search
@@ -229,38 +253,46 @@ const Users = () => {
                                     </CTableRow>
                                 </CTableHead>
                                 <CTableBody>
-                                    {filteredUsers.map((user, index) => (
-                                        <CTableRow key={index}>
-                                            <CTableDataCell>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedUsers.includes(user.user_id)}
-                                                    onChange={() => handleSelectUser(user.user_id)}
-                                                />
-                                            </CTableDataCell>
-                                            <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                                            <CTableDataCell>{user.usermod.username}</CTableDataCell>
-                                            <CTableDataCell>{user.designation}</CTableDataCell>
-                                            <CTableDataCell>{user.mobile_no}</CTableDataCell>
-                                            <CTableDataCell>{user.device_id}</CTableDataCell>
-                                            <CTableDataCell>
-                                                <span style={{ fontWeight: user.userActive ? 'bold' : 'bold', color: user.userActive ? 'green' : 'red' }}>
-                                                    {user.userActive ? 'Active' : 'Inactive'}
-                                                </span>
-                                            </CTableDataCell>
-                                            <CTableDataCell>{user.expiry_time}</CTableDataCell>
-                                            <CTableDataCell>
-                                                <div className="d-flex gap-2">
-                                                    <CButton onClick={() => handleTableRowClick(user)}>
-                                                        <CIcon icon={cilPen} />
-                                                    </CButton>
-                                                    <CButton onClick={(e) => { e.stopPropagation(); handleDeleteUser(user.user_id); }}>
-                                                        <CIcon icon={cilTrash} />
-                                                    </CButton>
-                                                </div>
+                                    {filteredUsers.length === 0 ? (
+                                        <CTableRow>
+                                            <CTableDataCell colSpan="9" className="text-center">
+                                                No users available
                                             </CTableDataCell>
                                         </CTableRow>
-                                    ))}
+                                    ) : (
+                                        filteredUsers.map((user, index) => (
+                                            <CTableRow key={index}>
+                                                <CTableDataCell>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedUsers.includes(user.user_id)}
+                                                        onChange={() => handleSelectUser(user.user_id)}
+                                                    />
+                                                </CTableDataCell>
+                                                <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                                                <CTableDataCell>{user.usermod.username}</CTableDataCell>
+                                                <CTableDataCell>{user.designation}</CTableDataCell>
+                                                <CTableDataCell>{user.mobile_no}</CTableDataCell>
+                                                <CTableDataCell>{user.device_id}</CTableDataCell>
+                                                <CTableDataCell>
+                                                    <span style={{ fontWeight: user.userActive ? 'bold' : 'bold', color: user.userActive ? 'green' : 'red' }}>
+                                                        {user.userActive ? 'Active' : 'Inactive'}
+                                                    </span>
+                                                </CTableDataCell>
+                                                <CTableDataCell>{user.expiry_time}</CTableDataCell>
+                                                <CTableDataCell>
+                                                    <div className="d-flex gap-2">
+                                                        <CButton onClick={() => handleTableRowClick(user)}>
+                                                            <CIcon icon={cilPen} />
+                                                        </CButton>
+                                                        <CButton onClick={(e) => { e.stopPropagation(); handleDeleteUser(user.user_id); }}>
+                                                            <CIcon icon={cilTrash} />
+                                                        </CButton>
+                                                    </div>
+                                                </CTableDataCell>
+                                            </CTableRow>
+                                        ))
+                                    )}
                                 </CTableBody>
                             </CTable>
                         </CCardBody>
@@ -277,7 +309,7 @@ const Users = () => {
                             <CRow className="mb-3">
                                 <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">User Name</CFormLabel>
                                 <CCol md={4}>
-                                    <CFormInput type="text" id="name" name="name" defaultValue={selectedUser.usermod.username} readOnly  />
+                                    <CFormInput type="text" id="name" name="name" defaultValue={selectedUser.usermod.username} readOnly />
                                 </CCol>
                                 <CFormLabel htmlFor="email" className="col-sm-2 col-form-label">Email Address</CFormLabel>
                                 <CCol md={4}>

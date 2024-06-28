@@ -27,7 +27,16 @@ class SendReport extends React.Component {
       rowData: [],
       selectedRows: [],
       selectAllChecked: false,
+      successMessage: '',
     };
+
+    this.axiosInstance = axios.create({
+      baseURL: BaseURL,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
   }
 
   componentDidMount() {
@@ -35,7 +44,7 @@ class SendReport extends React.Component {
   }
 
   fetchData = () => {
-    axios.get(BaseURL + "pushnotification/sendreport/")
+    this.axiosInstance.get('pushnotification/sendreport/')
       .then(response => {
         this.setState({ rowData: response.data.reverse() });
       })
@@ -45,9 +54,10 @@ class SendReport extends React.Component {
   }
 
   handleDelete = (id) => {
-    axios.delete(`${BaseURL}pushnotification/sendreport/${id}/`)
+    this.axiosInstance.delete(`pushnotification/sendreport/${id}/`)
       .then(() => {
         this.fetchData();
+        this.setState({ successMessage: 'Report deleted successfully!' });
       })
       .catch(error => {
         console.error('Error deleting data:', error);
@@ -79,13 +89,19 @@ class SendReport extends React.Component {
   };
 
   render() {
-    const { rowData, selectedRows, selectAllChecked } = this.state;
+    const { rowData, selectedRows, selectAllChecked, successMessage } = this.state;
 
     return (
+      <>
+      {successMessage && ( 
+        <div className="alert alert-success" role="alert">
+            {successMessage}
+        </div>
+      )}
       <CRow>
         <CCol xs={12}>
           <CCard className="mb-4">
-            <CCardHeader  className="d-flex justify-content-between align-items-center">
+            <CCardHeader className="d-flex justify-content-between align-items-center">
               <strong>SEND REPORT</strong>
               <CNav>
                 <CNavItem className="mx-2 position-relative">
@@ -112,7 +128,6 @@ class SendReport extends React.Component {
                     <CTableHeaderCell scope="col">Title</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Message</CTableHeaderCell>
                     <CTableHeaderCell scope="col">User</CTableHeaderCell>
-                    <CTableHeaderCell scope="col">User Group</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Delivery Status</CTableHeaderCell>
                     <CTableHeaderCell scope="col">Action</CTableHeaderCell>
                   </CTableRow>
@@ -133,7 +148,6 @@ class SendReport extends React.Component {
                       <CTableDataCell>{row.title}</CTableDataCell>
                       <CTableDataCell>{row.message}</CTableDataCell>
                       <CTableDataCell>{row.send_to_user}</CTableDataCell>
-                      <CTableDataCell>{row.users_group}</CTableDataCell>
                       <CTableDataCell>{row.delivery_status}</CTableDataCell>
                       <CTableDataCell>
                         <CButton onClick={() => this.handleDelete(row.id)}>
@@ -148,6 +162,7 @@ class SendReport extends React.Component {
           </CCard>
         </CCol>
       </CRow>
+      </>
     );
   }
 }

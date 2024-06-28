@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { cibBuffer, cibEmlakjet, cibStackexchange, cibUnsplash, cilTrash } from '@coreui/icons';
+import { cilTrash } from '@coreui/icons';
 import {
   CButton,
   CCard,
@@ -19,7 +19,6 @@ import {
   CTableRow,
   CNav,
   CNavItem,
-  CBadge,
   CFormTextarea,
   CModal,
   CModalBody,
@@ -35,9 +34,11 @@ import BaseURL from 'src/assets/contants/BaseURL';
 const EmailTable = () => {
   const [emails, setEmails] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filteredEmails, setFilteredEmails] = useState([]);
   const [selectedEmail, setSelectedEmail] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEmails, setSelectedEmails] = useState([]);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     fetchEmails();
@@ -45,15 +46,27 @@ const EmailTable = () => {
 
   const fetchEmails = async () => {
     try {
-      const response = await axios.get(BaseURL + "emailtracking/inbox/");
-      setEmails(response.data.reverse());
+      const response = await axios.get(BaseURL + "emailtracking/inbox/", {
+        headers: {
+          Authorization: `Token ${localStorage.getItem('token')}`
+        }
+      });
+      const reversedEmails = response.data.reverse();
+      setEmails(reversedEmails);
+      setFilteredEmails(reversedEmails);
     } catch (error) {
       console.error('Error fetching emails:', error);
     }
   };
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleSearch = () => {
+    const filtered = emails.filter((email) =>
+      email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      email.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      email.date.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      email.time.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredEmails(filtered);
   };
 
   const handleRowClick = (email) => {
@@ -63,19 +76,31 @@ const EmailTable = () => {
 
   const deleteEmail = async (emailId) => {
     try {
-      await axios.delete(`${BaseURL}emailtracking/inbox/${emailId}/`);
+      await axios.delete(`${BaseURL}emailtracking/inbox/${emailId}/`, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem('token')}`
+        }
+      });
       setEmails(emails.filter(email => email.id !== emailId));
+      setFilteredEmails(filteredEmails.filter(email => email.id !== emailId));
       setSelectedEmails(selectedEmails.filter(id => id !== emailId));
+      setSuccessMessage('Email deleted successfully.');
     } catch (error) {
       console.error('Error deleting email:', error);
     }
   };
-
+  
   const deleteSelectedEmails = async () => {
     try {
-      await Promise.all(selectedEmails.map(emailId => axios.delete(`${BaseURL}emailtracking/inbox/${emailId}/`)));
+      await Promise.all(selectedEmails.map(emailId => axios.delete(`${BaseURL}emailtracking/inbox/${emailId}/`, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem('token')}`
+        }
+      })));
       setEmails(emails.filter(email => !selectedEmails.includes(email.id)));
+      setFilteredEmails(filteredEmails.filter(email => !selectedEmails.includes(email.id)));
       setSelectedEmails([]);
+      setSuccessMessage('Selected emails deleted successfully.');
     } catch (error) {
       console.error('Error deleting emails:', error);
     }
@@ -83,7 +108,7 @@ const EmailTable = () => {
 
   const handleSelectAll = (event) => {
     if (event.target.checked) {
-      setSelectedEmails(emails.map(email => email.id));
+      setSelectedEmails(filteredEmails.map(email => email.id));
     } else {
       setSelectedEmails([]);
     }
@@ -97,45 +122,19 @@ const EmailTable = () => {
     }
   };
 
-  const filteredEmails = emails.filter((email) =>
-    email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    email.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    email.date.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    email.time.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <>
+    {successMessage && (
+      <div className="alert alert-success" role="alert">
+        {successMessage}
+      </div>
+    )}
       <CRow>
         <CCol xs={12}>
           <CCard className="mb-4">
             <CCardHeader className="d-flex justify-content-between align-items-center">
               <strong>E-Mail box</strong>
               <CNav>
-                <CNavItem className="mx-2 position-relative">
-                  <CIcon icon={cibBuffer} />
-                  <CBadge color="danger" className="position-absolute top-0 start-100 translate-middle" size="sm">
-                    {/* 5 */}
-                  </CBadge>
-                </CNavItem>
-                <CNavItem className="mx-2 position-relative">
-                  <CIcon icon={cibEmlakjet} />
-                  <CBadge color="danger" className="position-absolute top-0 start-100 translate-middle" size="sm">
-                    {/* 2 */}
-                  </CBadge>
-                </CNavItem>
-                <CNavItem className="mx-2 position-relative">
-                  <CIcon icon={cibStackexchange} />
-                  <CBadge color="danger" className="position-absolute top-0 start-100 translate-middle" size="sm">
-                    {/* 7 */}
-                  </CBadge>
-                </CNavItem>
-                <CNavItem className="mx-2 position-relative">
-                  <CIcon icon={cibUnsplash} />
-                  <CBadge color="danger" className="position-absolute top-0 start-100 translate-middle" size="sm">
-                    {/* 3 */}
-                  </CBadge>
-                </CNavItem>
                 <CNavItem className="mx-2 position-relative">
                       <CTooltip content="Delete Selected">
                         <CButton type="button" color="primary" size="sm" onClick={(e) => { e.stopPropagation(); deleteSelectedEmails(); }}>
@@ -153,9 +152,9 @@ const EmailTable = () => {
                     aria-label="Search"
                     aria-describedby="addon-wrapping"
                     value={searchQuery}
-                    onChange={handleSearchChange}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
-                  <CButton type="button" color="secondary" id="button-addon2">
+                  <CButton type="button" color="secondary" id="button-addon2" onClick={handleSearch}>
                     Search
                   </CButton>
                 </CInputGroup>

@@ -25,38 +25,45 @@ class Ticket extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      fields: [],
       ticketData: [],
       searchQuery: '',
+      filteredData: [],
       selectedRows: [],
       selectAllChecked: false,
+      successMessage: ''
     };
   }
 
   async componentDidMount() {
-    const responseTickets = await axios.get(BaseURL + "emailtracking/ticket/");
-    this.setState({ ticketData: responseTickets.data.reverse() });
+    try {
+      const token = localStorage.getItem('token');
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const responseTickets = await axios.get(BaseURL + "emailtracking/ticket/");
+      const reversedData = responseTickets.data.reverse();
+      this.setState({ 
+        ticketData: reversedData,
+        filteredData: reversedData
+      });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   }
 
-  handleSearchChange = (event) => {
-    this.setState({ searchQuery: event.target.value });
-  };
-
-  getFilteredData = () => {
-    const { ticketData, searchQuery } = this.state;
-    return ticketData.filter(ticket =>
+  handleSearchButtonClick = () => {
+    const { searchQuery, ticketData } = this.state;
+    const filteredData = ticketData.filter(ticket =>
       ticket.ticketname.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ticket.date.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ticket.time.toLowerCase().includes(searchQuery.toLowerCase())
     );
+    this.setState({ filteredData });
   };
 
   handleDownloadPDF = () => {
-    const { ticketData, searchQuery } = this.state;
-    const filteredData = this.getFilteredData();
+    const { filteredData, searchQuery } = this.state;
     const doc = new jsPDF();
 
-    const tableColumn = ["Sl.No", "Date-Time", "Ticket Name", ...Object.keys(ticketData[0]?.actual_json || {})];
+    const tableColumn = ["Sl.No", "Date-Time", "Ticket Name", ...Object.keys(filteredData[0]?.actual_json || {})];
     const tableRows = [];
 
     filteredData.forEach((ticket, index) => {
@@ -78,9 +85,8 @@ class Ticket extends Component {
   };
 
   handleDownloadCSV = () => {
-    const { ticketData, searchQuery } = this.state;
-    const filteredData = this.getFilteredData();
-    const headers = ["Sl.No", "Date-Time", "Ticket Name", ...Object.keys(ticketData[0]?.actual_json || {})];
+    const { filteredData, searchQuery } = this.state;
+    const headers = ["Sl.No", "Date-Time", "Ticket Name", ...Object.keys(filteredData[0]?.actual_json || {})];
 
     const csvRows = [];
     csvRows.push(headers.join(','));
@@ -145,23 +151,29 @@ class Ticket extends Component {
       const updatedTicketData = ticketData.filter(ticket => !selectedRows.includes(ticket.id));
       this.setState({
         ticketData: updatedTicketData,
+        filteredData: updatedTicketData,
         selectedRows: [],
-        selectAllChecked: false
+        selectAllChecked: false,
+        successMessage: 'Selected ticket deleted successfully!'
       });
       console.log("Deleted rows:", selectedRows);
     } catch (error) {
       console.error("Error deleting rows:", error);
     }
-  };  
+  }; 
 
   render() {
-    const { ticketData, searchQuery, selectedRows, selectAllChecked } = this.state;
-    const filteredData = this.getFilteredData();
+    const { filteredData, searchQuery, selectedRows, selectAllChecked, successMessage } = this.state;
 
-    const tableColumn = ["Sl.No", "Date-Time", "Ticket Name", ...Object.keys(ticketData[0]?.actual_json || {})];
+    const tableColumn = ["Sl.No", "Date-Time", "Ticket Name", ...Object.keys(filteredData[0]?.actual_json || {})];
 
     return (
       <>
+      {successMessage && ( 
+          <div className="alert alert-success" role="alert">
+            {successMessage}
+        </div>
+      )}
         <CRow>
           <CCol xs={12}>
             <CCard className="mb-4">
@@ -191,9 +203,9 @@ class Ticket extends Component {
                       aria-label="Search"
                       aria-describedby="addon-wrapping"
                       value={searchQuery}
-                      onChange={this.handleSearchChange}
+                      onChange={(e) => this.setState({ searchQuery: e.target.value })}
                     />
-                    <CButton type="button" color="secondary" id="button-addon2">
+                    <CButton type="button" color="secondary" id="button-addon2" onClick={this.handleSearchButtonClick}>
                       Search
                     </CButton>
                   </CInputGroup>

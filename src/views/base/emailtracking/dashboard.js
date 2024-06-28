@@ -47,8 +47,13 @@ class Dashboard extends Component {
   }
 
   fetchData = async () => {
+    const token = localStorage.getItem('token');
     try {
-      const response = await axios.get(BaseURL + "emailtracking/dashboard/");
+      const response = await axios.get(BaseURL + 'emailtracking/dashboard/', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = response.data;
 
       this.setState({
@@ -254,7 +259,7 @@ class Dashboard extends Component {
           </CCol>
         </CRow>
         <CCard className="mb-4">
-          <CCardHeader>Ticket Analysis</CCardHeader>
+          <CCardHeader><strong>Ticket Analysis</strong></CCardHeader>
           <CCardBody>
             <canvas ref={this.chartRef} />
           </CCardBody>

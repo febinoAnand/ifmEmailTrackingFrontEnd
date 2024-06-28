@@ -15,8 +15,6 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
-  CNav,
-  CNavItem,
   CTooltip
 } from '@coreui/react';
 import jsPDF from 'jspdf';
@@ -32,6 +30,7 @@ class TicketReport extends React.Component {
       searchTerm: '',
       selectedTickets: [],
       selectAll: false,
+      successMessage: '',
     };
     this.tableRef = React.createRef();
   }
@@ -48,17 +47,23 @@ class TicketReport extends React.Component {
   }
 
   fetchTickets = () => {
-    axios.get(BaseURL + "emailtracking/reports/")
-      .then(response => {
-        const reversedData = response.data.reverse();
-        this.setState({
-          tickets: reversedData,
-          filteredTickets: reversedData,
+    try {
+      const token = localStorage.getItem('token');
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      axios.get(BaseURL + "emailtracking/reports/")
+        .then(response => {
+          const reversedData = response.data.reverse();
+          this.setState({
+            tickets: reversedData,
+            filteredTickets: reversedData,
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching tickets:', error);
         });
-      })
-      .catch(error => {
-        console.error('Error fetching tickets:', error);
-      });
+    } catch (error) {
+      console.error('Error fetching token from localStorage:', error);
+    }
   }
 
   scrollToTicket = () => {
@@ -74,21 +79,19 @@ class TicketReport extends React.Component {
     }
   }
 
-  handleSearchChange = (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    const { tickets } = this.state;
-
+  handleSearchButtonClick = () => {
+    const { tickets, searchTerm } = this.state;
     const filteredTickets = tickets.filter(ticket =>
-      ticket.date.toLowerCase().includes(searchTerm) ||
-      ticket.time.toLowerCase().includes(searchTerm) ||
-      ticket.message.toLowerCase().includes(searchTerm) ||
-      ticket.Department.toLowerCase().includes(searchTerm) ||
+      ticket.date.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ticket.time.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ticket.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ticket.Department.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ticket.send_to_user.some(user =>
-        user.username.toLowerCase().includes(searchTerm)
+        user.username.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
 
-    this.setState({ filteredTickets, searchTerm });
+    this.setState({ filteredTickets });
   }
 
   handleCheckboxChange = (ticketId) => {
@@ -133,6 +136,7 @@ class TicketReport extends React.Component {
         .then(response => {
           console.log(`Ticket with ID ${ticketId} deleted successfully`);
           this.fetchTickets();
+          this.setState({ successMessage: 'Selected ticket deleted successfully!' });
         })
         .catch(error => {
           console.error(`Error deleting ticket with ID ${ticketId}:`, error);
@@ -173,37 +177,42 @@ class TicketReport extends React.Component {
   }
 
   render() {
-    const { filteredTickets, searchTerm, selectedTickets, selectAll } = this.state;
+    const { filteredTickets, searchTerm, selectedTickets, selectAll, successMessage } = this.state;
 
     return (
       <>
+      {successMessage && ( 
+                    <div className="alert alert-success" role="alert">
+                        {successMessage}
+                    </div>
+                )}
         <CRow>
           <CCol xs={12}>
             <CCard className="mb-4">
-            <CCardHeader className="d-flex justify-content-between align-items-center">
-              <strong>Report</strong>
-              <div className="d-flex align-items-center">
-                <CTooltip content="Delete Selected Report">
-                  <CButton type="button" color="primary" size="sm" onClick={this.handleDeleteSelected}>
-                    Delete Selected
+              <CCardHeader className="d-flex justify-content-between align-items-center">
+                <strong>Report</strong>
+                <div className="d-flex align-items-center">
+                  <CTooltip content="Delete Selected Report">
+                    <CButton type="button" color="primary" size="sm" onClick={this.handleDeleteSelected}>
+                      Delete Selected
+                    </CButton>
+                  </CTooltip>
+                  <CButton color="primary" type="button" size="sm" onClick={this.handleDownloadPDF} className="ms-2">
+                    Download
                   </CButton>
-                </CTooltip>
-                <CButton color="primary" type="button" size="sm" onClick={this.handleDownloadPDF} className="ms-2">
-                  Download
-                </CButton>
-              </div>
-            </CCardHeader>
+                </div>
+              </CCardHeader>
               <CCardBody>
                 <CCol md={4}>
                   <CInputGroup className="flex-nowrap mt-3 mb-4">
                     <CFormInput
                       placeholder="Search by Date, Time, Message, Department, Send to User"
                       aria-label="Search"
-                      aria-describedby="addon-wrapping"
+                      aria-describedby="button-addon2"
                       value={searchTerm}
-                      onChange={this.handleSearchChange}
+                      onChange={(e) => this.setState({ searchTerm: e.target.value })}
                     />
-                    <CButton type="button" color="secondary" id="button-addon2">
+                    <CButton type="button" color="secondary" id="button-addon2" onClick={this.handleSearchButtonClick}>
                       Search
                     </CButton>
                   </CInputGroup>
@@ -228,7 +237,7 @@ class TicketReport extends React.Component {
                       </CTableRow>
                     </CTableHead>
                     <CTableBody ref={this.tableRef}>
-                      {filteredTickets.length === 0 ? (
+                      {filteredTickets.length === 0 && searchTerm !== '' ? (
                         <CTableRow>
                           <CTableDataCell colSpan="7" className="text-center">No matching tickets found.</CTableDataCell>
                         </CTableRow>

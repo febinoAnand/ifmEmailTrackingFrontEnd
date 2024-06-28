@@ -33,30 +33,40 @@ class Settings extends Component {
     }
 
     fetchSettings = () => {
-        axios.get(BaseURL + 'smsgateway/setting/')
-            .then(response => {
-                const settings = response.data[0];
-                if (settings) {
-                    const { id, sid, auth_token, is_active } = settings;
-                    this.setState({ id, sid, auth_token, is_active });
-                } else {
-                    console.error('Empty response data.');
-                    toast.error('Failed to fetch settings: Empty response data.');
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching settings:', error);
-                toast.error('Failed to fetch settings.');
-            });
+        const token = localStorage.getItem('token');
+        axios.get(BaseURL + 'smsgateway/setting/', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => {
+            const settings = response.data[0];
+            if (settings) {
+                const { id, sid, auth_token, is_active } = settings;
+                this.setState({ id, sid, auth_token, is_active });
+            } else {
+                console.error('Empty response data.');
+                toast.error('Failed to fetch settings: Empty response data.');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching settings:', error);
+            toast.error('Failed to fetch settings.');
+        });
     }
 
     handleSubmit = async (event) => {
         event.preventDefault();
 
         const { id, sid, auth_token, is_active } = this.state;
+        const token = localStorage.getItem('token');
 
         try {
-            const response = await axios.put(`${BaseURL}smsgateway/setting/${id}/`, { sid, auth_token, is_active });
+            const response = await axios.put(`${BaseURL}smsgateway/setting/${id}/`, { sid, auth_token, is_active }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             console.log(response);
             this.setState({ successMessage: 'Settings updated successfully!' });
             setTimeout(() => {

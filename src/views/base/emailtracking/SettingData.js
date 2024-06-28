@@ -33,6 +33,15 @@ import {
 import BaseURL from 'src/assets/contants/BaseURL';
 import CIcon from '@coreui/icons-react';
 
+const token = localStorage.getItem('token');
+const axiosInstance = axios.create({
+    baseURL: BaseURL,
+    headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+    }
+});
+
 class SettingData extends React.Component {
     constructor(props) {
         super(props);
@@ -47,7 +56,7 @@ class SettingData extends React.Component {
             errors: {},
             successMessage: '',
             emailList: [],
-            searchQuery: '',
+            filteredEmailList: [],
             inputValue: '',
             modalVisible: false,
             newEmail: ''
@@ -60,10 +69,10 @@ class SettingData extends React.Component {
     }
 
     fetchEmailData() {
-        axios.get(BaseURL + 'emailtracking/email_ids/')
+        axiosInstance.get('emailtracking/email_ids/')
             .then(response => {
                 const emailList = response.data.reverse();
-                this.setState({ emailList });
+                this.setState({ emailList, filteredEmailList: emailList });
             })
             .catch(error => {
                 console.error('Error fetching email data:', error);
@@ -78,12 +87,15 @@ class SettingData extends React.Component {
                 email: newEmail,
                 active: true
             };
-            axios.post(BaseURL + "emailtracking/email_ids/", emailData)
+            axiosInstance.post('emailtracking/email_ids/', emailData)
                 .then(response => {
                     console.log('Email added successfully:', response.data);
-                    toast.success('Email added successfully');
+                    this.setState({ 
+                        successMessage: 'Email added successfully',
+                        newEmail: '',
+                        modalVisible: false 
+                    });
                     this.fetchEmailData();
-                    this.setState({ newEmail: '', modalVisible: false });
                 })
                 .catch(error => {
                     console.error('Error adding email:', error);
@@ -94,17 +106,17 @@ class SettingData extends React.Component {
             toast.warning('Input value is empty. No email added.');
         }
     };
-
+    
     handleToggleEmail = (email) => {
         const updatedEmail = {
             ...email,
             active: !email.active
         };
-
-        axios.put(`${BaseURL}emailtracking/email_ids/${email.id}/`, updatedEmail)
+    
+        axiosInstance.put(`emailtracking/email_ids/${email.id}/`, updatedEmail)
             .then(response => {
                 console.log('Email updated successfully:', response.data);
-                toast.success('Email updated successfully');
+                this.setState({ successMessage: 'Email updated successfully' });
                 this.fetchEmailData();
             })
             .catch(error => {
@@ -112,22 +124,22 @@ class SettingData extends React.Component {
                 toast.error('Failed to update email');
             });
     };
-
+    
     handleDeleteEmail = (emailId) => {
-        axios.delete(`${BaseURL}emailtracking/email_ids/${emailId}/`)
+        axiosInstance.delete(`emailtracking/email_ids/${emailId}/`)
             .then(response => {
                 console.log('Email deleted successfully:', response.data);
-                toast.success('Email deleted successfully');
+                this.setState({ successMessage: 'Email deleted successfully' });
                 this.fetchEmailData();
             })
             .catch(error => {
                 console.error('Error deleting email:', error);
                 toast.error('Failed to delete email');
             });
-    };
+    };  
 
     fetchSettings() {
-        axios.get(BaseURL + 'emailtracking/settings/')
+        axiosInstance.get('emailtracking/settings/')
             .then(response => {
                 const data = response.data[0];
                 if (data) {
@@ -166,8 +178,13 @@ class SettingData extends React.Component {
         });
     };
 
-    handleSearchChange = (e) => {
-        this.setState({ searchQuery: e.target.value });
+    handleSearch = () => {
+        const searchQuery = document.getElementById('searchInput').value;
+        const { emailList } = this.state;
+        const filteredEmailList = emailList.filter(emailObj =>
+            emailObj.email.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        this.setState({ filteredEmailList });
     };
 
     handleSubmit = (e) => {
@@ -187,14 +204,14 @@ class SettingData extends React.Component {
                 checkstatus,
             };
 
-            axios.put(`${BaseURL}emailtracking/settings/${id}/`, data)
-            .then(() => {
-                this.setState({ successMessage: 'Settings updated successfully', errors: {} });
-            })
-            .catch(error => {
-                console.error('Error updating settings:', error);
-                toast.error('Failed to update settings');
-            });
+            axiosInstance.put(`emailtracking/settings/${id}/`, data)
+                .then(() => {
+                    this.setState({ successMessage: 'Settings updated successfully', errors: {} });
+                })
+                .catch(error => {
+                    console.error('Error updating settings:', error);
+                    toast.error('Failed to update settings');
+                });
         } else {
             this.setState({ errors });
             console.log('Validation errors:', errors);
@@ -236,10 +253,7 @@ class SettingData extends React.Component {
     };
 
     render() {
-        const { host, port, username, password, checkinterval, checkstatus, errors, successMessage, emailList, modalVisible, newEmail, searchQuery } = this.state;
-        const filteredEmailList = emailList.filter(emailObj =>
-            emailObj.email.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        const { host, port, username, password, checkinterval, checkstatus, errors, successMessage, filteredEmailList, modalVisible, newEmail } = this.state;
 
         return (
             <>
@@ -338,18 +352,16 @@ class SettingData extends React.Component {
                             </CCardHeader>
                             <CCardBody>
                                 <CCol md={4}>
-                                    <CInputGroup className="flex-nowrap mt-3 mb-4">
-                                        <CFormInput
-                                            placeholder="Search by Email"
-                                            aria-label="Search"
-                                            aria-describedby="addon-wrapping"
-                                            value={searchQuery}
-                                            onChange={this.handleSearchChange}
-                                        />
-                                        <CButton type="button" color="secondary" id="button-addon2">
-                                            Search
-                                        </CButton>
-                                    </CInputGroup>
+                                <CInputGroup className="mb-3">
+                                    <CFormInput
+                                        type="text"
+                                        id="searchInput"
+                                        placeholder="Search email"
+                                    />
+                                    <CButton type="button" color='secondary' onClick={this.handleSearch}>
+                                        Search
+                                    </CButton>
+                                </CInputGroup>
                                 </CCol>
                                 <CTable striped hover>
                                     <CTableHead color='dark'>

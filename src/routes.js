@@ -18,9 +18,7 @@ const Test = React.lazy(() => import('./views/test/Test'))
 const dashboard = React.lazy(() => import('./views/base/emailtracking/dashboard'))
 const EmailTable = React.lazy(() => import('./views/base/emailtracking/EmailTable'))
 const SettingData = React.lazy(() => import('./views/base/emailtracking/SettingData'))
-const SearchParameter = React.lazy(() => import('./views/base/emailtracking/SearchParameter'))
-const EmailSubpage = React.lazy(() => import('./views/base/emailtracking/EmailSubpage'))
-const Parameter = React.lazy(() => import('./views/base/emailtracking/parameter'))
+const department = React.lazy(() => import('./views/base/emailtracking/department'))
 const Trigger = React.lazy(() => import('./views/base/emailtracking/trigger'))
 const TicketReport = React.lazy(() => import('./views/base/emailtracking/ticketreport'))
 const Ticket = React.lazy(() => import('./views/base/emailtracking/ticket'))
@@ -122,9 +120,7 @@ const routes = [
   { path: '/emailtracking/dashboard', name: 'EmailTracking / Dashboard', element: dashboard}, //EmailTracking
   { path: '/emailtracking/emailtable', name: 'EmailTracking / Inbox', element: EmailTable}, //EmailTracking
   { path: '/emailtracking/setting', name: 'EmailTracking / Setting', element: SettingData}, //EmailTracking
-  { path: '/emailtracking/search', name: 'EmailTracking / SearchParameter', element: SearchParameter}, //EmailTracking
-  { path: '/emailtracking/emailsubpage', name: 'EmailSubpage', element: EmailSubpage}, //EmailTracking
-  { path: '/emailtracking/parameter', name: 'EmailTracking / Create Fields', element: Parameter}, //EmailTracking
+  { path: '/emailtracking/department', name: 'EmailTracking / Create Departments', element: department}, //EmailTracking
   { path: '/emailtracking/trigger', name: 'EmailTracking / Rules Engine', element: Trigger}, //EmailTracking
   { path: '/emailtracking/ticketreport', name: 'EmailTracking / Report', element: TicketReport}, //EmailTracking
   { path: '/emailtracking/ticket', name: 'EmailTracking / Ticket', element: Ticket}, //EmailTracking
