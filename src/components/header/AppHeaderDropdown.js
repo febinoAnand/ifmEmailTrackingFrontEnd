@@ -26,6 +26,7 @@ import avatar9 from './../../assets/images/avatars/10.jpg'
 import BaseURL from 'src/assets/contants/BaseURL';
 
 const AppHeaderDropdown = () => {
+  const username = localStorage.getItem('username');
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token')
@@ -33,6 +34,7 @@ const AppHeaderDropdown = () => {
 
       if (response.data.status === 'OK') {
         localStorage.removeItem('token')
+        localStorage.removeItem('username');
         window.location.href = '#'
       } else {
         alert('Logout failed: ' + response.data.message)
@@ -52,8 +54,8 @@ const AppHeaderDropdown = () => {
         <CDropdownItem className="text-center">
           <CAvatar src={avatar9} className="avatar mb-2" size='lg' />
           <div className="d-flex flex-column align-items-center">
-            <span className="fw-bold">Admin</span>
-            <span className="text-muted">admin@gmail.com</span>
+            <span className="text-muted">User</span>
+            <span className="fw-bold">{username}</span>
           </div>
           {/* <CBadge color="info" className="ms-2">
             42

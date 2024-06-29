@@ -40,6 +40,8 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem('token', data.token);
+        localStorage.setItem('username', username);
+        console.log(username)
         console.log('Login successful. Token:', data.token);
         navigate('/emailTracking/dashboard');
       } else {
