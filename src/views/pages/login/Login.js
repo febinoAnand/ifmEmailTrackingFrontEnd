@@ -15,6 +15,7 @@ import {
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser } from '@coreui/icons';
+import BaseURL from 'src/assets/contants/BaseURL';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -24,23 +25,30 @@ const Login = () => {
   const handleLogin = async (event) => {
     event.preventDefault();
 
-    const response = await fetch('YOUR_API_ENDPOINT', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username,
-        password,
-      }),
-    });
+    try {
+      const response = await fetch(BaseURL + 'Userauth/weblogin/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      localStorage.setItem('token', data.token);
-      navigate('/emailTracking/dashboard');
-    } else {
-      alert('Login failed. Please check your credentials and try again.');
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token);
+        console.log('Login successful. Token:', data.token);
+        navigate('/emailTracking/dashboard');
+      } else {
+        const errorData = await response.json();
+        alert(`Login failed: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('An error occurred during login:', error);
+      alert('An error occurred. Please try again.');
     }
   };
 
@@ -84,11 +92,6 @@ const Login = () => {
                           Login
                         </CButton>
                       </CCol>
-                      {/* <CCol xs={6} className="text-right">
-                        <CButton color="link" className="px-0">
-                          Forgot password?
-                        </CButton>
-                      </CCol> */}
                     </CRow>
                   </CForm>
                 </CCardBody>

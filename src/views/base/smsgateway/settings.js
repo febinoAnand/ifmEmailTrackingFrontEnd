@@ -36,7 +36,7 @@ class Settings extends Component {
         const token = localStorage.getItem('token');
         axios.get(BaseURL + 'smsgateway/setting/', {
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Token ${token}`
             }
         })
         .then(response => {
@@ -64,7 +64,7 @@ class Settings extends Component {
         try {
             const response = await axios.put(`${BaseURL}smsgateway/setting/${id}/`, { sid, auth_token, is_active }, {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Token ${token}`
                 }
             });
             console.log(response);

@@ -49,7 +49,7 @@ class TicketReport extends React.Component {
   fetchTickets = () => {
     try {
       const token = localStorage.getItem('token');
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      axios.defaults.headers.common['Authorization'] = `Token ${token}`;
       axios.get(BaseURL + "emailtracking/reports/")
         .then(response => {
           const reversedData = response.data.reverse();

@@ -37,7 +37,7 @@ class Ticket extends Component {
   async componentDidMount() {
     try {
       const token = localStorage.getItem('token');
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      axios.defaults.headers.common['Authorization'] = `Token ${token}`;
       const responseTickets = await axios.get(BaseURL + "emailtracking/ticket/");
       const reversedData = responseTickets.data.reverse();
       this.setState({ 

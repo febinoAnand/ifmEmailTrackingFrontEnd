@@ -21,10 +21,27 @@ import {
   cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-
+import axios from 'axios'
 import avatar9 from './../../assets/images/avatars/10.jpg'
+import BaseURL from 'src/assets/contants/BaseURL';
 
 const AppHeaderDropdown = () => {
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const response = await axios.post(BaseURL + 'Userauth/weblogout/', { token })
+
+      if (response.data.status === 'OK') {
+        localStorage.removeItem('token')
+        window.location.href = '#'
+      } else {
+        alert('Logout failed: ' + response.data.message)
+      }
+    } catch (error) {
+      console.error('There was an error logging out!', error)
+    }
+  }
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
@@ -87,7 +104,7 @@ const AppHeaderDropdown = () => {
           </CBadge>
         </CDropdownItem> */}
         <CDropdownDivider />
-        <CDropdownItem href="#">
+        <CDropdownItem href="#" onClick={handleLogout}>
           <CIcon icon={cilLockLocked} className="me-2" />
           Log Out
         </CDropdownItem>

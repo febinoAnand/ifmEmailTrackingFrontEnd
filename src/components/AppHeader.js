@@ -34,10 +34,16 @@ const AppHeader = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
     const fetchNotifications = async () => {
       try {
         const today = new Date().toISOString().split('T')[0];
-        const response = await fetch(`${BaseURL}pushnotification/sendreport/?date=${today}`);
+        const response = await fetch(`${BaseURL}pushnotification/sendreport/?date=${today}`, {
+          headers: {
+            Authorization: `Token ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch notifications');
         }
@@ -56,7 +62,12 @@ const AppHeader = () => {
     const fetchInbox = async () => {
       try {
         const today = new Date().toISOString().split('T')[0];
-        const response = await fetch(`${BaseURL}emailtracking/inbox/?date=${today}`);
+        const response = await fetch(`${BaseURL}emailtracking/inbox/?date=${today}`, {
+          headers: {
+            Authorization: `Token ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch inbox messages');
         }

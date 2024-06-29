@@ -31,7 +31,7 @@ class Setting extends React.Component {
         const token = localStorage.getItem('token');
         axios.get(BaseURL + "pushnotification/setting/", {
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Token ${token}`
             }
         })
         .then(response => {
@@ -61,7 +61,7 @@ class Setting extends React.Component {
 
         axios.put(BaseURL + "pushnotification/setting/" + id + "/", data, {
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Token ${token}`
             }
         })
         .then(response => {

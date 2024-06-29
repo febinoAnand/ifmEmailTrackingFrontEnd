@@ -34,7 +34,7 @@ class SendReport extends React.Component {
       baseURL: BaseURL,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Token ${localStorage.getItem('token')}`,
       },
     });
   }

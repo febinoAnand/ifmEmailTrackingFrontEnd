@@ -32,7 +32,7 @@ class SendReport extends React.Component {
         const token = localStorage.getItem('token');
         axios.get(BaseURL + 'smsgateway/sendreport/', {
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Token ${token}`
             }
         })
         .then(response => {
@@ -72,7 +72,7 @@ class SendReport extends React.Component {
             deleteRequests.push(
                 axios.delete(`${BaseURL}smsgateway/sendreport/${reportId}/`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Token ${token}`
                     }
                 })
             );

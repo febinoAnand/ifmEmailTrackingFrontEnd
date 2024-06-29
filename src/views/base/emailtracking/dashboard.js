@@ -48,10 +48,15 @@ class Dashboard extends Component {
 
   fetchData = async () => {
     const token = localStorage.getItem('token');
+    console.log('Token:', token);
+    if (!token) {
+      console.error('No token found');
+      return;
+    }
     try {
-      const response = await axios.get(BaseURL + 'emailtracking/dashboard/', {
+      const response = await axios.get(`${BaseURL}emailtracking/dashboard/`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Token ${token}`,
         },
       });
       const data = response.data;
@@ -67,7 +72,16 @@ class Dashboard extends Component {
         userDetails: data.user_details,
       });
     } catch (error) {
-      console.error('Error fetching data:', error);
+      if (error.response) {
+        console.error('Error fetching data:', error.response.data);
+        if (error.response.status === 403) {
+          console.error('403 Forbidden - Check if the token is valid and has the correct permissions.');
+        }
+      } else if (error.request) {
+        console.error('No response received:', error.request);
+      } else {
+        console.error('Error setting up request:', error.message);
+      }
     }
   };
 

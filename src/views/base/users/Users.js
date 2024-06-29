@@ -51,7 +51,7 @@ const Users = () => {
         const token = localStorage.getItem('token');
         axios.get(BaseURL + 'Userauth/userdetail/', {
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Token ${token}`
             }
         })
             .then(response => {
@@ -127,7 +127,7 @@ const Users = () => {
         selectedUsers.forEach(userId => {
             axios.delete(`${BaseURL}Userauth/delete-user/${userId}/`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Token ${token}`
                 }
             })
                 .then(response => {
@@ -170,7 +170,7 @@ const Users = () => {
         const token = localStorage.getItem('token');
         axios.put(`${BaseURL}Userauth/userdetail/${selectedUser.userdetail_id}/`, updatedUser, {
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Token ${token}`
             }
         })
             .then(response => {
@@ -188,7 +188,7 @@ const Users = () => {
         const token = localStorage.getItem('token');
         axios.delete(`${BaseURL}Userauth/delete-user/${userId}/`, {
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Token ${token}`
             }
         })
             .then(response => {
