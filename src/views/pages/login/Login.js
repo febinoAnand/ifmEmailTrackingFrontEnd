@@ -22,8 +22,33 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email) && email.endsWith('@gmail.com');
+  };
+
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    return passwordRegex.test(password);
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
+
+    if (!username || !password) {
+      alert('Both username and password are required.');
+      return;
+    }
+
+    if (!validateEmail(username)) {
+      alert('Username must be a valid Gmail address.');
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      alert('Password must contain at least one special character, one number, and one alphabet.');
+      return;
+    }
 
     try {
       const response = await fetch(BaseURL + 'Userauth/weblogin/', {
@@ -41,12 +66,11 @@ const Login = () => {
         const data = await response.json();
         localStorage.setItem('token', data.token);
         localStorage.setItem('username', username);
-        console.log(username)
+        console.log(username);
         console.log('Login successful. Token:', data.token);
         navigate('/emailTracking/dashboard');
       } else {
-        const errorData = await response.json();
-        alert(`Login failed: ${errorData.message}`);
+        alert('Invalid username or password.');
       }
     } catch (error) {
       console.error('An error occurred during login:', error);
