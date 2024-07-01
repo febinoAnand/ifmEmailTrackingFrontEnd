@@ -42,6 +42,8 @@ const EmailTable = () => {
 
   useEffect(() => {
     fetchEmails();
+    const interval = setInterval(fetchEmails, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchEmails = async () => {
