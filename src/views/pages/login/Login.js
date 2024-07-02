@@ -41,9 +41,11 @@ const Login = () => {
         const data = await response.json();
         localStorage.setItem('token', data.token);
         localStorage.setItem('username', username);
+        localStorage.setItem('password', password);
         console.log(username)
         console.log('Login successful. Token:', data.token);
         navigate('/emailTracking/dashboard');
+        window.location.reload();
       } else {
         const errorData = await response.json();
         alert(`Login failed: ${errorData.message}`);

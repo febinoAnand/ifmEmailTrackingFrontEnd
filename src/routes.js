@@ -22,7 +22,8 @@ const Settings = React.lazy(() => import('./views/base/smsgateway/settings'))
 //users
 const Users = React.lazy(() => import('./views/base/users/Users'))
 
-
+// Password
+const Changepassword = React.lazy(() => import('./views/base/emailtracking/changepassword'))
 
 // Base
 const Navs = React.lazy(() => import('./views/base/navs/Navs'))
@@ -46,6 +47,8 @@ const routes = [
   { path: '/smsgateway/settings', name: 'Actions / SMS Gateway / Settings', element: Settings}, //SMSGateway
 
   { path: '/users/users', name: 'User Management / Users', element: Users}, //users
+
+  { path: '/emailtracking/changepassword', name: 'Change Password', element: Changepassword}, //Changepassword
 
   { path: '/base/navs', name: 'Navs', element: Navs },
 ]

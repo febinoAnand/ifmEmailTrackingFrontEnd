@@ -393,12 +393,12 @@ class Parameter extends React.Component {
                           <CTableDataCell>
                             <div className="d-flex gap-2">
                               <CTooltip content="Edit">
-                                <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.getRowData(department)}>
+                                <CButton className="button-green" size='sm' onClick={() => this.getRowData(department)}>
                                   <CIcon icon={cilPen} />
                                 </CButton>
                               </CTooltip>
                               <CTooltip content="Delete">
-                                <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => this.handleDelete(department.id)}>
+                                <CButton size='sm' onClick={() => this.handleDelete(department.id)}>
                                   <CIcon icon={cilTrash} />
                                 </CButton>
                               </CTooltip>

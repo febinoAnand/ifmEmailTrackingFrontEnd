@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { cilTrash, cilPen } from '@coreui/icons';
+import { cilTrash, cilPen, cilLockLocked } from '@coreui/icons';
 import {
     CButton,
     CCard,
@@ -31,12 +31,13 @@ import BaseURL from 'src/assets/contants/BaseURL';
 const Users = () => {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
-    const [searchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [userActive, setUserActive] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [passwordModalVisible, setPasswordModalVisible] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
@@ -64,7 +65,7 @@ const Users = () => {
     };
 
     const handleSearch = () => {
-        const query = document.getElementById('searchInput').value.toLowerCase();
+        const query = searchQuery.toLowerCase();
         const filtered = users.filter(user => {
             const searchFields = [
                 user.usermod.username,
@@ -85,6 +86,11 @@ const Users = () => {
         setSelectedUser(user);
         setUserActive(user.userActive);
         setModalVisible(true);
+    };
+
+    const handlePasswordModalOpen = (user) => {
+        setSelectedUser(user);
+        setPasswordModalVisible(true);
     };
 
     const handleToggleChange = (event) => {
@@ -184,6 +190,44 @@ const Users = () => {
             });
     };
 
+    const handleUpdatePassword = () => {
+        if (!selectedUser || !selectedUser.userdetail_id) {
+            console.error('Error: No user selected for password update.');
+            return;
+        }
+        const newPassword = document.getElementById('newpassword').value;
+        const confirmPassword = document.getElementById('confirmpassword').value;
+    
+        if (newPassword !== confirmPassword) {
+            console.error('Error: New Password and Confirm Password do not match.');
+            return;
+        }
+    
+        const requestData = {
+            user_id: selectedUser.user_id,
+            username: selectedUser.usermod.username,
+            new_password: newPassword,
+            confirm_password: confirmPassword,
+        };
+        console.log("data",requestData)
+    
+        const token = localStorage.getItem('token');
+        axios.post(`${BaseURL}Userauth/change-password/`, requestData, {
+            headers: {
+                'Authorization': `Token ${token}`
+            }
+        })
+            .then(response => {
+                console.log('Password updated successfully:', response.data);
+                fetchUsers();
+                setPasswordModalVisible(false);
+                setSuccessMessage('Password updated successfully');
+            })
+            .catch(error => {
+                console.error('Error updating password:', error);
+            });
+    };    
+
     const handleDeleteUser = (userId) => {
         const token = localStorage.getItem('token');
         axios.delete(`${BaseURL}Userauth/delete-user/${userId}/`, {
@@ -202,11 +246,11 @@ const Users = () => {
 
     return (
         <>
-         {successMessage && (
-            <div className="alert alert-success" role="alert">
-                {successMessage}
-            </div>
-        )}
+            {successMessage && (
+                <div className="alert alert-success" role="alert">
+                    {successMessage}
+                </div>
+            )}
             <CRow>
                 <CCol xs={12}>
                     <CCard className="mb-4">
@@ -225,7 +269,8 @@ const Users = () => {
                                         placeholder="Search by Ext user, Designation, Mobile no or Device ID"
                                         aria-label="Search"
                                         aria-describedby="addon-wrapping"
-                                        id="searchInput"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
                                     />
                                     <CButton type="button" color="secondary" onClick={handleSearch} id="button-addon2">
                                         Search
@@ -275,17 +320,20 @@ const Users = () => {
                                                 <CTableDataCell>{user.mobile_no}</CTableDataCell>
                                                 <CTableDataCell>{user.device_id}</CTableDataCell>
                                                 <CTableDataCell>
-                                                    <span style={{ fontWeight: user.userActive ? 'bold' : 'bold', color: user.userActive ? 'green' : 'red' }}>
+                                                    <span style={{ fontWeight: user.userActive ? 'bold' : 'normal', color: user.userActive ? 'green' : 'red' }}>
                                                         {user.userActive ? 'Active' : 'Inactive'}
                                                     </span>
                                                 </CTableDataCell>
                                                 <CTableDataCell>{user.expiry_time}</CTableDataCell>
                                                 <CTableDataCell>
                                                     <div className="d-flex gap-2">
-                                                        <CButton onClick={() => handleTableRowClick(user)}>
+                                                        <CButton className="button-green" size='sm' onClick={() => handleTableRowClick(user)}>
                                                             <CIcon icon={cilPen} />
                                                         </CButton>
-                                                        <CButton onClick={(e) => { e.stopPropagation(); handleDeleteUser(user.user_id); }}>
+                                                        <CButton className="button-yellow" size='sm' onClick={() => handlePasswordModalOpen(user)}>
+                                                            <CIcon icon={cilLockLocked} />
+                                                        </CButton>
+                                                        <CButton color='primary' size='sm' onClick={(e) => { e.stopPropagation(); handleDeleteUser(user.user_id); }}>
                                                             <CIcon icon={cilTrash} />
                                                         </CButton>
                                                     </div>
@@ -327,16 +375,6 @@ const Users = () => {
                                 </CCol>
                             </CRow>
                             <CRow className="mb-3">
-                                <CFormLabel htmlFor="password" className="col-sm-2 col-form-label">Password</CFormLabel>
-                                <CCol md={4}>
-                                    <CFormInput type="text" id="password" name="password" readOnly />
-                                </CCol>
-                                <CFormLabel htmlFor="confirmpassword" className="col-sm-2 col-form-label">Confirm Password</CFormLabel>
-                                <CCol md={4}>
-                                    <CFormInput type="text" id="confirmpassword" name="confirmpassword" readOnly />
-                                </CCol>
-                            </CRow>
-                            <CRow className="mb-3">
                                 <CFormLabel htmlFor="toggle" className="col-sm-2 col-form-label">Active Status</CFormLabel>
                                 <CCol md={6}>
                                     <CFormSwitch
@@ -356,6 +394,44 @@ const Users = () => {
                 </CModalBody>
                 <CModalFooter>
                     <CButton color="secondary" onClick={() => setModalVisible(false)}>
+                        Close
+                    </CButton>
+                </CModalFooter>
+            </CModal>
+
+            <CModal size='lg' visible={passwordModalVisible} onClose={() => setPasswordModalVisible(false)} backdrop="static" keyboard={false}>
+                <CModalHeader onClose={() => setPasswordModalVisible(false)}>
+                    <CModalTitle><strong>Update Password</strong></CModalTitle>
+                </CModalHeader>
+                <CModalBody>
+                    {selectedUser && (
+                        <CForm>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">User Name</CFormLabel>
+                                <CCol md={10}>
+                                    <CFormInput type="text" id="name" name="name" defaultValue={selectedUser.usermod.username} readOnly />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3">
+                                <CFormLabel htmlFor="newpassword" className="col-sm-2 col-form-label">New Password</CFormLabel>
+                                <CCol md={4}>
+                                    <CFormInput type="password" id="newpassword" name="newpassword" />
+                                </CCol>
+                                <CFormLabel htmlFor="confirmpassword" className="col-sm-2 col-form-label">Confirm Password</CFormLabel>
+                                <CCol md={4}>
+                                    <CFormInput type="password" id="confirmpassword" name="confirmpassword" />
+                                </CCol>
+                            </CRow>
+                            <CRow className="justify-content-center">
+                                <CCol md="auto">
+                                    <CButton color="primary" onClick={handleUpdatePassword}>Update</CButton>
+                                </CCol>
+                            </CRow>
+                        </CForm>
+                    )}
+                </CModalBody>
+                <CModalFooter>
+                    <CButton color="secondary" onClick={() => setPasswordModalVisible(false)}>
                         Close
                     </CButton>
                 </CModalFooter>
