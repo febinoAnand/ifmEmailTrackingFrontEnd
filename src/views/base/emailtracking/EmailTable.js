@@ -42,7 +42,7 @@ const EmailTable = () => {
 
   useEffect(() => {
     fetchEmails();
-    const interval = setInterval(fetchEmails, 3000);
+    const interval = setInterval(fetchEmails, 5000);
     return () => clearInterval(interval);
   }, []);
 
