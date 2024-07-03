@@ -33,17 +33,31 @@ class Dashboard extends Component {
       userDetails: [],
     };
     this.chartRef = React.createRef();
+    this.prevDataRef = React.createRef({
+      totalUsers: 0,
+      activeUsers: 0,
+      inactiveUsers: 0,
+      totalDepartments: 0,
+      totalInbox: 0,
+      totalTickets: 0,
+      departmentTicketCount: [],
+      userDetails: [],
+    });
   }
 
   async componentDidMount() {
     await this.fetchData();
-    this.updateChart();
+    this.interval = setInterval(this.fetchData, 5000);
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.departmentTicketCount !== prevState.departmentTicketCount) {
       this.updateChart();
     }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   fetchData = async () => {
@@ -61,16 +75,22 @@ class Dashboard extends Component {
       });
       const data = response.data;
 
-      this.setState({
-        totalUsers: data.total_users,
-        activeUsers: data.active_users,
-        inactiveUsers: data.inactive_users,
-        totalDepartments: data.total_departments,
-        totalInbox: data.total_inbox,
-        totalTickets: data.total_tickets,
-        departmentTicketCount: data.department_ticket_count,
-        userDetails: data.user_details,
-      });
+      const prevData = this.prevDataRef.current;
+
+      if (JSON.stringify(prevData) !== JSON.stringify(data)) {
+        this.setState({
+          totalUsers: data.total_users,
+          activeUsers: data.active_users,
+          inactiveUsers: data.inactive_users,
+          totalDepartments: data.total_departments,
+          totalInbox: data.total_inbox,
+          totalTickets: data.total_tickets,
+          departmentTicketCount: data.department_ticket_count,
+          userDetails: data.user_details,
+        });
+
+        this.prevDataRef.current = data;
+      }
     } catch (error) {
       if (error.response) {
         console.error('Error fetching data:', error.response.data);

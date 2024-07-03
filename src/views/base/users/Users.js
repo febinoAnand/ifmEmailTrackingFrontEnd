@@ -31,7 +31,7 @@ import BaseURL from 'src/assets/contants/BaseURL';
 const Users = () => {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery] = useState('');
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -65,7 +65,7 @@ const Users = () => {
     };
 
     const handleSearch = () => {
-        const query = searchQuery.toLowerCase();
+        const query = document.getElementById('searchInput').value.toLowerCase();
         const filtered = users.filter(user => {
             const searchFields = [
                 user.usermod.username,
@@ -269,8 +269,7 @@ const Users = () => {
                                         placeholder="Search by Ext user, Designation, Mobile no or Device ID"
                                         aria-label="Search"
                                         aria-describedby="addon-wrapping"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        id="searchInput"
                                     />
                                     <CButton type="button" color="secondary" onClick={handleSearch} id="button-addon2">
                                         Search
@@ -320,7 +319,7 @@ const Users = () => {
                                                 <CTableDataCell>{user.mobile_no}</CTableDataCell>
                                                 <CTableDataCell>{user.device_id}</CTableDataCell>
                                                 <CTableDataCell>
-                                                    <span style={{ fontWeight: user.userActive ? 'bold' : 'normal', color: user.userActive ? 'green' : 'red' }}>
+                                                    <span style={{ fontWeight: user.userActive ? 'bold' : 'bold', color: user.userActive ? 'green' : 'red' }}>
                                                         {user.userActive ? 'Active' : 'Inactive'}
                                                     </span>
                                                 </CTableDataCell>
