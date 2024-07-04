@@ -32,6 +32,7 @@ const AppHeaderDropdown = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('username');
         navigate('/');
+        window.location.reload();
       } else {
         alert('Logout failed: ' + response.data.message);
       }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from 'src/AuthContext';
 import {
   CButton,
   CCard,
@@ -21,6 +22,7 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -39,10 +41,10 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('token', data.token);
+        login(data.token);
         localStorage.setItem('username', username);
         localStorage.setItem('password', password);
-        console.log(username)
+        console.log(username);
         console.log('Login successful. Token:', data.token);
         navigate('/emailTracking/dashboard');
         window.location.reload();

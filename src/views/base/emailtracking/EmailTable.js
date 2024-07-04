@@ -34,11 +34,12 @@ import BaseURL from 'src/assets/contants/BaseURL';
 const EmailTable = () => {
   const [emails, setEmails] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredEmails, setFilteredEmails] = useState([]);
   const [selectedEmail, setSelectedEmail] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEmails, setSelectedEmails] = useState([]);
   const [successMessage, setSuccessMessage] = useState('');
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [filteredEmails, setFilteredEmails] = useState([]);
 
   useEffect(() => {
     fetchEmails();
@@ -55,7 +56,6 @@ const EmailTable = () => {
       });
       const reversedEmails = response.data.reverse();
       setEmails(reversedEmails);
-      setFilteredEmails(reversedEmails);
     } catch (error) {
       console.error('Error fetching emails:', error);
     }
@@ -69,6 +69,7 @@ const EmailTable = () => {
       email.time.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredEmails(filtered);
+    setShowSearchResults(true);
   };
 
   const handleRowClick = (email) => {
@@ -84,8 +85,7 @@ const EmailTable = () => {
         }
       });
       setEmails(emails.filter(email => email.id !== emailId));
-      setFilteredEmails(filteredEmails.filter(email => email.id !== emailId));
-      setSelectedEmails(selectedEmails.filter(id => id !== emailId));
+      setSelectedEmail(null);
       setSuccessMessage('Email deleted successfully.');
     } catch (error) {
       console.error('Error deleting email:', error);
@@ -100,7 +100,6 @@ const EmailTable = () => {
         }
       })));
       setEmails(emails.filter(email => !selectedEmails.includes(email.id)));
-      setFilteredEmails(filteredEmails.filter(email => !selectedEmails.includes(email.id)));
       setSelectedEmails([]);
       setSuccessMessage('Selected emails deleted successfully.');
     } catch (error) {
@@ -110,7 +109,7 @@ const EmailTable = () => {
 
   const handleSelectAll = (event) => {
     if (event.target.checked) {
-      setSelectedEmails(filteredEmails.map(email => email.id));
+      setSelectedEmails(emails.map(email => email.id));
     } else {
       setSelectedEmails([]);
     }
@@ -126,11 +125,11 @@ const EmailTable = () => {
 
   return (
     <>
-    {successMessage && (
-      <div className="alert alert-success" role="alert">
-        {successMessage}
-      </div>
-    )}
+      {successMessage && (
+        <div className="alert alert-success" role="alert">
+          {successMessage}
+        </div>
+      )}
       <CRow>
         <CCol xs={12}>
           <CCard className="mb-4">
@@ -138,11 +137,11 @@ const EmailTable = () => {
               <strong>E-Mail box</strong>
               <CNav>
                 <CNavItem className="mx-2 position-relative">
-                      <CTooltip content="Delete Selected">
-                        <CButton type="button" color="primary" size="sm" onClick={(e) => { e.stopPropagation(); deleteSelectedEmails(); }}>
-                            Delete Selected
-                        </CButton>
-                      </CTooltip>
+                  <CTooltip content="Delete Selected">
+                    <CButton type="button" color="primary" size="sm" onClick={deleteSelectedEmails}>
+                      Delete Selected
+                    </CButton>
+                  </CTooltip>
                 </CNavItem>
               </CNav>
             </CCardHeader>
@@ -180,21 +179,46 @@ const EmailTable = () => {
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                  {filteredEmails.length === 0 ? (
-                    <CTableRow>
-                      <CTableDataCell colSpan="7" className="text-center">No data available</CTableDataCell>
-                    </CTableRow>
+                  {showSearchResults ? (
+                    filteredEmails.length === 0 ? (
+                      <CTableRow>
+                        <CTableDataCell colSpan="7" className="text-center">No matching emails found</CTableDataCell>
+                      </CTableRow>
+                    ) : (
+                      filteredEmails.map((email, index) => (
+                        <CTableRow key={email.id}>
+                          <CTableDataCell>
+                            <CFormCheck
+                              id={`selectEmail${email.id}`}
+                              checked={selectedEmails.includes(email.id)}
+                              onChange={() => handleSelectEmail(email.id)}
+                            />
+                          </CTableDataCell>
+                          <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                          <CTableDataCell style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email.date}</CTableDataCell>
+                          <CTableDataCell>{email.time}</CTableDataCell>
+                          <CTableDataCell>{email.subject}</CTableDataCell>
+                          <CTooltip placement="top" content="Click to view full Inbox.">
+                            <CTableDataCell onClick={() => handleRowClick(email)} style={{ cursor: 'pointer' }}>{email.message}</CTableDataCell>
+                          </CTooltip>
+                          <CTableDataCell className="text-end">
+                            <CTooltip content="Delete">
+                              <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => deleteEmail(email.id)}>
+                                <CIcon icon={cilTrash} />
+                              </CButton>
+                            </CTooltip>
+                          </CTableDataCell>
+                        </CTableRow>
+                      ))
+                    )
                   ) : (
-                    filteredEmails.map((email, index) => (
+                    emails.map((email, index) => (
                       <CTableRow key={email.id}>
                         <CTableDataCell>
                           <CFormCheck
                             id={`selectEmail${email.id}`}
                             checked={selectedEmails.includes(email.id)}
-                            onChange={(e) => {
-                              e.stopPropagation();
-                              handleSelectEmail(email.id);
-                            }}
+                            onChange={() => handleSelectEmail(email.id)}
                           />
                         </CTableDataCell>
                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
@@ -206,7 +230,7 @@ const EmailTable = () => {
                         </CTooltip>
                         <CTableDataCell className="text-end">
                           <CTooltip content="Delete">
-                            <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={(e) => { e.stopPropagation(); deleteEmail(email.id); }}>
+                            <CButton style={{ fontSize: '10px', padding: '6px 10px' }} onClick={() => deleteEmail(email.id)}>
                               <CIcon icon={cilTrash} />
                             </CButton>
                           </CTooltip>
@@ -225,7 +249,7 @@ const EmailTable = () => {
           <CModalTitle>E-Mail Details</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          {selectedEmail ? (
+          {selectedEmail && (
             <>
               <CRow className="mb-3">
                 <CFormLabel htmlFor="fromEmail" className="col-sm-3 col-form-label"><strong>From Email:</strong></CFormLabel>
@@ -258,8 +282,6 @@ const EmailTable = () => {
                 </CCol>
               </CRow>
             </>
-          ) : (
-            <p></p>
           )}
         </CModalBody>
         <CModalFooter>
