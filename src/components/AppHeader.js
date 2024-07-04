@@ -33,56 +33,63 @@ const AppHeader = () => {
   const [inboxCount, setInboxCount] = useState(0);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchNotifications = async () => {
     const token = localStorage.getItem('token');
-    const fetchNotifications = async () => {
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        const response = await fetch(`${BaseURL}pushnotification/sendreport/?date=${today}`, {
-          headers: {
-            Authorization: `Token ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-        if (!response.ok) {
-          throw new Error('Failed to fetch notifications');
-        }
-        const data = await response.json();
-        const sortedNotifications = data.filter(notification => (
-          notification.delivery_status === "200 - OK" &&
-          notification.date === today
-        )).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).reverse();
-        setNotifications(sortedNotifications);
-        setNotificationCount(sortedNotifications.length);
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const response = await fetch(`${BaseURL}pushnotification/sendreport/?date=${today}`, {
+        headers: {
+          Authorization: `Token ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch notifications');
       }
-    };
+      const data = await response.json();
+      const sortedNotifications = data.filter(notification => (
+        notification.delivery_status === "200 - OK" &&
+        notification.date === today
+      )).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).reverse();
+      setNotifications(sortedNotifications);
+      setNotificationCount(sortedNotifications.length);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  };
 
-    const fetchInbox = async () => {
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        const response = await fetch(`${BaseURL}emailtracking/inbox/?date=${today}`, {
-          headers: {
-            Authorization: `Token ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-        if (!response.ok) {
-          throw new Error('Failed to fetch inbox messages');
-        }
-        const data = await response.json();
-        const sortedInbox = data.filter(message => message.date === today)
-          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).reverse();
-        setInbox(sortedInbox);
-        setInboxCount(sortedInbox.length);
-      } catch (error) {
-        console.error('Error fetching inbox messages:', error);
+  const fetchInbox = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const response = await fetch(`${BaseURL}emailtracking/inbox/?date=${today}`, {
+        headers: {
+          Authorization: `Token ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch inbox messages');
       }
-    };
+      const data = await response.json();
+      const sortedInbox = data.filter(message => message.date === today)
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).reverse();
+      setInbox(sortedInbox);
+      setInboxCount(sortedInbox.length);
+    } catch (error) {
+      console.error('Error fetching inbox messages:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchNotifications();
     fetchInbox();
+    const intervalId = setInterval(() => {
+      fetchNotifications();
+      fetchInbox();
+    }, 5000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const truncateMessage = (message, charLimit) => {
