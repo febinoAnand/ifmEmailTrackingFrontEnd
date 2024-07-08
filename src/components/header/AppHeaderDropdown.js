@@ -26,18 +26,15 @@ const AppHeaderDropdown = () => {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(BaseURL + 'Userauth/weblogout/', { token });
+      await axios.post(BaseURL + 'Userauth/weblogout/', { token });
 
-      if (response.data.status === 'OK') {
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
-        navigate('/');
-        window.location.reload();
-      } else {
-        alert('Logout failed: ' + response.data.message);
-      }
     } catch (error) {
       console.error('There was an error logging out!', error);
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('username');
+      navigate('/');
+      window.location.reload();
     }
   };
 
