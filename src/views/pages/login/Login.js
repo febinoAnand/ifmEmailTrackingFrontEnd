@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from 'src/AuthContext';
 import {
   CButton,
@@ -100,6 +100,7 @@ const Login = () => {
                       </CCol>
                     </CRow>
                   </CForm>
+                  <Link to="/users/logindemo">Go to Login Demo</Link>
                 </CCardBody>
               </CCard>
             </CCardGroup>

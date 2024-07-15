@@ -3,6 +3,8 @@ import { HashRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthProvider } from './AuthContext';
 import ProtectedRoute from './ProtectedRoute';
 import './scss/style.scss';
+import LoginDemo from './views/base/users/Logindemo';
+import ActiveDemo from './views/base/users/Activedemo';
 
 const loading = (
   <div className="pt-3 text-center">
@@ -26,6 +28,8 @@ class App extends Component {
             <Routes>
               <Route exact path="/" element={<Navigate to="/login" />} />
               <Route exact path="/login" name="Login Page" element={<Login />} />
+              <Route exact path="/users/logindemo" element={<LoginDemo />} />
+              <Route exact path="/users/activedemo" element={<ActiveDemo />} />
               <Route exact path="/live" name="Home 2" element={<ProtectedRoute element={DashboardLayout} />} />
               <Route path="*" name="Home" element={<ProtectedRoute element={DefaultLayout} />} />
             </Routes>
