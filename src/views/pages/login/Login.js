@@ -98,9 +98,14 @@ const Login = () => {
                           Login
                         </CButton>
                       </CCol>
+                      <CCol xs={3}>
+                        <Link to="/users/logindemo">Go to Login Demo</Link>
+                      </CCol>
+                      <CCol xs={3}>
+                        <Link to="/users/activedemo">To Activate</Link>
+                      </CCol>
                     </CRow>
                   </CForm>
-                  <Link to="/users/logindemo">Go to Login Demo</Link>
                 </CCardBody>
               </CCard>
             </CCardGroup>

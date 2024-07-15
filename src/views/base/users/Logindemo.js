@@ -16,7 +16,6 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser } from '@coreui/icons';
 import BaseURL from 'src/assets/contants/BaseURL';
-import { useNavigate } from 'react-router-dom';
 
 const LoginDemo = () => {
   const [username, setUsername] = useState('');
@@ -24,8 +23,6 @@ const LoginDemo = () => {
   const [otp, setOtp] = useState('');
   const [responseStatus, setResponseStatus] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
-  const [activated, setActivated] = useState(false);
-  const navigate = useNavigate();
 
   const handleGenerateOTP = async () => {
     try {
@@ -48,7 +45,6 @@ const LoginDemo = () => {
         setResponseStatus('success');
         setResponseMessage(`OTP generated: ${data.otp}`);
         setOtp(data.otp);
-        setActivated(true);
       } else {
         setResponseStatus('danger');
         setResponseMessage(`Failed: ${data.message}`);
@@ -60,9 +56,6 @@ const LoginDemo = () => {
     }
   };
 
-  const handleActivate = () => {
-    navigate('/users/activedemo');
-  };
 
   return (
     <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
@@ -104,16 +97,6 @@ const LoginDemo = () => {
                     <CButton onClick={handleGenerateOTP} color="primary" className="px-4">
                       Generate OTP
                     </CButton>
-                    {activated && (
-                      <CButton
-                        onClick={handleActivate}
-                        color="primary"
-                        className="px-4"
-                        style={{ marginLeft: '10px' }}
-                      >
-                        To Activate
-                      </CButton>
-                    )}
                   </CForm>
                 </CCardBody>
               </CCard>

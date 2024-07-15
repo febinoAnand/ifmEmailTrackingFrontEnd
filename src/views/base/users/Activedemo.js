@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import { CContainer, CRow, CCol, CCard, CCardBody, CForm, CInputGroup, CInputGroupText, CFormInput, CFormCheck, CButton, CAlert } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import axios from 'axios';
