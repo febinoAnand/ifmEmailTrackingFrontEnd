@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { CContainer, CRow, CCol, CCard, CCardBody, CForm, CInputGroup, CInputGroupText, CFormInput, CFormCheck, CButton, CAlert } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import axios from 'axios';
@@ -6,6 +6,7 @@ import BaseURL from 'src/assets/contants/BaseURL';
 
 const ActiveDemo = () => {
   const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [isActive, setIsActive] = useState(false);
   const [isInactive, setIsInactive] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -14,7 +15,8 @@ const ActiveDemo = () => {
   const fetchUserStatus = async () => {
     try {
       const response = await axios.post(BaseURL + 'Userauth/demo-check-user-activity/', {
-        username: username
+        username: username,
+        password: password
       });
 
       if (response.data.status === 'active') {
@@ -35,6 +37,7 @@ const ActiveDemo = () => {
     try {
       const response = await axios.post(BaseURL + 'Userauth/demo-update-user-status/', {
         username: username,
+        password: password,
         is_active: isActive
       });
 
@@ -103,6 +106,18 @@ const ActiveDemo = () => {
                       autoComplete="username"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
+                    />
+                  </CInputGroup>
+                  <CInputGroup className="mb-3">
+                    <CInputGroupText>
+                      <CIcon icon="cil-lock-locked" />
+                    </CInputGroupText>
+                    <CFormInput
+                      type="password"
+                      placeholder="Enter Password"
+                      autoComplete="current-password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                   </CInputGroup>
                   <CInputGroup className="mb-3">
