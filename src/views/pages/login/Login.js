@@ -99,10 +99,10 @@ const Login = () => {
                         </CButton>
                       </CCol>
                       <CCol xs={3}>
-                        <Link to="/users/logindemo">Go to Login Demo</Link>
+                        <Link to="/users/logindemo">Demo User OTP</Link>
                       </CCol>
                       <CCol xs={3}>
-                        <Link to="/users/activedemo">To Activate</Link>
+                        <Link to="/users/activedemo">To Activate Demo User</Link>
                       </CCol>
                     </CRow>
                   </CForm>

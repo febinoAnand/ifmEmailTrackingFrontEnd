@@ -120,16 +120,6 @@ const ActiveDemo = () => {
                       onChange={(e) => setPassword(e.target.value)}
                     />
                   </CInputGroup>
-                  <CInputGroup className="mb-3">
-                    <CInputGroupText>
-                      <CIcon icon="cil-file" />
-                    </CInputGroupText>
-                    <CFormInput
-                      placeholder="Active State File"
-                      value={isActive ? 'Active' : (isInactive ? 'Inactive' : '')}
-                      readOnly
-                    />
-                  </CInputGroup>
                   <CRow className="mb-3">
                     <CCol xs={6}>
                       <CFormCheck
